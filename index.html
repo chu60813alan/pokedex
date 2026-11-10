@@ -31,7 +31,6 @@
       text-align: center;
       width: 100%;
     }
-    /* 多分頁導覽列 (調整成3個分頁) */
     .tab-nav {
       display: flex;
       gap: 4px;
@@ -135,22 +134,20 @@
     }
     .result-category strong {
       display: block;
-      margin-bottom: 3px;
+      margin-bottom: 6px;
       color: #D35400;
       border-bottom: 1px dashed #F39C12;
-      padding-bottom: 2px;
+      padding-bottom: 4px;
     }
     .type-badge {
       display: inline-block;
-      padding: 3px 6px;
-      margin: 2px;
+      padding: 3px 8px;
       border-radius: 4px;
       font-size: 0.8rem;
       font-weight: bold;
       color: white;
     }
     
-    /* 隊伍分析區塊樣式 */
     .team-slot {
       background: #FFF9F2;
       border: 1px dashed #F39C12;
@@ -161,6 +158,39 @@
       gap: 8px;
     }
     .team-slot select { font-size: 0.9rem; padding: 4px; }
+
+    /* 隊伍盲點卡片優化 */
+    .weakness-card {
+      background: #FFFFFF;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      border: 1px solid #F39C12;
+    }
+    .weakness-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+    .pivot-info {
+      font-size: 0.82rem;
+      color: #27AE60;
+      background: #E8F8F5;
+      padding: 4px 6px;
+      border-radius: 4px;
+      margin-top: 4px;
+      border-left: 3px solid #2ECC71;
+    }
+    .pivot-none {
+      font-size: 0.82rem;
+      color: #C0392B;
+      background: #FDEDEC;
+      padding: 4px 6px;
+      border-radius: 4px;
+      margin-top: 4px;
+      border-left: 3px solid #E74C3C;
+    }
 
     /* 屬性色彩標章 */
     .bg-normal { background-color: #A8A878; }
@@ -189,16 +219,15 @@
       <h1>寶可夢 18 屬性對戰戰術中心</h1>
     </div>
 
-    <!-- 三大功能分頁切換按鈕 -->
     <div class="tab-nav">
       <div class="tab-btn active" onclick="switchTab('defense')">🛡️ 單隻攻防</div>
-      <div class="tab-btn" onclick="switchTab('team')">👥 隊伍盲點</div>
+      <div class="tab-btn" onclick="switchTab('team')">👥 隊伍盲點與聯防</div>
       <div class="tab-btn" onclick="switchTab('ability')">✨ 特性影響</div>
     </div>
 
     <div class="tool-box">
       
-      <!-- 分頁一：🛡️ 單隻攻防分析 (含 25 隻捷徑) -->
+      <!-- 分頁一 -->
       <div id="panel-defense" class="panel active">
         <h3>單隻寶可夢防禦與進攻分析</h3>
         <label>🔥 快速載入 25 隻熱門寶可夢：</label>
@@ -246,13 +275,12 @@
         <div id="defense-result" class="result-section" style="display:none;"></div>
       </div>
 
-      <!-- 分頁二：👥 隊伍盲點分析 -->
+      <!-- 分頁二：👥 隊伍盲點與聯防分析 -->
       <div id="panel-team" class="panel">
-        <h3>多隻寶可夢隊伍盲點統計</h3>
-        <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">設定你的隊員組合，系統將統計全隊遭遇各屬性弱點（2倍或4倍）的累積次數：</p>
+        <h3>多隻寶可夢隊伍盲點與聯防分析</h3>
+        <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">設定你的 3 隻隊員組合，系統將統計弱點並自動尋找隊中能幫忙「聯防扛傷」的隊友：</p>
         
         <div id="team-slots-container">
-          <!-- 動態產生 3 隻隊員設定 -->
           <script>
             for(let i=1; i<=3; i++) {
               document.write(`
@@ -269,11 +297,11 @@
             }
           </script>
         </div>
-        <button onclick="analyzeTeamWeakness()">統計全隊弱點分佈</button>
+        <button onclick="analyzeTeamWeakness()">分析全隊盲點與聯防</button>
         <div id="team-result" class="result-section" style="display:none;"></div>
       </div>
 
-      <!-- 分頁三：✨ 特性影響計算 -->
+      <!-- 分頁三 -->
       <div id="panel-ability" class="panel">
         <h3>特性能力對防禦抗性的影響</h3>
         <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">選擇寶可夢原本屬性，並套用對戰特殊特性來即時修正防禦結果：</p>
@@ -339,9 +367,10 @@
       fairy: { fighting: 2, dragon: 2, dark: 2, fire: 0.5, poison: 0.5, steel: 0.5 }
     };
 
-    function getMultiplier(atk, def) {
-      if (!chart[atk]) return 1;
-      return chart[atk][def] !== undefined ? chart[atk][def] : 1;
+    function getMultiplier(atk, def1, def2) {
+      let m1 = (chart[atk] && chart[atk][def1] !== undefined) ? chart[atk][def1] : 1;
+      let m2 = (def2 !== 'none' && chart[atk] && chart[atk][def2] !== undefined) ? chart[atk][def2] : 1;
+      return m1 * m2;
     }
 
     function switchTab(tab) {
@@ -374,9 +403,7 @@
       let groups = { 4: [], 2: [], 1: [], 0.5: [], 0.25: [], 0: [] };
 
       allTypes.forEach(atk => {
-        let m1 = getMultiplier(atk, d1);
-        let m2 = (d2 !== 'none') ? getMultiplier(atk, d2) : 1;
-        let total = m1 * m2;
+        let total = getMultiplier(atk, d1, d2);
         if (groups[total]) {
           groups[total].push(atk);
         }
@@ -393,37 +420,60 @@
     }
 
     function analyzeTeamWeakness() {
-      let weaknessCounts = {};
-      allTypes.forEach(t => weaknessCounts[t] = 0);
-
+      // 收集 3 隻隊員的屬性
+      let team = [];
       for(let i=1; i<=3; i++) {
-        let d1 = document.getElementById(`team-${i}-1`).value;
-        let d2 = document.getElementById(`team-${i}-2`).value;
-
-        allTypes.forEach(atk => {
-          let m1 = getMultiplier(atk, d1);
-          let m2 = (d2 !== 'none') ? getMultiplier(atk, d2) : 1;
-          let total = m1 * m2;
-          if (total >= 2) { // 只要受到2倍或4倍傷害就算隊伍弱點
-            weaknessCounts[atk]++;
-          }
-        });
+        let t1 = document.getElementById(`team-${i}-1`).value;
+        let t2 = document.getElementById(`team-${i}-2`).value;
+        team.push({ id: i, t1: t1, t2: t2 });
       }
 
       const resDiv = document.getElementById('team-result');
       resDiv.style.display = 'block';
 
-      let sortedWeaknesses = Object.keys(weaknessCounts).filter(t => weaknessCounts[t] > 0).sort((a,b) => weaknessCounts[b] - weaknessCounts[a]);
+      let html = `<div class="result-category"><strong>📊 全隊屬性弱點與聯防分析：</strong></div>`;
+      let hasWeakness = false;
 
-      let html = `<div class="result-category"><strong>📊 全隊弱點屬性累積次數：</strong>`;
-      if(sortedWeaknesses.length === 0) {
-        html += `<p>太神啦！目前隊伍沒有明顯弱點屬性。</p>`;
-      } else {
-        sortedWeaknesses.forEach(t => {
-          html += `<div style="margin:4px 0;"><span class="type-badge bg-${t}">${typeNames[t]}</span> 共有 <strong style="color:#C0392B;">${weaknessCounts[t]}</strong> 隻隊員害怕此屬性</div>`;
+      // 檢查每一個屬性打過來時的情況
+      allTypes.forEach(atk => {
+        let weakMembers = []; // 害怕這屬性的隊員
+        let pivotMembers = []; // 可以幫忙聯防扛傷的隊員 (倍率 < 1)
+
+        team.forEach(member => {
+          let mult = getMultiplier(atk, member.t1, member.t2);
+          if (mult >= 2) {
+            weakMembers.push(`隊員${member.id}`);
+          } else if (mult < 1) {
+            pivotMembers.push(`隊員${member.id}`);
+          }
         });
+
+        // 如果這屬性有隊員害怕，就列出來並尋找聯防
+        if (weakMembers.length > 0) {
+          hasWeakness = true;
+          let pivotText = "";
+          if (pivotMembers.length > 0) {
+            pivotText = `<div class="pivot-info">💡 可聯防幫扛：${pivotMembers.join(', ')} 具有抗性或免疫！</div>`;
+          } else {
+            pivotText = `<div class="pivot-none">⚠️ 注意：全隊無人可抗此屬性，屬性盲點！</div>`;
+          }
+
+          html += `
+            <div class="weakness-card">
+              <div class="weakness-header">
+                <span class="type-badge bg-${atk}">${typeNames[atk]}</span>
+                <span style="font-size: 0.85rem; color: #555;">${weakMembers.join(', ')} 害怕此屬性</span>
+              </div>
+              ${pivotText}
+            </div>
+          `;
+        }
+      });
+
+      if(!hasWeakness) {
+        html += `<p style="padding: 8px;">太神啦！目前隊伍互相補足，沒有任何成員害怕的屬性會變成全隊死角。</p>`;
       }
-      html += `</div>`;
+
       resDiv.innerHTML = html;
     }
 
@@ -437,11 +487,8 @@
       let groups = { 4: [], 2: [], 1: [], 0.5: [], 0.25: [], 0: [] };
 
       allTypes.forEach(atk => {
-        let m1 = getMultiplier(atk, d1);
-        let m2 = (d2 !== 'none') ? getMultiplier(atk, d2) : 1;
-        let total = m1 * m2;
+        let total = getMultiplier(atk, d1, d2);
 
-        // 特性覆蓋邏輯
         if (ability === 'levitate' && atk === 'ground') total = 0;
         if (ability === 'water-absorb' && atk === 'water') total = 0;
         if (ability === 'lightning-rod' && atk === 'electric') total = 0;
@@ -457,7 +504,7 @@
       if (groups[2].length > 0) html += `<div class="result-category"><strong>⚡ 2 倍傷害：</strong>` + groups[2].map(t => `<span class="type-badge bg-${t}">${typeNames[t]}</span>`).join('') + `</div>`;
       if (groups[0.5].length > 0) html += `<div class="result-category"><strong>🛡️ 0.5 倍抗性：</strong>` + groups[0.5].map(t => `<span class="type-badge bg-${t}">${typeNames[t]}</span>`).join('') + `</div>`;
       if (groups[0.25].length > 0) html += `<div class="result-category"><strong>🧱 0.25 倍強力抗性：</strong>` + groups[0.25].map(t => `<span class="type-badge bg-${t}">${typeNames[t]}</span>`).join('') + `</div>`;
-      if (groups[0].length > 0) html += `<div class="result-category"><strong>🚫 0 倍無效：</strong>` + groups[0].map(t => `<span class="type-badge bg-${t}">${typeNames[t]}</span>`).join('') + `</div>`;
+      if (groups[0].length > 0) html += `<div class="result-category"><strong>🚫 0 倍無效：</strong>` + groups[0].map(t => `<span class="type-badge bg-${t}`, typeNames[t]) + `</span>`).join('') + `</div>`;
 
       resDiv.innerHTML = html;
     }
