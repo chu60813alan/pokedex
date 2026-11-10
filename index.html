@@ -186,4 +186,46 @@
       ghost: { psychic: 2, ghost: 2, dark: 0.5, normal: 0 },
       dragon: { dragon: 2, steel: 0.5, fairy: 0 },
       dark: { psychic: 2, ghost: 2, fighting: 0.5, dark: 0.5, fairy: 0.5 },
-      steel: { ice: 2, rock: 2, fairy: 2, fire: 0.5, water: 0.5, electric: 0.5, steel
+      steel: { ice: 2, rock: 2, fairy: 2, fire: 0.5, water: 0.5, electric: 0.5, steel: 0.5 },
+      fairy: { fighting: 2, dragon: 2, dark: 2, fire: 0.5, poison: 0.5, steel: 0.5 }
+    };
+
+    function getMultiplier(atk, def) {
+      if (!chart[atk]) return 1;
+      return chart[atk][def] !== undefined ? chart[atk][def] : 1;
+    }
+
+    function calculateFullEffectiveness() {
+      const atk = document.getElementById('atk-type').value;
+      const def1 = document.getElementById('def-type-1').value;
+      const def2 = document.getElementById('def-type-2').value;
+      const resBox = document.getElementById('calc-result');
+
+      let m1 = getMultiplier(atk, def1);
+      let m2 = 1;
+
+      if (def2 !== 'none') {
+        m2 = getMultiplier(atk, def2);
+      }
+
+      let finalMultiplier = m1 * m2;
+
+      // 顯示格式化倍率
+      let text = `最終傷害倍率：${finalMultiplier} 倍`;
+      if (finalMultiplier >= 2) {
+        resBox.style.color = "#C0392B";
+        resBox.innerHTML = `💥 效果絕佳！承受 <span style="font-size: 1.3rem;">${finalMultiplier} 倍</span> 傷害！`;
+      } else if (finalMultiplier === 0) {
+        resBox.style.color = "#7F8C8D";
+        resBox.innerHTML = `🚫 完全無效！(0 倍傷害)`;
+      } else if (finalMultiplier < 1) {
+        resBox.style.color = "#D35400";
+        resBox.innerHTML = `⚠️ 效果不太好... 僅承受 <span style="font-size: 1.3rem;">${finalMultiplier} 倍</span> 傷害`;
+      } else {
+        resBox.style.color = "#27AE60";
+        resBox.innerHTML = `🛡️ 普通傷害 (1.0 倍)`;
+      }
+    }
+  </script>
+</body>
+</html>
