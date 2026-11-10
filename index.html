@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>寶可夢 18 屬性全方位攻防分析器</title>
+  <title>寶可夢 18 屬性攻防分析器</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -31,7 +31,6 @@
       text-align: center;
       width: 100%;
     }
-    /* 分頁按鈕樣式 */
     .tab-nav {
       display: flex;
       gap: 8px;
@@ -82,12 +81,49 @@
       font-size: 1rem;
       background-color: #FFF;
     }
-    .panel {
-      display: none;
+    button {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      background-color: #E67E22;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-top: 6px;
     }
-    .panel.active {
-      display: block;
+    button:active { background-color: #D35400; }
+    .panel { display: none; }
+    .panel.active { display: block; }
+    
+    /* 25隻熱門寶可夢按鈕網格 */
+    .preset-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-bottom: 16px;
+      max-height: 180px;
+      overflow-y: auto;
+      padding-right: 4px;
     }
+    .preset-btn {
+      padding: 6px 4px;
+      font-size: 0.85rem;
+      background-color: #FFF3E6;
+      border: 1px solid #F39C12;
+      color: #D35400;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: center;
+      font-weight: bold;
+      transition: 0.1s;
+    }
+    .preset-btn:hover {
+      background-color: #F39C12;
+      color: white;
+    }
+
     .result-section {
       margin-top: 16px;
       padding: 16px;
@@ -115,7 +151,6 @@
       font-weight: bold;
       color: white;
     }
-    /* 屬性標籤顏色 */
     .bg-normal { background-color: #A8A878; }
     .bg-fire { background-color: #F08030; }
     .bg-water { background-color: #6890F0; }
@@ -142,7 +177,6 @@
       <h1>寶可夢 18 屬性攻防分析器</h1>
     </div>
 
-    <!-- 切換分頁按鈕 -->
     <div class="tab-nav">
       <div class="tab-btn active" onclick="switchTab('defense')">🛡️ 防禦抗性總覽</div>
       <div class="tab-btn" onclick="switchTab('attack')">⚔️ 進攻打點總覽</div>
@@ -152,14 +186,45 @@
       <!-- 🛡️ 防禦分頁 -->
       <div id="panel-defense" class="panel active">
         <h3>防禦方複合屬性全方位弱點分析</h3>
+        
+        <!-- 25隻熱門寶可夢快捷按鈕區塊 -->
+        <label>🔥 點擊快速載入熱門寶可夢：</label>
+        <div class="preset-grid">
+          <button class="preset-btn" onclick="loadPreset('fire', 'flying')">M-噴火龍Y</button>
+          <button class="preset-btn" onclick="loadPreset('dragon', 'ground')">烈咬陸鯊</button>
+          <button class="preset-btn" onclick="loadPreset('ghost', 'fairy')">謎擬Ｑ</button>
+          <button class="preset-btn" onclick="loadPreset('dragon', 'flying')">快龍</button>
+          <button class="preset-btn" onclick="loadPreset('water', 'ground')">M-巨沼怪</button>
+          <button class="preset-btn" onclick="loadPreset('grass', 'dark')">魔幻假面喵</button>
+          <button class="preset-btn" onclick="loadPreset('normal', 'flying')">M-姆克鷹</button>
+          <button class="preset-btn" onclick="loadPreset('steel', 'psychic')">巨金怪</button>
+          <button class="preset-btn" onclick="loadPreset('ghost', 'poison')">耿鬼</button>
+          <button class="preset-btn" onclick="loadPreset('rock', 'dark')">班基拉斯</button>
+          <button class="preset-btn" onclick="loadPreset('steel', 'flying')">鋼鎧鴨</button>
+          <button class="preset-btn" onclick="loadPreset('steel', 'ghost')">賽富豪</button>
+          <button class="preset-btn" onclick="loadPreset('dragon', 'steel')">鋁鋼橋龍</button>
+          <button class="preset-btn" onclick="loadPreset('dark', 'steel')">劈斬將軍</button>
+          <button class="preset-btn" onclick="loadPreset('fire', 'ghost')">蒼炎刃鬼</button>
+          <button class="preset-btn" onclick="loadPreset('water', 'ghost')">幽尾玄魚</button>
+          <button class="preset-btn" onclick="loadPreset('dark', 'ghost')">勾魂眼</button>
+          <button class="preset-btn" onclick="loadPreset('water', 'none')">美娜斯</button>
+          <button class="preset-btn" onclick="loadPreset('grass', 'fairy')">風妖精</button>
+          <button class="preset-btn" onclick="loadPreset('fire', 'dark')">赤焰咆嘯虎</button>
+          <button class="preset-btn" onclick="loadPreset('fire', 'fighting')">火焰雞</button>
+          <button class="preset-btn" onclick="loadPreset('steel', 'ghost')">堅盾劍怪</button>
+          <button class="preset-btn" onclick="loadPreset('water', 'flying')">暴鯉龍</button>
+          <button class="preset-btn" onclick="loadPreset('ghost', 'grass')">來悲粗茶</button>
+          <button class="preset-btn" onclick="loadPreset('dragon', 'ghost')">多龍巴魯托</button>
+        </div>
+
         <div class="form-group">
           <label>第一屬性：</label>
           <select id="def-1">
             <option value="normal">一般</option>
-            <option value="fire">火</option>
+            <option value="fire" selected>火</option>
             <option value="water">水</option>
             <option value="electric">電</option>
-            <option value="grass" selected>草</option>
+            <option value="grass">草</option>
             <option value="ice">冰</option>
             <option value="fighting">格鬥</option>
             <option value="poison">毒</option>
@@ -186,9 +251,9 @@
             <option value="grass">草</option>
             <option value="ice">冰</option>
             <option value="fighting">格鬥</option>
-            <option value="poison" selected>毒</option>
+            <option value="poison">毒</option>
             <option value="ground">地面</option>
-            <option value="flying">飛行</option>
+            <option value="flying" selected>飛行</option>
             <option value="psychic">超能力</option>
             <option value="bug">蟲</option>
             <option value="rock">岩石</option>
@@ -281,6 +346,12 @@
         document.querySelectorAll('.tab-btn')[1].classList.add('active');
         document.getElementById('panel-attack').classList.add('active');
       }
+    }
+
+    function loadPreset(t1, t2) {
+      document.getElementById('def-1').value = t1;
+      document.getElementById('def-2').value = t2;
+      analyzeDefense();
     }
 
     function analyzeDefense() {
