@@ -1,3 +1,4 @@
+HTML
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -115,11 +116,11 @@
       <div class="form-group">
         <label>防禦方寶可夢 - 第一屬性：</label>
         <select id="def-type-1">
-          <option value="grass">草</option>
           <option value="normal">一般</option>
           <option value="fire">火</option>
           <option value="water">水</option>
           <option value="electric">電</option>
+          <option value="grass">草</option>
           <option value="ice">冰</option>
           <option value="fighting">格鬥</option>
           <option value="poison">毒</option>
@@ -140,15 +141,16 @@
         <label>防禦方寶可夢 - 第二屬性：</label>
         <select id="def-type-2">
           <option value="none">無 (單屬性)</option>
-          <option value="flying">飛行</option>
-          <option value="poison">毒</option>
-          <option value="ground">地面</option>
+          <option value="normal">一般</option>
           <option value="fire">火</option>
           <option value="water">水</option>
-          <option value="grass">草</option>
           <option value="electric">電</option>
+          <option value="grass">草</option>
           <option value="ice">冰</option>
           <option value="fighting">格鬥</option>
+          <option value="poison">毒</option>
+          <option value="ground">地面</option>
+          <option value="flying">飛行</option>
           <option value="psychic">超能力</option>
           <option value="bug">蟲</option>
           <option value="rock">岩石</option>
@@ -157,7 +159,6 @@
           <option value="dark">惡</option>
           <option value="steel">鋼</option>
           <option value="fairy">妖精</option>
-          <option value="normal">一般</option>
         </select>
       </div>
 
@@ -168,7 +169,6 @@
   </div>
 
   <script>
-    // 完整的 18 屬性相剋對照表 (2 = 絕佳/2x, 0.5 = 不好/0.5x, 0 = 無效/0x)
     const chart = {
       normal: { rock: 0.5, steel: 0.5, ghost: 0 },
       fire: { grass: 2, ice: 2, bug: 2, steel: 2, fire: 0.5, water: 0.5, rock: 0.5, dragon: 0.5 },
@@ -210,7 +210,6 @@
 
       let finalMultiplier = m1 * m2;
 
-      // 顯示格式化倍率
       let text = `最終傷害倍率：${finalMultiplier} 倍`;
       if (finalMultiplier >= 2) {
         resBox.style.color = "#C0392B";
