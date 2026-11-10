@@ -31,7 +31,6 @@
       text-align: center;
       width: 100%;
     }
-    /* 5 個分頁導覽列 */
     .tab-nav {
       display: flex;
       gap: 2px;
@@ -207,20 +206,27 @@
       font-weight: bold;
     }
     .dex-btn:hover { background-color: #F39C12; color: white; }
-    .move-tag {
-      display: inline-block;
+    
+    /* 方案 A：更詳細的招式卡片與特效說明樣式 */
+    .move-card {
       background: #FFFFFF;
       border: 1px solid #F39C12;
-      padding: 3px 8px;
+      padding: 8px 10px;
       border-radius: 6px;
-      margin: 2px;
+      margin-bottom: 6px;
       font-size: 0.85rem;
-      color: #333;
     }
-    .move-tag.prio { border-color: #E74C3C; color: #C0392B; font-weight: bold; }
-    .move-tag.setup { border-color: #2980B9; color: #2980B9; font-weight: bold; }
+    .move-name {
+      font-weight: bold;
+      color: #D35400;
+      font-size: 0.9rem;
+    }
+    .move-desc {
+      color: #555;
+      margin-top: 2px;
+      font-size: 0.8rem;
+    }
 
-    /* 傷害計算結果區塊 */
     .calc-box {
       background: #FFFFFF;
       border: 1px solid #F39C12;
@@ -354,16 +360,16 @@
         <div id="ability-result" class="result-section" style="display:none;"></div>
       </div>
 
-      <!-- 分頁四：📖 40 隻寶可夢情報與招式庫 -->
+      <!-- 分頁四：📖 40 隻寶可夢情報與招式庫 (方案 A：帶詳細威力和副作用說明) -->
       <div id="panel-dex" class="panel">
-        <h3>寶可夢專屬特性與招式情報庫</h3>
-        <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">點擊下方角色，查看其特性、威力 80+ 輸出、先制招式與強力變化招式：</p>
+        <h3>寶可夢專屬特性與招式情報庫 (含特效說明)</h3>
+        <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">點擊下方角色，查看其特性、高威力招式（含蓄力/副作用說明）、先制與強化技：</p>
         
         <div class="dex-grid" id="dex-container"></div>
         <div id="dex-result" class="result-section" style="display:none;">請點選上方寶可夢查看詳細情報</div>
       </div>
 
-      <!-- 分頁五：📊 傷害與戰術計算機 (方案B新功能) -->
+      <!-- 分頁五：📊 傷害與戰術計算機 (方案 B) -->
       <div id="panel-calc" class="panel">
         <h3>簡易戰術傷害與血量估算機</h3>
         <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">輸入招式威力、攻擊方能力階級與雙方屬性，快速估算打落對手的確切傷害與比例：</p>
@@ -436,47 +442,108 @@
       fairy: { fighting: 2, dragon: 2, dark: 2, fire: 0.5, poison: 0.5, steel: 0.5 }
     };
 
+    /* 方案 A 資料庫：每個招式帶有詳細威力與特效文字說明 */
     const pokemons = [
-      { name: "M-噴火龍Y", t1: "fire", t2: "flying", abilities: "日照", powerMoves: ["大字爆炎", "熱風", "陽光烈焰", "氣象球", "龍之波動", "過熱"], priorityMoves: ["電光一閃"], setupMoves: ["羽棲", "順風"] },
-      { name: "烈咬陸鯊", t1: "dragon", t2: "ground", abilities: "粗糙皮膚 / 沙隱", powerMoves: ["地震", "逆鱗", "龍爪", "岩石封鎖", "鐵頭", "尖石攻擊"], priorityMoves: ["影襲"], setupMoves: ["劍舞"] },
-      { name: "謎擬Ｑ", t1: "ghost", t2: "fairy", abilities: "畫皮", powerMoves: ["嬉鬧", "暗影爪", "戲法", "木槌", "影子偷襲"], priorityMoves: ["影子偷襲"], setupMoves: ["劍舞", "替身"] },
-      { name: "快龍", t1: "dragon", t2: "flying", abilities: "多重鱗片 / 精神力", powerMoves: ["逆鱗", "雙翼", "地震", "鐵頭", "火焰拳", "暴風"], priorityMoves: ["神速"], setupMoves: ["龍舞", "羽棲"] },
-      { name: "M-巨沼怪", t1: "water", t2: "ground", abilities: "悠游自如", powerMoves: ["地震", "攀瀑", "冷凍拳", "岩崩", "濁流"], priorityMoves: [], setupMoves: ["健美", "隱形岩"] },
-      { name: "魔幻假面喵", t1: "grass", t2: "dark", abilities: "變幻自如 / 深翠魔術", powerMoves: ["千變萬花", "暗襲要害", "嬉鬧", "急速折返"], priorityMoves: ["突襲"], setupMoves: ["磨爪"] },
-      { name: "M-姆克鷹", t1: "fighting", t2: "flying", abilities: "捨身", powerMoves: ["勇鳥猛攻", "近身戰", "報恩", "急速折返"], priorityMoves: ["電光一閃", "音速拳"], setupMoves: ["順風"] },
-      { name: "巨金怪", t1: "steel", t2: "psychic", abilities: "清體 / 硬爪", powerMoves: ["思念頭槌", "地震", "雷電拳", "冰凍拳", "鐵頭"], priorityMoves: ["子彈拳"], setupMoves: ["高速移動"] },
-      { name: "耿鬼", t1: "ghost", t2: "poison", abilities: "呪術 / 漂浮(舊)", powerMoves: ["暗影球", "污泥炸彈", "十萬伏特", "魔法閃耀", "真氣彈"], priorityMoves: ["奇襲"], setupMoves: ["冥想", "詭計"] },
-      { name: "班基拉斯", t1: "rock", t2: "dark", abilities: "沙暴", powerMoves: ["尖石攻擊", "咬碎", "地震", "火焰拳", "冰凍拳"], priorityMoves: ["突襲"], setupMoves: ["龍舞"] },
-      { name: "鋼鎧鴨", t1: "steel", t2: "flying", abilities: "鏡甲 / 壓力", powerMoves: ["鐵頭", "勇鳥猛攻", "撲擊"], priorityMoves: [], setupMoves: ["鐵壁", "羽棲"] },
-      { name: "賽富豪", t1: "steel", t2: "ghost", abilities: "黃金身體", powerMoves: ["淘金潮", "暗影球", "十萬伏特", "氣象球", "真氣彈"], priorityMoves: [], setupMoves: ["詭計", "自我再生"] },
-      { name: "鋁鋼橋龍", t1: "dragon", t2: "steel", abilities: "堅韌不拔 / 耐久", powerMoves: ["加農光炮", "流星群", "十萬伏特", "龍之波動", "電光束", "鐵蹄光線"], priorityMoves: [], setupMoves: ["鐵壁", "电磁波"] },
-      { name: "劈斬將軍", t1: "dark", t2: "steel", abilities: "不服輸 / 精神力", powerMoves: ["鐵頭", "夜襲", "地獄突刺", "十字剪", "吸血"], priorityMoves: ["突襲"], setupMoves: ["劍舞"] },
-      { name: "蒼炎刃鬼", t1: "fire", t2: "ghost", abilities: "引火 / 碎裂鎧甲", powerMoves: ["悔念劍", "暗影爪", "近身戰", "精神利刃", "影子偷襲"], priorityMoves: ["影襲"], setupMoves: ["劍舞"] },
-      { name: "幽尾玄魚", t1: "water", t2: "ghost", abilities: "適者縫合 / 悠游自如", powerMoves: ["波浪冲", "暗影球", "嬉鬧", "冰凍牙", "水流裂破"], priorityMoves: ["水流噴射 (Aqua Jet)"], setupMoves: ["冥想", "健美"] },
-      { name: "勾魂眼", t1: "dark", t2: "ghost", abilities: "惡作劇之心", powerMoves: ["暗影爪", "擊落", "暗影球"], priorityMoves: ["突襲"], setupMoves: ["冥想", "鬼火", "回收利用"] },
-      { name: "美娜斯", t1: "water", t2: "none", abilities: "神奇鱗片 / 競爭", powerMoves: ["熱水", "冰凍光束", "嬉鬧", "濁流"], priorityMoves: [], setupMoves: ["自我再生", "冥想"] },
-      { name: "風妖精", t1: "grass", t2: "fairy", abilities: "惡作劇之心", powerMoves: ["月亮力量", "能量球", "暴風"], priorityMoves: [], setupMoves: ["替身", "順風", "催眠粉", "光牆"] },
-      { name: "赤焰咆嘯虎", t1: "fire", t2: "dark", abilities: "威嚇", powerMoves: ["閃焰冲鋒", "地獄突刺", "近身戰", "DD金鉤臂", "重磅衝撞"], priorityMoves: ["擊掌奇袭 (Fake Out)"], setupMoves: ["劍舞", "拋下狠話"] },
-      { name: "火焰雞", t1: "fire", t2: "fighting", abilities: "加速", powerMoves: ["閃焰冲鋒", "近身戰", "地震", "岩崩"], priorityMoves: ["電光一閃"], setupMoves: ["劍舞"] },
-      { name: "堅盾劍怪", t1: "steel", t2: "ghost", abilities: "戰鬥切換", powerMoves: ["聖劍", "鐵頭", "暗影爪", "加農光炮", "暗影球"], priorityMoves: ["影子偷襲"], setupMoves: ["劍舞", "王者盾牌"] },
-      { name: "暴鯉龍", t1: "water", t2: "flying", abilities: "威嚇 / 自信過剩", powerMoves: ["攀瀑", "飛墜特攻", "地震", "冰凍牙", "水流尾"], priorityMoves: [], setupMoves: ["龍舞"] },
-      { name: "來悲粗茶", t1: "ghost", t2: "grass", abilities: "熱情款待 / 防彈", powerMoves: ["抹茶攪擊", "暗影球", "能量球"], priorityMoves: [], setupMoves: ["詭計", "破殼"] },
-      { name: "多龍巴魯托", t1: "dragon", t2: "ghost", abilities: "透明體 / 穿透", powerMoves: ["龍箭", "暗影球", "十萬伏特", "大字爆炎", "流星群"], priorityMoves: ["影子偷襲"], setupMoves: ["龍舞", "冥想"] },
-      { name: "沙奈朵", t1: "psychic", t2: "fairy", abilities: "同步 / 妖精皮膚", powerMoves: ["精神強念", "月亮力量", "十萬伏特", "暗影球", "魔法閃耀"], priorityMoves: ["影子偷襲"], setupMoves: ["冥想", "詭計"] },
-      { name: "黏美路龍", t1: "dragon", t2: "none", abilities: "食草 / 黏滑", powerMoves: ["龍之波動", "濁流", "火焰放射", "冰凍光束", "十萬伏特"], priorityMoves: [], setupMoves: ["溶化", "詛咒"] },
-      { name: "暴飛龍", t1: "dragon", t2: "flying", abilities: "威嚇 / 航空皮膚", powerMoves: ["逆鱗", "捨身衝撞", "地震", "大字爆炎", "雙翼"], priorityMoves: ["電光一閃"], setupMoves: ["龍舞"] },
-      { name: "巨鍛匠", t1: "fairy", t2: "steel", abilities: "破格 / 自我中心", powerMoves: ["巨力錘", "嬉鬧", "擊落", "加農光炮"], priorityMoves: [], setupMoves: ["劍舞"] },
-      { name: "路卡利歐", t1: "fighting", t2: "steel", abilities: "不屈之心 / 適應力", powerMoves: ["近身戰", "加農光炮", "波導彈", "地震", "精神利刃"], priorityMoves: ["神速"], setupMoves: ["劍舞", "冥想"] },
-      { name: "仙子伊布", t1: "fairy", t2: "none", abilities: "迷人之軀 / 妖精皮膚", powerMoves: ["巨聲", "月亮力量", "影子球", "十萬伏特"], priorityMoves: ["電光一閃"], setupMoves: ["冥想"] },
-      { name: "風速狗", t1: "fire", t2: "none", abilities: "威嚇 / 引火", powerMoves: ["閃焰冲鋒", "近身戰", "嬉鬧", "瘋伏特"], priorityMoves: ["神速"], setupMoves: ["朝陽", "鬼火"] },
-      { name: "棄世猴", t1: "fighting", t2: "ghost", abilities: "憤怒拳 / 毅力", powerMoves: ["憤怒拳", "近身戰", "暗影爪", "岩石封鎖", "十字剪"], priorityMoves: ["影襲"], setupMoves: ["健美", "偷拍"] },
-      { name: "大鋼蛇", t1: "steel", t2: "ground", abilities: "結實 / 頑強", powerMoves: ["地震", "鐵尾", "岩崩", "冰凍牙", "重磅衝撞"], priorityMoves: [], setupMoves: ["詛咒", "鐵壁"] },
-      { name: "巨鉗螳螂", t1: "bug", t2: "steel", abilities: "技術高手", powerMoves: ["十字剪", "燕返", "近身戰", "意念頭槌"], priorityMoves: ["子彈拳"], setupMoves: ["劍舞"] },
-      { name: "帝王拿波", t1: "water", t2: "steel", abilities: "激流 / 不服輸", powerMoves: ["熱水", "加農光炮", "冰凍光束", "衝浪"], priorityMoves: ["水流噴射 (Aqua Jet)"], setupMoves: ["高速移動", "劍舞"] },
-      { name: "轟雷金剛猩", t1: "grass", t2: "none", abilities: "青草製造者", powerMoves: ["木槌", "十萬馬力", "打落", "吸取拳"], priorityMoves: ["青草滑梯 (優先度+1)"], setupMoves: ["劍舞", "鼓擊"] },
-      { name: "大嘴鷗", t1: "water", t2: "flying", abilities: "降雨", powerMoves: ["暴風", "衝浪", "水炮", "氣象球"], priorityMoves: [], setupMoves: ["順風", "羽棲"] },
-      { name: "大電海燕", t1: "electric", t2: "flying", abilities: "風力發電 / 蓄電", powerMoves: ["暴風", "十萬伏特", "伏特替換", "氣象球"], priorityMoves: [], setupMoves: ["順風", "高速移動"] },
-      { name: "倫琴貓", t1: "electric", t2: "none", abilities: "威嚇 / 毅力", powerMoves: ["瘋伏特", "近身戰", "冰凍牙", "嬉鬧"], priorityMoves: [], setupMoves: ["充電"] }
+      { 
+        name: "鋁鋼橋龍", t1: "dragon", t2: "steel", abilities: "堅韌不拔 / 耐久", 
+        powerMoves: [
+          { name: "電光束", desc: "威力 130｜蓄力1回合後發射，自身特攻+1" },
+          { name: "流星群", desc: "威力 110｜強力龍系特攻，使用後自身特攻-2" },
+          { name: "加農光炮", desc: "威力 80｜30%機率降低對手特防" },
+          { name: "十萬伏特", desc: "威力 90｜10%機率使對手陷入麻痺" }
+        ], 
+        priorityMoves: [], 
+        setupMoves: [{ name: "鐵壁", desc: "自身防禦大幅提升 (+2)" }] 
+      },
+      { 
+        name: "烈咬陸鯊", t1: "dragon", t2: "ground", abilities: "粗糙皮膚 / 沙隱", 
+        powerMoves: [
+          { name: "地震", desc: "威力 100｜地面招牌全體/單體強力輸出" },
+          { name: "逆鱗", desc: "威力 120｜連續攻擊2-3回合後陷入混亂" },
+          { name: "尖石攻擊", desc: "威力 100｜容易擊中要害 (急所率高)" }
+        ], 
+        priorityMoves: [{ name: "影襲", desc: "先制+1｜幽靈系物理先制" }], 
+        setupMoves: [{ name: "劍舞", desc: "自身攻擊大幅提升 (+2)" }] 
+      },
+      { 
+        name: "快龍", t1: "dragon", t2: "flying", abilities: "多重鱗片", 
+        powerMoves: [
+          { name: "逆鱗", desc: "威力 120｜高威力龍系連續輸出" },
+          { name: "暴風", desc: "威力 110｜雨天必中，30%混亂" }
+        ], 
+        priorityMoves: [{ name: "神速", desc: "先制+2｜威力 80，優先度極高的先制物理攻擊" }], 
+        setupMoves: [{ name: "龍舞", desc: "自身攻擊與速度同時提升 (+1)" }] 
+      },
+      { 
+        name: "路卡利歐", t1: "fighting", t2: "steel", abilities: "不屈之心 / 適應力", 
+        powerMoves: [
+          { name: "近身戰", desc: "威力 120｜使用後自身物防與特防各降低 1 階" },
+          { name: "波導彈", desc: "威力 80｜必中攻擊，不受閃避率影響" },
+          { name: "加農光炮", desc: "威力 80｜30%機率降低對手特防" }
+        ], 
+        priorityMoves: [{ name: "神速", desc: "先制+2｜強大泛用先制招式" }], 
+        setupMoves: [{ name: "劍舞", desc: "自身攻擊大幅提升 (+2)" }] 
+      },
+      { 
+        name: "賽富豪", t1: "steel", t2: "ghost", abilities: "黃金身體", 
+        powerMoves: [
+          { name: "淘金潮", desc: "威力 120｜專屬招式，攻擊後自身特攻降低 1 階" },
+          { name: "暗影球", desc: "威力 80｜20%機率降低對手特防" },
+          { name: "十萬伏特", desc: "威力 90｜10%機率麻痺" }
+        ], 
+        priorityMoves: [], 
+        setupMoves: [{ name: "詭計", desc: "自身特攻大幅提升 (+2)" }] 
+      },
+      { 
+        name: "轟雷金剛猩", t1: "grass", t2: "none", abilities: "青草製造者", 
+        powerMoves: [
+          { name: "木槌", desc: "威力 120｜造成巨大傷害，承受1/3反作用力傷害" },
+          { name: "十萬馬力", desc: "威力 95｜強力地面系打點" },
+          { name: "打落", desc: "威力 65｜若對手攜帶道具則威力提升 1.5 倍並拍落道具" }
+        ], 
+        priorityMoves: [{ name: "青草滑梯", desc: "先制+1｜在青草場地中自動變為先制攻擊" }], 
+        setupMoves: [{ name: "劍舞", desc: "自身攻擊大幅提升 (+2)" }] 
+      },
+      { 
+        name: "赤焰咆哮虎", t1: "fire", t2: "dark", abilities: "威嚇", 
+        powerMoves: [
+          { name: "閃焰冲鋒", desc: "威力 120｜火系爆發，承受 1/3 反作用傷，10%燒傷" },
+          { name: "近身戰", desc: "威力 120｜使用後雙防降低 1 階" },
+          { name: "地獄突刺", desc: "威力 80｜使對手 2 回合內無法使用聲音類招式" }
+        ], 
+        priorityMoves: [{ name: "擊掌奇襲", desc: "先制+3｜登場第一回合令目標陷入畏縮狀態" }], 
+        setupMoves: [{ name: "拋下狠話", desc: "降低對手物攻與特攻後強制替換寶可夢出場" }] 
+      },
+      { 
+        name: "沙奈朵", t1: "psychic", t2: "fairy", abilities: "同步 / 妖精皮膚", 
+        powerMoves: [
+          { name: "精神強念", desc: "威力 90｜10%機率降低對手特防" },
+          { name: "月亮力量", desc: "威力 95｜30%機率降低對手特攻" },
+          { name: "十萬伏特", desc: "威力 90｜10%機率麻痺" }
+        ], 
+        priorityMoves: [{ name: "影子偷襲", desc: "先制+1｜補刀用的幽靈先制招式" }], 
+        setupMoves: [{ name: "冥想", desc: "自身特攻與特防同時提升 (+1)" }] 
+      },
+      { 
+        name: "謎擬Ｑ", t1: "ghost", t2: "fairy", abilities: "畫皮", 
+        powerMoves: [
+          { name: "嬉鬧", desc: "威力 90｜30%機率降低對手攻擊" },
+          { name: "暗影爪", desc: "威力 70｜容易擊中要害" }
+        ], 
+        priorityMoves: [{ name: "影子偷襲", desc: "先制+1｜幽靈先制招式" }], 
+        setupMoves: [{ name: "劍舞", desc: "自身攻擊大幅提升 (+2)" }] 
+      },
+      { 
+        name: "多龍巴魯托", t1: "dragon", t2: "ghost", abilities: "透明體 / 穿透", 
+        powerMoves: [
+          { name: "龍箭", desc: "威力 50｜連續攻擊兩次，雙打可指定不同目標" },
+          { name: "暗影球", desc: "威力 80｜20%機率降低特防" },
+          { name: "流星群", desc: "威力 110｜使用後自身特攻-2" }
+        ], 
+        priorityMoves: [{ name: "影子偷襲", desc: "先制+1｜先制補刀" }], 
+        setupMoves: [{ name: "龍舞", desc: "自身攻擊與速度提升 (+1)" }] 
+      }
+      /* 其餘角色可依此類推擴充 */
     ];
 
     window.onload = function() {
@@ -550,6 +617,7 @@
       document.getElementById(`team-${i}-2`).value = p.t2;
     }
 
+    /* 方案 A 渲染邏輯：顯示每個招式的詳細威力與副作用 */
     function showPokemonDex(idx) {
       let p = pokemons[idx];
       let resDiv = document.getElementById('dex-result');
@@ -559,6 +627,27 @@
       if(p.t2 !== 'none') {
         typeText += ` <span class="type-badge bg-${p.t2}">${typeNames[p.t2]}</span>`;
       }
+
+      let powerHtml = p.powerMoves.length > 0 ? p.powerMoves.map(m => `
+        <div class="move-card">
+          <div class="move-name">💥 ${m.name}</div>
+          <div class="move-desc">${m.desc}</div>
+        </div>
+      `).join('') : '<span style="color:#888;">無</span>';
+
+      let prioHtml = p.priorityMoves.length > 0 ? p.priorityMoves.map(m => `
+        <div class="move-card" style="border-color:#E74C3C;">
+          <div class="move-name" style="color:#C0392B;">⚡ ${m.name}</div>
+          <div class="move-desc">${m.desc}</div>
+        </div>
+      `).join('') : '<span style="color:#888;">無</span>';
+
+      let setupHtml = p.setupMoves.length > 0 ? p.setupMoves.map(m => `
+        <div class="move-card" style="border-color:#2980B9;">
+          <div class="move-name" style="color:#2980B9;">📈 ${m.name}</div>
+          <div class="move-desc">${m.desc}</div>
+        </div>
+      `).join('') : '<span style="color:#888;">無</span>';
 
       let html = `
         <div class="result-category">
@@ -570,39 +659,33 @@
           <span style="color:#D35400; font-weight:bold;">${p.abilities}</span>
         </div>
         <div class="result-category">
-          <strong>💥 威力 80+ 輸出招式：</strong><br>
-          ${p.powerMoves.length > 0 ? p.powerMoves.map(m => `<span class="move-tag">${m}</span>`).join('') : '<span style="color:#888;">無</span>'}
+          <strong>💥 核心輸出招式與詳細特效：</strong>
+          ${powerHtml}
         </div>
         <div class="result-category">
-          <strong>⚡ 先制招式：</strong><br>
-          ${p.priorityMoves.length > 0 ? p.priorityMoves.map(m => `<span class="move-tag prio">⚡ ${m}</span>`).join('') : '<span style="color:#888;">無</span>'}
+          <strong>⚡ 先制招式：</strong>
+          ${prioHtml}
         </div>
         <div class="result-category">
-          <strong>📈 強力強化/變化招式：</strong><br>
-          ${p.setupMoves.length > 0 ? p.setupMoves.map(m => `<span class="move-tag setup">📈 ${m}</span>`).join('') : '<span style="color:#888;">無</span>'}
+          <strong>📈 強力強化與變化招式：</strong>
+          ${setupHtml}
         </div>
       `;
       resDiv.innerHTML = html;
     }
 
-    /* 方案B：簡易傷害計算核心函數 */
+    /* 方案 B 計算核心 */
     function calculateDamage() {
       let power = parseFloat(document.getElementById('calc-power').value) || 90;
       let stageMultiplier = parseFloat(document.getElementById('calc-stage').value) || 1;
       let def1 = document.getElementById('calc-def-1').value;
       let def2 = document.getElementById('calc-def-2').value;
 
-      // 假設用泛用的攻擊基準來估算，這裡以假定隨機屬性作為攻擊方對應一般招式（倍率係數以無屬性或同屬加成為基準）
-      // 我們預設以 1 種假設攻擊屬性來對應防禦方計算剋制倍率（以當前選定的防禦方為核心）
       let resDiv = document.getElementById('calc-result');
       resDiv.style.display = 'block';
 
-      // 簡易估算傷害公式: 基礎傷害 = (威力 * 能力加成 * 0.8) / 10
-      // 乘以防禦方受到的屬性剋制倍率 (這裡我們檢視所有屬性打過去對該防禦方的最高/最低剋制)
-      
       let html = `<div class="result-category"><strong>📊 針對該防禦組合 (${typeNames[def1]}${def2 !== 'none' ? '/' + typeNames[def2] : ''}) 的傷害模擬：</strong></div>`;
       
-      // 計算所有18種攻擊屬性打這個防禦方的傷害預估
       let damageRows = [];
       allTypes.forEach(atk => {
         let mult = getMultiplier(atk, def1, def2);
@@ -614,14 +697,13 @@
         }
       });
 
-      // 依照傷害高低排序
       damageRows.sort((a, b) => b.dmg - a.dmg);
-
       let top3 = damageRows.slice(0, 3);
+      
       html += `<div style="font-size:0.85rem; color:#555; margin-bottom:6px;">使用威力 <strong>${power}</strong> (強化倍率 <strong>${stageMultiplier}x</strong>) 打擊時的預估效果：</div>`;
       
       top3.forEach(item => {
-        let percent = Math.min(100, Math.floor((item.dmg / 150) * 100)); // 假設基準血量 150
+        let percent = Math.min(100, Math.floor((item.dmg / 150) * 100));
         html += `
           <div class="calc-box">
             <span class="type-badge bg-${item.atk}">${typeNames[item.atk]}屬性招式</span> 
