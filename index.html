@@ -31,7 +31,6 @@
       text-align: center;
       width: 100%;
     }
-    /* 調整成 4 個分頁 */
     .tab-nav {
       display: flex;
       gap: 3px;
@@ -248,7 +247,6 @@
       <h1>寶可夢 18 屬性對戰戰術中心</h1>
     </div>
 
-    <!-- 四大功能分頁切換 -->
     <div class="tab-nav">
       <div class="tab-btn active" onclick="switchTab('defense')">🛡️ 單隻攻防</div>
       <div class="tab-btn" onclick="switchTab('team')">👥 隊伍聯防</div>
@@ -388,45 +386,45 @@
       fairy: { fighting: 2, dragon: 2, dark: 2, fire: 0.5, poison: 0.5, steel: 0.5 }
     };
 
-    // 40 隻寶可夢清單與招式情報資料庫 (含特性、85+輸出、先制、強化技)
+    // 40 隻完整精準修正的寶可夢與招式情報庫
     const pokemons = [
-      { name: "M-噴火龍Y", t1: "fire", t2: "flying", abilities: "日照", powerMoves: ["大字爆炎", "熱風", "陽光烈焰", "氣象球", "龍波"], priorityMoves: ["電光一閃"], setupMoves: ["羽棲"] },
-      { name: "烈咬陸鯊", t1: "dragon", t2: "ground", abilities: "粗糙皮膚 / 沙隱", powerMoves: ["地震", "逆鱗", "龍爪", "岩石封鎖", "鐵頭"], priorityMoves: ["影襲"], setupMoves: ["劍舞"] },
-      { name: "謎擬Ｑ", t1: "ghost", t2: "fairy", abilities: "画皮", powerMoves: ["嬉鬧", "暗影爪", "戲法", "木槌"], priorityMoves: ["影襲"], setupMoves: ["劍舞"] },
-      { name: "快龍", t1: "dragon", t2: "flying", abilities: "多重鱗片 / 精神力", powerMoves: ["逆鱗", "雙翼", "地震", "鐵頭", "火焰拳"], priorityMoves: ["神速"], setupMoves: ["龍舞"] },
-      { name: "M-巨沼怪", t1: "water", t2: "ground", abilities: "悠游自如", powerMoves: ["地震", "攀瀑", "冷凍拳", "岩崩"], priorityMoves: [], setupMoves: ["健美"] },
-      { name: "魔幻假面喵", t1: "grass", t2: "dark", abilities: "變幻自如 / 深翠魔術", powerMoves: ["千變萬花", "暗襲要害", "嬉鬧", "急速折返"], priorityMoves: ["突襲"], setupMoves: ["磨爪"] },
+      { name: "M-噴火龍Y", t1: "fire", t2: "flying", abilities: "日照", powerMoves: ["大字爆炎", "熱風", "陽光烈焰", "氣象球", "龍之波動", "過熱"], priorityMoves: ["電光一閃"], setupMoves: ["羽棲", "順風"] },
+      { name: "烈咬陸鯊", t1: "dragon", t2: "ground", abilities: "粗糙皮膚 / 沙隱", powerMoves: ["地震", "逆鱗", "龍爪", "岩石封鎖", "鐵頭", "尖石攻擊"], priorityMoves: ["影襲"], setupMoves: ["劍舞"] },
+      { name: "謎擬Ｑ", t1: "ghost", t2: "fairy", abilities: "畫皮", powerMoves: ["嬉鬧", "暗影爪", "戲法", "木槌", "影子偷襲"], priorityMoves: ["影子偷襲"], setupMoves: ["劍舞", "替身"] },
+      { name: "快龍", t1: "dragon", t2: "flying", abilities: "多重鱗片 / 精神力", powerMoves: ["逆鱗", "雙翼", "地震", "鐵頭", "火焰拳", "暴風"], priorityMoves: ["神速"], setupMoves: ["龍舞", "羽棲"] },
+      { name: "M-巨沼怪", t1: "water", t2: "ground", abilities: "悠游自如", powerMoves: ["地震", "攀瀑", "冷凍拳", "岩崩", "濁流"], priorityMoves: [], setupMoves: ["健美", "隱形岩"] },
+      { name: "魔幻假面喵", t1: "grass", t2: "dark", abilities: "變幻自如 / 深翠魔術", powerMoves: ["千變萬花", "暗襲要害", "嬉鬧", "急速折返", "嬉鬧"], priorityMoves: ["突襲"], setupMoves: ["磨爪"] },
       { name: "M-姆克鷹", t1: "fighting", t2: "flying", abilities: "捨身", powerMoves: ["勇鳥猛攻", "近身戰", "報恩", "急速折返"], priorityMoves: ["電光一閃", "音速拳"], setupMoves: ["順風"] },
-      { name: "巨金怪", t1: "steel", t2: "psychic", abilities: "清體 / 硬爪", powerMoves: ["思念頭槌", "子彈拳", "地震", "雷電拳", "冰凍拳"], priorityMoves: ["子彈拳"], setupMoves: ["高速移動"] },
-      { name: "耿鬼", t1: "ghost", t2: "poison", abilities: "呪術 / 漂浮(舊)", powerMoves: ["暗影球", "污泥炸彈", "十万伏特", "魔法閃耀"], priorityMoves: ["奇襲"], setupMoves: ["冥想", "詭計"] },
-      { name: "班基拉斯", t1: "rock", t2: "dark", abilities: "沙暴", powerMoves: ["尖石攻擊", "咬碎", "地震", "火焰拳"], priorityMoves: ["突襲"], setupMoves: ["龍舞"] },
-      { name: "鋼鎧鴨", t1: "steel", t2: "flying", abilities: "鏡甲 / 壓力", powerMoves: ["鐵頭", "勇鳥猛攻", "撲擊"], priorityMoves: [], setupMoves: ["鐵壁", "羽棲"] },
-      { name: "賽富豪", t1: "steel", t2: "ghost", abilities: "黃金身體", powerMoves: ["淘金潮", "暗影球", "十萬伏特", "氣象球"], priorityMoves: [], setupMoves: ["詭計", "自我再生"] },
-      { name: "鋁鋼橋龍", t1: "dragon", t2: "steel", abilities: "堅韌不拔 / 耐久", powerMoves: ["加農光炮", "流星群", "十萬伏特", "龍之波動"], priorityMoves: [], setupMoves: ["鐵壁"] },
-      { name: "劈斬將軍", t1: "dark", t2: "steel", abilities: "不服輸 / 精神力", powerMoves: ["鐵頭", "夜襲", "地獄突刺", "十字剪"], priorityMoves: ["突襲"], setupMoves: ["劍舞"] },
-      { name: "蒼炎刃鬼", t1: "fire", t2: "ghost", abilities: "引火 / 碎裂鎧甲", powerMoves: ["悔念劍", "暗影爪", "近身戰", "精神利刃"], priorityMoves: ["影襲"], setupMoves: ["劍舞"] },
-      { name: "幽尾玄魚", t1: "water", t2: "ghost", abilities: "適者縫合 / 悠游自如", powerMoves: ["波浪冲", "暗影球", "嬉鬧", "冰凍牙"], priorityMoves: ["水ジェット(Aqua Jet)"], setupMoves: ["冥想", "健美"] },
-      { name: "勾魂眼", t1: "dark", t2: "ghost", abilities: "惡作劇之心", powerMoves: ["暗影爪", "擊落"], priorityMoves: ["突襲"], setupMoves: ["冥想", "鬼火", "回收利用"] },
-      { name: "美娜斯", t1: "water", t2: "none", abilities: "神奇鱗片 / 競爭", powerMoves: ["熱水", "冰凍光束", "嬉鬧"], priorityMoves: [], setupMoves: ["自我再生", "冥想"] },
-      { name: "風妖精", t1: "grass", t2: "fairy", abilities: "惡作劇之心", powerMoves: ["月亮力量", "能量球", "暴風"], priorityMoves: [], setupMoves: ["替身", "順風", "催眠粉"] },
-      { name: "赤焰咆嘯虎", t1: "fire", t2: "dark", abilities: "威嚇", powerMoves: ["閃焰冲鋒", "地獄突刺", "近身戰", "DD金鉤臂"], priorityMoves: ["貓襲(Fake Out)"], setupMoves: ["劍舞", "拋下狠話"] },
-      { name: "火焰雞", t1: "fire", t2: "fighting", abilities: "加速", powerMoves: ["閃焰冲鋒", "近身戰", "地震", "岩崩"], priorityMoves: ["電光一閃"], setupMoves: ["劍舞"] },
-      { name: "堅盾劍怪", t1: "steel", t2: "ghost", abilities: "戰鬥切換", powerMoves: ["聖劍", "鐵頭", "暗影爪", "影子偷襲"], priorityMoves: ["影子偷襲"], setupMoves: ["劍舞", "王者盾牌"] },
-      { name: "暴鯉龍", t1: "water", t2: "flying", abilities: "威嚇 / 自信過剩", powerMoves: ["攀瀑", "飛墜特攻", "地震", "冰凍牙"], priorityMoves: [], setupMoves: ["龍舞"] },
+      { name: "巨金怪", t1: "steel", t2: "psychic", abilities: "清體 / 硬爪", powerMoves: ["思念頭槌", "地震", "雷電拳", "冰凍拳", "鐵頭"], priorityMoves: ["子彈拳"], setupMoves: ["高速移動"] },
+      { name: "耿鬼", t1: "ghost", t2: "poison", abilities: "呪術 / 漂浮(舊)", powerMoves: ["暗影球", "污泥炸彈", "十萬伏特", "魔法閃耀", "真氣彈"], priorityMoves: ["奇襲"], setupMoves: ["冥想", "詭計"] },
+      { name: "班基拉斯", t1: "rock", t2: "dark", abilities: "沙暴", powerMoves: ["尖石攻擊", "咬碎", "地震", "火焰拳", "冰凍拳"], priorityMoves: ["突襲"], setupMoves: ["龍舞"] },
+      { name: "鋼鎧鴨", t1: "steel", t2: "flying", abilities: "鏡甲 / 壓力", powerMoves: ["鐵頭", "勇鳥猛攻", "撲擊", "body press"], priorityMoves: [], setupMoves: ["鐵壁", "羽棲"] },
+      { name: "賽富豪", t1: "steel", t2: "ghost", abilities: "黃金身體", powerMoves: ["淘金潮", "暗影球", "十萬伏特", "氣象球", "真氣彈"], priorityMoves: [], setupMoves: ["詭計", "自我再生"] },
+      { name: "鋁鋼橋龍", t1: "dragon", t2: "steel", abilities: "堅韌不拔 / 耐久", powerMoves: ["加農光炮", "流星群", "十萬伏特", "龍之波動", "電光束", "鐵蹄光線"], priorityMoves: [], setupMoves: ["鐵壁", "电磁波"] },
+      { name: "劈斬將軍", t1: "dark", t2: "steel", abilities: "不服輸 / 精神力", powerMoves: ["鐵頭", "夜襲", "地獄突刺", "十字剪", "吸血"], priorityMoves: ["突襲"], setupMoves: ["劍舞"] },
+      { name: "蒼炎刃鬼", t1: "fire", t2: "ghost", abilities: "引火 / 碎裂鎧甲", powerMoves: ["悔念劍", "暗影爪", "近身戰", "精神利刃", "影子偷襲"], priorityMoves: ["影襲"], setupMoves: ["劍舞"] },
+      { name: "幽尾玄魚", t1: "water", t2: "ghost", abilities: "適者縫合 / 悠游自如", powerMoves: ["波浪冲", "暗影球", "嬉鬧", "冰凍牙", "水流裂破"], priorityMoves: ["水流噴射 (Aqua Jet)"], setupMoves: ["冥想", "健美"] },
+      { name: "勾魂眼", t1: "dark", t2: "ghost", abilities: "惡作劇之心", powerMoves: ["暗影爪", "擊落", "暗影球"], priorityMoves: ["突襲"], setupMoves: ["冥想", "鬼火", "回收利用"] },
+      { name: "美娜斯", t1: "water", t2: "none", abilities: "神奇鱗片 / 競爭", powerMoves: ["熱水", "冰凍光束", "嬉鬧", "濁流"], priorityMoves: [], setupMoves: ["自我再生", "冥想"] },
+      { name: "風妖精", t1: "grass", t2: "fairy", abilities: "惡作劇之心", powerMoves: ["月亮力量", "能量球", "暴風"], priorityMoves: [], setupMoves: ["替身", "順風", "催眠粉", "光牆"] },
+      { name: "赤焰咆嘯虎", t1: "fire", t2: "dark", abilities: "威嚇", powerMoves: ["閃焰冲鋒", "地獄突刺", "近身戰", "DD金鉤臂", "重磅衝撞"], priorityMoves: ["擊掌奇袭 (Fake Out)"], setupMoves: ["劍舞", "拋下狠話"] },
+      { name: "火焰雞", t1: "fire", t2: "fighting", abilities: "加速", powerMoves: ["閃焰冲鋒", "近身戰", "地震", "岩崩", "閃焰特攻"], priorityMoves: ["電光一閃"], setupMoves: ["劍舞"] },
+      { name: "堅盾劍怪", t1: "steel", t2: "ghost", abilities: "戰鬥切換", powerMoves: ["聖劍", "鐵頭", "暗影爪", "加農光炮", "暗影球"], priorityMoves: ["影子偷襲"], setupMoves: ["劍舞", "王者盾牌"] },
+      { name: "暴鯉龍", t1: "water", t2: "flying", abilities: "威嚇 / 自信過剩", powerMoves: ["攀瀑", "飛墜特攻", "地震", "冰凍牙", "水流尾"], priorityMoves: [], setupMoves: ["龍舞"] },
       { name: "來悲粗茶", t1: "ghost", t2: "grass", abilities: "熱情款待 / 防彈", powerMoves: ["抹茶攪擊", "暗影球", "能量球"], priorityMoves: [], setupMoves: ["詭計", "破殼"] },
-      { name: "多龍巴魯托", t1: "dragon", t2: "ghost", abilities: "透明體 / 穿透", powerMoves: ["龍箭", "暗影球", "十萬伏特", "大字爆炎"], priorityMoves: ["影子偷襲"], setupMoves: ["龍舞", "冥想"] },
-      { name: "沙奈朵", t1: "psychic", t2: "fairy", abilities: "同步 / 妖精皮膚", powerMoves: ["精神強念", "月亮力量", "十萬伏特", "暗影球"], priorityMoves: ["影子偷襲"], setupMoves: ["冥想", "詭計"] },
-      { name: "黏美路龍", t1: "dragon", t2: "none", abilities: "食草 / 黏滑", powerMoves: ["龍之波動", "濁流", "火焰放射", "冰凍光束"], priorityMoves: [], setupMoves: ["溶化", "詛咒"] },
-      { name: "暴飛龍", t1: "dragon", t2: "flying", abilities: "威嚇 / 航空皮膚", powerMoves: ["逆鱗", "捨身衝撞", "地震", "大字爆炎"], priorityMoves: ["電光一閃"], setupMoves: ["龍舞"] },
-      { name: "巨鍛匠", t1: "fairy", t2: "steel", abilities: "破格 / 自我中心", powerMoves: ["巨力錘", "嬉鬧", "擊落"], priorityMoves: [], setupMoves: ["劍舞"] },
-      { name: "路卡利歐", t1: "fighting", t2: "steel", abilities: "不屈之心 / 適應力", powerMoves: ["近身戰", "加農光炮", "神速", "波導彈", "地震"], priorityMoves: ["神速"], setupMoves: ["劍舞", "冥想"] },
-      { name: "仙子伊布", t1: "fairy", t2: "none", abilities: "迷人之軀 / 妖精皮膚", powerMoves: ["巨聲", "月亮力量", "影子球"], priorityMoves: ["電光一閃"], setupMoves: ["冥想"] },
-      { name: "風速狗", t1: "fire", t2: "none", abilities: "威嚇 / 引火", powerMoves: ["閃焰冲鋒", "近身戰", "神速", "嬉鬧"], priorityMoves: ["神速"], setupMoves: ["朝陽", "鬼火"] },
-      { name: "棄世猴", t1: "fighting", t2: "ghost", abilities: "憤怒拳 / 毅力", powerMoves: ["憤怒拳", "近身戰", "暗影爪", "岩石封鎖"], priorityMoves: ["影襲"], setupMoves: ["健美", "偷拍"] },
-      { name: "大鋼蛇", t1: "steel", t2: "ground", abilities: "結實 / 頑強", powerMoves: ["地震", "鐵尾", "岩崩", "冰凍牙"], priorityMoves: [], setupMoves: ["詛咒", "鐵壁"] },
-      { name: "巨鉗螳螂", t1: "bug", t2: "steel", abilities: "技術高手", powerMoves: ["子彈拳", "十字剪", "燕返", "近身戰"], priorityMoves: ["子彈拳"], setupMoves: ["劍舞"] },
-      { name: "帝王拿波", t1: "water", t2: "steel", abilities: "激流 / 不服輸", powerMoves: ["熱水", "加農光炮", "冰凍光束", "啄食"], priorityMoves: ["水ジェット"], setupMoves: ["高速移動", "劍舞"] },
-      { name: "轟雷金剛猩", t1: "grass", t2: "none", abilities: "青草製造者", powerMoves: ["青草滑梯", "木槌", "十萬馬力", "打落"], priorityMoves: ["青草滑梯(優先度+1)"], setupMoves: ["劍舞", "鼓擊"] },
+      { name: "多龍巴魯托", t1: "dragon", t2: "ghost", abilities: "透明體 / 穿透", powerMoves: ["龍箭", "暗影球", "十萬伏特", "大字爆炎", "流星群"], priorityMoves: ["影子偷襲"], setupMoves: ["龍舞", "冥想"] },
+      { name: "沙奈朵", t1: "psychic", t2: "fairy", abilities: "同步 / 妖精皮膚", powerMoves: ["精神強念", "月亮力量", "十萬伏特", "暗影球", "魔法閃耀"], priorityMoves: ["影子偷襲"], setupMoves: ["冥想", "詭計"] },
+      { name: "黏美路龍", t1: "dragon", t2: "none", abilities: "食草 / 黏滑", powerMoves: ["龍之波動", "濁流", "火焰放射", "冰凍光束", "十萬伏特"], priorityMoves: [], setupMoves: ["溶化", "詛咒"] },
+      { name: "暴飛龍", t1: "dragon", t2: "flying", abilities: "威嚇 / 航空皮膚", powerMoves: ["逆鱗", "捨身衝撞", "地震", "大字爆炎", "雙翼"], priorityMoves: ["電光一閃"], setupMoves: ["龍舞"] },
+      { name: "巨鍛匠", t1: "fairy", t2: "steel", abilities: "破格 / 自我中心", powerMoves: ["巨力錘", "嬉鬧", "擊落", "加農光炮"], priorityMoves: [], setupMoves: ["劍舞"] },
+      { name: "路卡利歐", t1: "fighting", t2: "steel", abilities: "不屈之心 / 適應力", powerMoves: ["近身戰", "加農光炮", "波導彈", "地震", "精神利刃"], priorityMoves: ["神速"], setupMoves: ["劍舞", "冥想"] },
+      { name: "仙子伊布", t1: "fairy", t2: "none", abilities: "迷人之軀 / 妖精皮膚", powerMoves: ["巨聲", "月亮力量", "影子球", "十萬伏特"], priorityMoves: ["電光一閃"], setupMoves: ["冥想"] },
+      { name: "風速狗", t1: "fire", t2: "none", abilities: "威嚇 / 引火", powerMoves: ["閃焰冲鋒", "近身戰", "嬉鬧", "瘋伏特"], priorityMoves: ["神速"], setupMoves: ["朝陽", "鬼火"] },
+      { name: "棄世猴", t1: "fighting", t2: "ghost", abilities: "憤怒拳 / 毅力", powerMoves: ["憤怒拳", "近身戰", "暗影爪", "岩石封鎖", "十字剪"], priorityMoves: ["影襲"], setupMoves: ["健美", "偷拍"] },
+      { name: "大鋼蛇", t1: "steel", t2: "ground", abilities: "結實 / 頑強", powerMoves: ["地震", "鐵尾", "岩崩", "冰凍牙", "重磅衝撞"], priorityMoves: [], setupMoves: ["詛咒", "鐵壁"] },
+      { name: "巨鉗螳螂", t1: "bug", t2: "steel", abilities: "技術高手", powerMoves: ["十字剪", "燕返", "近身戰", "意念頭槌"], priorityMoves: ["子彈拳"], setupMoves: ["劍舞"] },
+      { name: "帝王拿波", t1: "water", t2: "steel", abilities: "激流 / 不服輸", powerMoves: ["熱水", "加農光炮", "冰凍光束", "衝浪"], priorityMoves: ["水流噴射 (Aqua Jet)"], setupMoves: ["高速移動", "劍舞"] },
+      { name: "轟雷金剛猩", t1: "grass", t2: "none", abilities: "青草製造者", powerMoves: ["木槌", "十萬馬力", "打落", "吸取拳"], priorityMoves: ["青草滑梯 (優先度+1)"], setupMoves: ["劍舞", "鼓擊"] },
       { name: "大嘴鷗", t1: "water", t2: "flying", abilities: "降雨", powerMoves: ["暴風", "衝浪", "水炮", "氣象球"], priorityMoves: [], setupMoves: ["順風", "羽棲"] },
       { name: "大電海燕", t1: "electric", t2: "flying", abilities: "風力發電 / 蓄電", powerMoves: ["暴風", "十萬伏特", "伏特替換", "氣象球"], priorityMoves: [], setupMoves: ["順風", "高速移動"] },
       { name: "倫琴貓", t1: "electric", t2: "none", abilities: "威嚇 / 毅力", powerMoves: ["瘋伏特", "近身戰", "冰凍牙", "嬉鬧"], priorityMoves: [], setupMoves: ["充電"] }
@@ -503,7 +501,6 @@
       document.getElementById(`team-${i}-2`).value = p.t2;
     }
 
-    // 顯示第四頁的寶可夢詳細情報
     function showPokemonDex(idx) {
       let p = pokemons[idx];
       let resDiv = document.getElementById('dex-result');
