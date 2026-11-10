@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>寶可夢資料與屬性對戰中心</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #FFF9F2;
+      color: #333;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .container {
+      width: 100%;
+      max-width: 600px;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .back-btn {
+      color: #D35400;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    h1 {
+      font-size: 1.4rem;
+      color: #D35400;
+      text-align: center;
+    }
+    .section-title {
+      font-size: 1.1rem;
+      color: #E67E22;
+      margin: 20px 0 10px 0;
+      border-bottom: 2px solid #F39C12;
+      padding-bottom: 4px;
+    }
+    .card {
+      background: #FFFFFF;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 14px;
+      box-shadow: 0 4px 12px rgba(230, 120, 23, 0.1);
+      border-left: 5px solid #F39C12;
+    }
+    .card h2 {
+      font-size: 1.15rem;
+      color: #D35400;
+      margin-bottom: 6px;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin: 8px 0;
+      background: #FFF3E6;
+      padding: 8px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+    }
+    .stat-item {
+      text-align: center;
+    }
+    .stat-item span {
+      display: block;
+      font-weight: bold;
+      color: #D35400;
+    }
+    .moves-list {
+      font-size: 0.85rem;
+      color: #555;
+      margin-top: 6px;
+    }
+    .tool-box {
+      background: #FFF3E6;
+      border: 2px solid #F39C12;
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 16px;
+    }
+    .tool-box h3 {
+      font-size: 1.05rem;
+      color: #D35400;
+      margin-bottom: 10px;
+    }
+    select, button {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid #F39C12;
+      font-size: 0.9rem;
+      margin-right: 6px;
+      margin-bottom: 8px;
+    }
+    button {
+      background-color: #E67E22;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:active { background-color: #D35400; }
+    #calc-result, #quiz-result {
+      margin-top: 8px;
+      font-weight: bold;
+      font-size: 0.95rem;
+      color: #27AE60;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <a href="index.html" class="back-btn">‹ 返回首頁</a>
+      <h1>寶可夢進階戰術中心</h1>
+      <div style="width: 50px;"></div>
+    </div>
+
+    <!-- 經典寶可夢資料卡 -->
+    <div class="section-title">📊 經典寶可夢種族值與招式一覽</div>
+    
+    <div class="card">
+      <h2>🔥 噴火龍 (Charizard)</h2>
+      <p style="font-size: 0.85rem; color: #666;">屬性：火 / 飛行</p>
+      <div class="stats-grid">
+        <div class="stat-item">HP<span>78</span></div>
+        <div class="stat-item">攻擊<span>84</span></div>
+        <div class="stat-item">防禦<span>78</span></div>
+        <div class="stat-item">特攻<span>109</span></div>
+        <div class="stat-item">特防<span>85</span></div>
+        <div class="stat-item">速度<span>100</span></div>
+      </div>
+      <div class="moves-list"><b>常用強力招式：</b>大字爆炎、空氣斬、龍爪、日光束</div>
+    </div>
+
+    <div class="card">
+      <h2>⚡ 皮卡丘 (Pikachu)</h2>
+      <p style="font-size: 0.85rem; color: #666;">屬性：電</p>
+      <div class="stats-grid">
+        <div class="stat-item">HP<span>35</span></div>
+        <div class="stat-item">攻擊<span>55</span></div>
+        <div class="stat-item">防禦<span>40</span></div>
+        <div class="stat-item">特攻<span>50</span></div>
+        <div class="stat-item">特防<span>50</span></div>
+        <div class="stat-item">速度<span>90</span></div>
+      </div>
+      <div class="moves-list"><b>常用強力招式：</b>十萬伏特、伏特攻擊、電光一閃、鐵尾</div>
+    </div>
+
+    <div class="card">
+      <h2>🐢 卡比獸 (Snorlax)</h2>
+      <p style="font-size: 0.85rem; color: #666;">屬性：一般</p>
+      <div class="stats-grid">
+        <div class="stat-item">HP<span>160</span></div>
+        <div class="stat-item">攻擊<span>110</span></div>
+        <div class="stat-item">防禦<span>65</span></div>
+        <div class="stat-item">特攻<span>65</span></div>
+        <div class="stat-item">特防<span>110</span></div>
+        <div class="stat-item">速度<span>30</span></div>
+      </div>
+      <div class="moves-list"><b>常用強力招式：</b>終極衝擊、地震、冰凍拳、肚子鼓動</div>
+    </div>
+
+    <!-- 屬性相剋簡易計算工具 -->
+    <div class="section-title">⚔️ 屬性相剋快速查詢</div>
+    <div class="tool-box">
+      <h3>屬性對戰模擬器</h3>
+      <label>攻擊方屬性：</label>
+      <select id="atk-type">
+        <option value="fire">火</option>
+        <option value="water">水</option>
+        <option value="grass">草</option>
+        <option value="electric">電</option>
+      </select>
+      <br>
+      <label>防禦方屬性：</label>
+      <select id="def-type">
+        <option value="grass">草</option>
+        <option value="fire">火</option>
+        <option value="water">水</option>
+        <option value="rock">岩石</option>
+      </select>
+      <br>
+      <button onclick="calculateEffectiveness()">計算傷害倍率</button>
+      <p id="calc-result"></p>
+    </div>
+
+  </div>
+
+  <script>
+    function calculateEffectiveness() {
+      const atk = document.getElementById('atk-type').value;
+      const def = document.getElementById('def-type').value;
+      const res = document.getElementById('calc-result');
+
+      // 簡單的相剋邏輯示範
+      if ((atk === 'fire' && def === 'grass') || (atk === 'water' && def === 'fire') || (atk === 'grass' && def === 'water') || (atk === 'electric' && def === 'water')) {
+        res.style.color = "#27AE60";
+        res.innerText = "💥 效果絕佳！傷害加倍 (2.0x)";
+      } else if ((atk === 'fire' && def === 'fire') || (atk === 'water' && def === 'water') || (atk === 'grass' && def === 'grass')) {
+        res.style.color = "#E67E22";
+        res.innerText = "⚠️ 效果不太好... 傷害減半 (0.5x)";
+      } else {
+        res.style.color = "#333";
+        res.innerText = "🛡️ 一般傷害 (1.0x)";
+      }
+    }
+  </script>
+</body>
+</html>
