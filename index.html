@@ -97,7 +97,6 @@
     .panel { display: none; }
     .panel.active { display: block; }
     
-    /* 25隻熱門寶可夢按鈕網格 */
     .preset-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -187,7 +186,6 @@
       <div id="panel-defense" class="panel active">
         <h3>防禦方複合屬性全方位弱點分析</h3>
         
-        <!-- 25隻熱門寶可夢快捷按鈕區塊 -->
         <label>🔥 點擊快速載入熱門寶可夢：</label>
         <div class="preset-grid">
           <button class="preset-btn" onclick="loadPreset('fire', 'flying')">M-噴火龍Y</button>
@@ -196,7 +194,7 @@
           <button class="preset-btn" onclick="loadPreset('dragon', 'flying')">快龍</button>
           <button class="preset-btn" onclick="loadPreset('water', 'ground')">M-巨沼怪</button>
           <button class="preset-btn" onclick="loadPreset('grass', 'dark')">魔幻假面喵</button>
-          <button class="preset-btn" onclick="loadPreset('normal', 'flying')">M-姆克鷹</button>
+          <button class="preset-btn" onclick="loadPreset('fighting', 'flying')">M-姆克鷹</button>
           <button class="preset-btn" onclick="loadPreset('steel', 'psychic')">巨金怪</button>
           <button class="preset-btn" onclick="loadPreset('ghost', 'poison')">耿鬼</button>
           <button class="preset-btn" onclick="loadPreset('rock', 'dark')">班基拉斯</button>
@@ -221,7 +219,7 @@
           <label>第一屬性：</label>
           <select id="def-1">
             <option value="normal">一般</option>
-            <option value="fire" selected>火</option>
+            <option value="fire">火</option>
             <option value="water">水</option>
             <option value="electric">電</option>
             <option value="grass">草</option>
@@ -253,7 +251,7 @@
             <option value="fighting">格鬥</option>
             <option value="poison">毒</option>
             <option value="ground">地面</option>
-            <option value="flying" selected>飛行</option>
+            <option value="flying">飛行</option>
             <option value="psychic">超能力</option>
             <option value="bug">蟲</option>
             <option value="rock">岩石</option>
