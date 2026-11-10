@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>寶可夢 18 屬性全方位防禦計算機</title>
+  <title>寶可夢 18 屬性全方位攻防分析器</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -17,7 +17,7 @@
     }
     .container {
       width: 100%;
-      max-width: 600px;
+      max-width: 650px;
     }
     .header {
       display: flex;
@@ -30,6 +30,28 @@
       color: #D35400;
       text-align: center;
       width: 100%;
+    }
+    /* 分頁按鈕樣式 */
+    .tab-nav {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 10px;
+      border: 2px solid #F39C12;
+      background-color: #FFF3E6;
+      color: #D35400;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: center;
+      transition: 0.2s;
+    }
+    .tab-btn.active {
+      background-color: #E67E22;
+      color: white;
     }
     .tool-box {
       background: #FFFFFF;
@@ -52,7 +74,7 @@
       margin-bottom: 6px;
       color: #555;
     }
-    select, button {
+    select {
       width: 100%;
       padding: 10px;
       border-radius: 8px;
@@ -60,127 +82,161 @@
       font-size: 1rem;
       background-color: #FFF;
     }
-    button {
-      background-color: #E67E22;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 6px;
+    .panel {
+      display: none;
     }
-    button:active { background-color: #D35400; }
-    #calc-result {
+    .panel.active {
+      display: block;
+    }
+    .result-section {
       margin-top: 16px;
       padding: 16px;
       border-radius: 8px;
       background: #FFF3E6;
-      font-size: 1rem;
+      font-size: 0.95rem;
       line-height: 1.6;
     }
-    .main-result {
-      font-size: 1.15rem;
-      font-weight: bold;
-      text-align: center;
+    .result-category {
       margin-bottom: 10px;
-      padding-bottom: 8px;
+    }
+    .result-category strong {
+      display: block;
+      margin-bottom: 4px;
+      color: #D35400;
       border-bottom: 1px dashed #F39C12;
+      padding-bottom: 2px;
     }
-    .breakdown-item {
-      font-size: 0.95rem;
-      color: #444;
-      margin: 6px 0;
-      padding-left: 8px;
+    .type-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      margin: 2px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      color: white;
     }
+    /* 屬性標籤顏色 */
+    .bg-normal { background-color: #A8A878; }
+    .bg-fire { background-color: #F08030; }
+    .bg-water { background-color: #6890F0; }
+    .bg-electric { background-color: #F8D030; color: #333; }
+    .bg-grass { background-color: #78C850; }
+    .bg-ice { background-color: #98D8D8; color: #333; }
+    .bg-fighting { background-color: #C03028; }
+    .bg-poison { background-color: #A040A0; }
+    .bg-ground { background-color: #E0C068; color: #333; }
+    .bg-flying { background-color: #A890F0; }
+    .bg-psychic { background-color: #F85888; }
+    .bg-bug { background-color: #A8B820; }
+    .bg-rock { background-color: #B8A038; }
+    .bg-ghost { background-color: #705898; }
+    .bg-dragon { background-color: #7038F8; }
+    .bg-dark { background-color: #705848; }
+    .bg-steel { background-color: #B8B8D0; color: #333; }
+    .bg-fairy { background-color: #EE99AC; color: #333; }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
-      <h1>寶可夢 18 屬性防禦計算機</h1>
+      <h1>寶可夢 18 屬性攻防分析器</h1>
+    </div>
+
+    <!-- 切換分頁按鈕 -->
+    <div class="tab-nav">
+      <div class="tab-btn active" onclick="switchTab('defense')">🛡️ 防禦抗性總覽</div>
+      <div class="tab-btn" onclick="switchTab('attack')">⚔️ 進攻打點總覽</div>
     </div>
 
     <div class="tool-box">
-      <h3>⚔️ 完整屬性相剋模擬器</h3>
-      
-      <div class="form-group">
-        <label>攻擊方的招式屬性：</label>
-        <select id="atk-type">
-          <option value="normal">一般</option>
-          <option value="fire">火</option>
-          <option value="water">水</option>
-          <option value="electric">電</option>
-          <option value="grass">草</option>
-          <option value="ice">冰</option>
-          <option value="fighting">格鬥</option>
-          <option value="poison">毒</option>
-          <option value="ground">地面</option>
-          <option value="flying">飛行</option>
-          <option value="psychic">超能力</option>
-          <option value="bug">蟲</option>
-          <option value="rock">岩石</option>
-          <option value="ghost">幽靈</option>
-          <option value="dragon">龍</option>
-          <option value="dark">惡</option>
-          <option value="steel">鋼</option>
-          <option value="fairy">妖精</option>
-        </select>
+      <!-- 🛡️ 防禦分頁 -->
+      <div id="panel-defense" class="panel active">
+        <h3>防禦方複合屬性全方位弱點分析</h3>
+        <div class="form-group">
+          <label>第一屬性：</label>
+          <select id="def-1">
+            <option value="normal">一般</option>
+            <option value="fire">火</option>
+            <option value="water">水</option>
+            <option value="electric">電</option>
+            <option value="grass" selected>草</option>
+            <option value="ice">冰</option>
+            <option value="fighting">格鬥</option>
+            <option value="poison">毒</option>
+            <option value="ground">地面</option>
+            <option value="flying">飛行</option>
+            <option value="psychic">超能力</option>
+            <option value="bug">蟲</option>
+            <option value="rock">岩石</option>
+            <option value="ghost">幽靈</option>
+            <option value="dragon">龍</option>
+            <option value="dark">惡</option>
+            <option value="steel">鋼</option>
+            <option value="fairy">妖精</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>第二屬性：</label>
+          <select id="def-2">
+            <option value="none">無 (單屬性)</option>
+            <option value="normal">一般</option>
+            <option value="fire">火</option>
+            <option value="water">水</option>
+            <option value="electric">電</option>
+            <option value="grass">草</option>
+            <option value="ice">冰</option>
+            <option value="fighting">格鬥</option>
+            <option value="poison" selected>毒</option>
+            <option value="ground">地面</option>
+            <option value="flying">飛行</option>
+            <option value="psychic">超能力</option>
+            <option value="bug">蟲</option>
+            <option value="rock">岩石</option>
+            <option value="ghost">幽靈</option>
+            <option value="dragon">龍</option>
+            <option value="dark">惡</option>
+            <option value="steel">鋼</option>
+            <option value="fairy">妖精</option>
+          </select>
+        </div>
+        <button onclick="analyzeDefense()">分析防禦抗性</button>
+        <div id="defense-result" class="result-section" style="display:none;"></div>
       </div>
 
-      <div class="form-group">
-        <label>防禦方寶可夢 - 第一屬性：</label>
-        <select id="def-type-1">
-          <option value="normal">一般</option>
-          <option value="fire">火</option>
-          <option value="water">水</option>
-          <option value="electric">電</option>
-          <option value="grass">草</option>
-          <option value="ice">冰</option>
-          <option value="fighting">格鬥</option>
-          <option value="poison">毒</option>
-          <option value="ground">地面</option>
-          <option value="flying">飛行</option>
-          <option value="psychic">超能力</option>
-          <option value="bug">蟲</option>
-          <option value="rock">岩石</option>
-          <option value="ghost">幽靈</option>
-          <option value="dragon">龍</option>
-          <option value="dark">惡</option>
-          <option value="steel">鋼</option>
-          <option value="fairy">妖精</option>
-        </select>
+      <!-- ⚔️ 進攻分頁 -->
+      <div id="panel-attack" class="panel">
+        <h3>攻擊方招式屬性打點分析</h3>
+        <div class="form-group">
+          <label>招式屬性：</label>
+          <select id="atk-type">
+            <option value="normal">一般</option>
+            <option value="fire">火</option>
+            <option value="water">水</option>
+            <option value="electric">電</option>
+            <option value="grass">草</option>
+            <option value="ice">冰</option>
+            <option value="fighting">格鬥</option>
+            <option value="poison">毒</option>
+            <option value="ground">地面</option>
+            <option value="flying">飛行</option>
+            <option value="psychic">超能力</option>
+            <option value="bug">蟲</option>
+            <option value="rock">岩石</option>
+            <option value="ghost">幽靈</option>
+            <option value="dragon">龍</option>
+            <option value="dark">惡</option>
+            <option value="steel">鋼</option>
+            <option value="fairy">妖精</option>
+          </select>
+        </div>
+        <button onclick="analyzeAttack()">分析進攻打點</button>
+        <div id="attack-result" class="result-section" style="display:none;"></div>
       </div>
-
-      <div class="form-group">
-        <label>防禦方寶可夢 - 第二屬性：</label>
-        <select id="def-type-2">
-          <option value="none">無 (單屬性)</option>
-          <option value="normal">一般</option>
-          <option value="fire">火</option>
-          <option value="water">水</option>
-          <option value="electric">電</option>
-          <option value="grass">草</option>
-          <option value="ice">冰</option>
-          <option value="fighting">格鬥</option>
-          <option value="poison">毒</option>
-          <option value="ground">地面</option>
-          <option value="flying">飛行</option>
-          <option value="psychic">超能力</option>
-          <option value="bug">蟲</option>
-          <option value="rock">岩石</option>
-          <option value="ghost">幽靈</option>
-          <option value="dragon">龍</option>
-          <option value="dark">惡</option>
-          <option value="steel">鋼</option>
-          <option value="fairy">妖精</option>
-        </select>
-      </div>
-
-      <button onclick="calculateFullEffectiveness()">計算 18 屬性防禦倍率</button>
-      
-      <div id="calc-result" style="color: #666;">請選擇屬性並點擊計算</div>
     </div>
   </div>
 
   <script>
+    const allTypes = ["normal", "fire", "water", "electric", "grass", "ice", "fighting", "poison", "ground", "flying", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy"];
     const typeNames = {
       normal: "一般", fire: "火", water: "水", electric: "電",
       grass: "草", ice: "冰", fighting: "格鬥", poison: "毒",
@@ -215,49 +271,65 @@
       return chart[atk][def] !== undefined ? chart[atk][def] : 1;
     }
 
-    function calculateFullEffectiveness() {
-      const atk = document.getElementById('atk-type').value;
-      const def1 = document.getElementById('def-type-1').value;
-      const def2 = document.getElementById('def-type-2').value;
-      const resBox = document.getElementById('calc-result');
-
-      let m1 = getMultiplier(atk, def1);
-      let text1 = `${typeNames[atk]} 攻擊 ${typeNames[def1]}：${m1} 倍`;
-
-      let text2 = "";
-      let m2 = 1;
-      if (def2 !== 'none') {
-        m2 = getMultiplier(atk, def2);
-        text2 = `${typeNames[atk]} 攻擊 ${typeNames[def2]}：${m2} 倍`;
-      }
-
-      let finalMultiplier = m1 * m2;
-
-      let mainDesc = "";
-      let mainColor = "#333";
-
-      if (finalMultiplier >= 2) {
-        mainColor = "#C0392B";
-        mainDesc = `💥 最終傷害：<strong>${finalMultiplier} 倍 (效果絕佳)</strong>`;
-      } else if (finalMultiplier === 0) {
-        mainColor = "#7F8C8D";
-        mainDesc = `🚫 最終傷害：<strong>0 倍 (完全無效)</strong>`;
-      } else if (finalMultiplier < 1) {
-        mainColor = "#D35400";
-        mainDesc = `⚠️ 最終傷害：<strong>${finalMultiplier} 倍 (效果不好)</strong>`;
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      if (tab === 'defense') {
+        document.querySelectorAll('.tab-btn')[0].classList.add('active');
+        document.getElementById('panel-defense').classList.add('active');
       } else {
-        mainColor = "#27AE60";
-        mainDesc = `🛡️ 最終傷害：<strong>1.0 倍 (普通)</strong>`;
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        document.getElementById('panel-attack').classList.add('active');
       }
+    }
 
-      let html = `<div class="main-result" style="color: ${mainColor};">${mainDesc}</div>`;
-      html += `<div class="breakdown-item">▪ ${text1}</div>`;
-      if (def2 !== 'none') {
-        html += `<div class="breakdown-item">▪ ${text2}</div>`;
-      }
+    function analyzeDefense() {
+      const d1 = document.getElementById('def-1').value;
+      const d2 = document.getElementById('def-2').value;
+      const resDiv = document.getElementById('defense-result');
+      resDiv.style.display = 'block';
 
-      resBox.style.color = "#333";
-      resBox.innerHTML = html;
+      let groups = { 4: [], 2: [], 1: [], 0.5: [], 0.25: [], 0: [] };
+
+      allTypes.forEach(atk => {
+        let m1 = getMultiplier(atk, d1);
+        let m2 = (d2 !== 'none') ? getMultiplier(atk, d2) : 1;
+        let total = m1 * m2;
+        if (groups[total]) {
+          groups[total].push(atk);
+        }
+      });
+
+      let html = "";
+      if (groups[4].length > 0) html += `<div class="result-category"><strong>💥 4 倍傷害 (極度弱點)：</strong>` + groups[4].map(t => `<span class="type-badge bg-${t}">${typeNames[t]}</span>`).join('') + `</div>`;
+      if (groups[2].length > 0) html += `<div class="result-category"><strong>⚡ 2 倍傷害 (弱點)：</strong>` + groups[2].map(t => `<span class="type-badge bg-${t}">${typeNames[t]}</span>`).join('') + `</div>`;
+      if (groups[0.5].length > 0) html += `<div class="result-category"><strong>🛡️ 0.5 倍傷害 (抗性)：</strong>` + groups[0.5].map(t => `<span class="type-badge bg-${t}">${typeNames[t]}</span>`).join('') + `</div>`;
+      if (groups[0.25].length > 0) html += `<div class="result-category"><strong>🧱 0.25 倍傷害 (強力抗性)：</strong>` + groups[0.25].map(t => `<span class="type-badge bg-${t}">${typeNames[t]}</span>`).join('') + `</div>`;
+      if (groups[0].length > 0) html += `<div class="result-category"><strong>🚫 0 倍傷害 (完全無效)：</strong>` + groups[0].map(t => `<span class="type-badge bg-${t}">${typeNames[t]}</span>`).join('') + `</div>`;
+      
+      resDiv.innerHTML = html || "此組合無特殊倍率";
+    }
+
+    function analyzeAttack() {
+      const atk = document.getElementById('atk-type').value;
+      const resDiv = document.getElementById('attack-result');
+      resDiv.style.display = 'block';
+
+      let groups = { 2: [], 1: [], 0.5: [], 0: [] };
+
+      allTypes.forEach(def => {
+        let m = getMultiplier(atk, def);
+        if (groups[m]) {
+          groups[m].push(def);
+        }
+      });
+
+      let html = "";
+      if (groups[2].length > 0) html += `<div class="result-category"><strong>💥 效果絕佳 (2倍)：</strong>` + groups[2].map(t => `<span class="type-badge bg-${t}">${typeNames[t]}</span>`).join('') + `</div>`;
+      if (groups[0.5].length > 0) html += `<div class="result-category"><strong>⚠️ 效果不好 (0.5倍)：</strong>` + groups[0.5].map(t => `<span class="type-badge bg-${t}">${typeNames[t]}</span>`).join('') + `</div>`;
+      if (groups[0].length > 0) html += `<div class="result-category"><strong>🚫 完全無效 (0倍)：</strong>` + groups[0].map(t => `<span class="type-badge bg-${t}">${typeNames[t]}</span>`).join('') + `</div>`;
+
+      resDiv.innerHTML = html;
     }
   </script>
 </body>
