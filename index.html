@@ -159,7 +159,7 @@
     }
     .team-slot select { font-size: 0.9rem; padding: 4px; }
 
-    /* 隊伍盲點卡片優化 */
+    /* 全新美化的盲點聯防卡片 */
     .weakness-card {
       background: #FFFFFF;
       padding: 10px;
@@ -171,25 +171,23 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
     .pivot-info {
-      font-size: 0.82rem;
+      font-size: 0.85rem;
       color: #27AE60;
       background: #E8F8F5;
-      padding: 4px 6px;
-      border-radius: 4px;
-      margin-top: 4px;
-      border-left: 3px solid #2ECC71;
+      padding: 6px 8px;
+      border-radius: 6px;
+      border-left: 4px solid #2ECC71;
     }
     .pivot-none {
-      font-size: 0.82rem;
+      font-size: 0.85rem;
       color: #C0392B;
       background: #FDEDEC;
-      padding: 4px 6px;
-      border-radius: 4px;
-      margin-top: 4px;
-      border-left: 3px solid #E74C3C;
+      padding: 6px 8px;
+      border-radius: 6px;
+      border-left: 4px solid #E74C3C;
     }
 
     /* 屬性色彩標章 */
@@ -297,6 +295,7 @@
             }
           </script>
         </div>
+        <!-- 注意這裡的按鈕文字已更新為全新名稱 -->
         <button onclick="analyzeTeamWeakness()">分析全隊盲點與聯防</button>
         <div id="team-result" class="result-section" style="display:none;"></div>
       </div>
@@ -420,7 +419,6 @@
     }
 
     function analyzeTeamWeakness() {
-      // 收集 3 隻隊員的屬性
       let team = [];
       for(let i=1; i<=3; i++) {
         let t1 = document.getElementById(`team-${i}-1`).value;
@@ -434,10 +432,9 @@
       let html = `<div class="result-category"><strong>📊 全隊屬性弱點與聯防分析：</strong></div>`;
       let hasWeakness = false;
 
-      // 檢查每一個屬性打過來時的情況
       allTypes.forEach(atk => {
-        let weakMembers = []; // 害怕這屬性的隊員
-        let pivotMembers = []; // 可以幫忙聯防扛傷的隊員 (倍率 < 1)
+        let weakMembers = [];
+        let pivotMembers = [];
 
         team.forEach(member => {
           let mult = getMultiplier(atk, member.t1, member.t2);
@@ -448,7 +445,6 @@
           }
         });
 
-        // 如果這屬性有隊員害怕，就列出來並尋找聯防
         if (weakMembers.length > 0) {
           hasWeakness = true;
           let pivotText = "";
@@ -504,7 +500,7 @@
       if (groups[2].length > 0) html += `<div class="result-category"><strong>⚡ 2 倍傷害：</strong>` + groups[2].map(t => `<span class="type-badge bg-${t}">${typeNames[t]}</span>`).join('') + `</div>`;
       if (groups[0.5].length > 0) html += `<div class="result-category"><strong>🛡️ 0.5 倍抗性：</strong>` + groups[0.5].map(t => `<span class="type-badge bg-${t}">${typeNames[t]}</span>`).join('') + `</div>`;
       if (groups[0.25].length > 0) html += `<div class="result-category"><strong>🧱 0.25 倍強力抗性：</strong>` + groups[0.25].map(t => `<span class="type-badge bg-${t}">${typeNames[t]}</span>`).join('') + `</div>`;
-      if (groups[0].length > 0) html += `<div class="result-category"><strong>🚫 0 倍無效：</strong>` + groups[0].map(t => `<span class="type-badge bg-${t}`, typeNames[t]) + `</span>`).join('') + `</div>`;
+      if (groups[0].length > 0) html += `<div class="result-category"><strong>🚫 0 倍無效：</strong>` + groups[0].map(t => `<span class="type-badge bg-${t}">${typeNames[t]}</span>`).join('') + `</div>`;
 
       resDiv.innerHTML = html;
     }
