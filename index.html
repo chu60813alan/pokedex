@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>寶可夢雙屬性相剋計算機</title>
+  <title>寶可夢 18 屬性全方位防禦計算機</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -69,34 +69,46 @@
     button:active { background-color: #D35400; }
     #calc-result {
       margin-top: 16px;
-      padding: 12px;
+      padding: 14px;
       border-radius: 8px;
       background: #FFF3E6;
       font-weight: bold;
       text-align: center;
-      font-size: 1.05rem;
+      font-size: 1.1rem;
+      line-height: 1.5;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
-      <h1>寶可夢雙屬性防禦計算機</h1>
+      <h1>寶可夢 18 屬性防禦計算機</h1>
     </div>
 
     <div class="tool-box">
-      <h3>⚔️ 模擬招式打擊效果</h3>
+      <h3>⚔️ 完整屬性相剋模擬器</h3>
       
       <div class="form-group">
         <label>攻擊方的招式屬性：</label>
         <select id="atk-type">
+          <option value="normal">一般</option>
           <option value="fire">火</option>
           <option value="water">水</option>
-          <option value="grass">草</option>
           <option value="electric">電</option>
-          <option value="rock">岩石</option>
+          <option value="grass">草</option>
           <option value="ice">冰</option>
           <option value="fighting">格鬥</option>
+          <option value="poison">毒</option>
+          <option value="ground">地面</option>
+          <option value="flying">飛行</option>
+          <option value="psychic">超能力</option>
+          <option value="bug">蟲</option>
+          <option value="rock">岩石</option>
+          <option value="ghost">幽靈</option>
+          <option value="dragon">龍</option>
+          <option value="dark">惡</option>
+          <option value="steel">鋼</option>
+          <option value="fairy">妖精</option>
         </select>
       </div>
 
@@ -104,80 +116,74 @@
         <label>防禦方寶可夢 - 第一屬性：</label>
         <select id="def-type-1">
           <option value="grass">草</option>
+          <option value="normal">一般</option>
           <option value="fire">火</option>
           <option value="water">水</option>
+          <option value="electric">電</option>
+          <option value="ice">冰</option>
+          <option value="fighting">格鬥</option>
+          <option value="poison">毒</option>
+          <option value="ground">地面</option>
           <option value="flying">飛行</option>
+          <option value="psychic">超能力</option>
+          <option value="bug">蟲</option>
+          <option value="rock">岩石</option>
+          <option value="ghost">幽靈</option>
           <option value="dragon">龍</option>
+          <option value="dark">惡</option>
           <option value="steel">鋼</option>
+          <option value="fairy">妖精</option>
         </select>
       </div>
 
       <div class="form-group">
-        <label>防禦方寶可夢 - 第二屬性（若無請選「無」）：</label>
+        <label>防禦方寶可夢 - 第二屬性：</label>
         <select id="def-type-2">
           <option value="none">無 (單屬性)</option>
           <option value="flying">飛行</option>
           <option value="poison">毒</option>
           <option value="ground">地面</option>
           <option value="fire">火</option>
+          <option value="water">水</option>
+          <option value="grass">草</option>
+          <option value="electric">電</option>
+          <option value="ice">冰</option>
+          <option value="fighting">格鬥</option>
+          <option value="psychic">超能力</option>
+          <option value="bug">蟲</option>
+          <option value="rock">岩石</option>
+          <option value="ghost">幽靈</option>
           <option value="dragon">龍</option>
+          <option value="dark">惡</option>
+          <option value="steel">鋼</option>
+          <option value="fairy">妖精</option>
+          <option value="normal">一般</option>
         </select>
       </div>
 
-      <button onclick="calculateDualEffectiveness()">計算最終傷害倍率</button>
+      <button onclick="calculateFullEffectiveness()">計算 18 屬性防禦倍率</button>
       
       <div id="calc-result" style="color: #666;">請選擇屬性並點擊計算</div>
     </div>
   </div>
 
   <script>
-    // 簡單的相剋對照表 (倍率: 2 = 絕佳, 0.5 = 不好, 0 = 無效, 1 = 正常)
+    // 完整的 18 屬性相剋對照表 (2 = 絕佳/2x, 0.5 = 不好/0.5x, 0 = 無效/0x)
     const chart = {
+      normal: { rock: 0.5, steel: 0.5, ghost: 0 },
       fire: { grass: 2, ice: 2, bug: 2, steel: 2, fire: 0.5, water: 0.5, rock: 0.5, dragon: 0.5 },
       water: { fire: 2, ground: 2, rock: 2, water: 0.5, grass: 0.5, dragon: 0.5 },
-      grass: { water: 2, ground: 2, rock: 2, fire: 0.5, grass: 0.5, poison: 0.5, flying: 0.5, bug: 0.5, dragon: 0.5, steel: 0.5 },
       electric: { water: 2, flying: 2, electric: 0.5, grass: 0.5, dragon: 0.5, ground: 0 },
-      rock: { fire: 2, ice: 2, flying: 2, bug: 2, fighting: 0.5, ground: 0.5, steel: 0.5 },
+      grass: { water: 2, ground: 2, rock: 2, fire: 0.5, grass: 0.5, poison: 0.5, flying: 0.5, bug: 0.5, dragon: 0.5, steel: 0.5 },
       ice: { grass: 2, ground: 2, flying: 2, dragon: 2, fire: 0.5, water: 0.5, ice: 0.5, steel: 0.5 },
-      fighting: { normal: 2, ice: 2, rock: 2, dark: 2, steel: 2, poison: 0.5, flying: 0.5, psychic: 0.5, bug: 0.5, fairy: 0.5, ghost: 0 }
-    };
-
-    function getMultiplier(atk, def) {
-      if (!chart[atk]) return 1;
-      return chart[atk][def] !== undefined ? chart[atk][def] : 1;
-    }
-
-    function calculateDualEffectiveness() {
-      const atk = document.getElementById('atk-type').value;
-      const def1 = document.getElementById('def-type-1').value;
-      const def2 = document.getElementById('def-type-2').value;
-      const resBox = document.getElementById('calc-result');
-
-      let m1 = getMultiplier(atk, def1);
-      let m2 = 1;
-
-      if (def2 !== 'none') {
-        m2 = getMultiplier(atk, def2);
-      }
-
-      // 雙屬性倍率相乘
-      let finalMultiplier = m1 * m2;
-
-      let text = `最終傷害倍率：${finalMultiplier}x`;
-      if (finalMultiplier >= 2) {
-        resBox.style.color = "#C0392B";
-        resBox.innerHTML = `💥 效果絕佳！(${finalMultiplier} 倍傷害)`;
-      } else if (finalMultiplier === 0) {
-        resBox.style.color = "#7F8C8D";
-        resBox.innerHTML = `🚫 完全無效！(0 倍傷害)`;
-      } else if (finalMultiplier < 1) {
-        resBox.style.color = "#D35400";
-        resBox.innerHTML = `⚠️ 效果不太好... (${finalMultiplier} 倍傷害)`;
-      } else {
-        resBox.style.color = "#27AE60";
-        resBox.innerHTML = `🛡️ 普通傷害 (1.0 倍)`;
-      }
-    }
-  </script>
-</body>
-</html>
+      fighting: { normal: 2, ice: 2, rock: 2, dark: 2, steel: 2, poison: 0.5, flying: 0.5, psychic: 0.5, bug: 0.5, fairy: 0.5, ghost: 0 },
+      poison: { grass: 2, fairy: 2, poison: 0.5, ground: 0.5, rock: 0.5, ghost: 0.5, steel: 0 },
+      ground: { fire: 2, electric: 2, poison: 2, rock: 2, steel: 2, grass: 0.5, bug: 0.5, flying: 0 },
+      flying: { grass: 2, fighting: 2, bug: 2, electric: 0.5, rock: 0.5, steel: 0.5 },
+      psychic: { fighting: 2, poison: 2, psychic: 0.5, steel: 0.5, dark: 0 },
+      bug: { grass: 2, psychic: 2, dark: 2, fire: 0.5, fighting: 0.5, poison: 0.5, flying: 0.5, ghost: 0.5, steel: 0.5, fairy: 0.5 },
+      rock: { fire: 2, ice: 2, flying: 2, bug: 2, fighting: 0.5, ground: 0.5, steel: 0.5 },
+      ghost: { psychic: 2, ghost: 2, dark: 0.5, normal: 0 },
+      dragon: { dragon: 2, steel: 0.5, fairy: 0 },
+      dark: { psychic: 2, ghost: 2, fighting: 0.5, dark: 0.5, fairy: 0.5 },
+      steel: { ice: 2, rock: 2, fairy: 2, fire: 0.5, water: 0.5, electric: 0.5, steel
