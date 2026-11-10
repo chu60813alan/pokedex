@@ -26,27 +26,28 @@
       margin-bottom: 16px;
     }
     h1 {
-      font-size: 1.15rem;
+      font-size: 1.1rem;
       color: #D35400;
       text-align: center;
       width: 100%;
     }
+    /* 5 個分頁導覽列 */
     .tab-nav {
       display: flex;
-      gap: 3px;
+      gap: 2px;
       margin-bottom: 16px;
     }
     .tab-btn {
       flex: 1;
-      padding: 8px 2px;
+      padding: 8px 1px;
       border: 2px solid #F39C12;
       background-color: #FFF3E6;
       color: #D35400;
       font-weight: bold;
-      border-radius: 8px;
+      border-radius: 6px;
       cursor: pointer;
       text-align: center;
-      font-size: 0.78rem;
+      font-size: 0.72rem;
       transition: 0.2s;
     }
     .tab-btn.active {
@@ -73,9 +74,9 @@
       font-weight: bold;
       margin-bottom: 4px;
       color: #555;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
     }
-    select {
+    select, input {
       width: 100%;
       padding: 8px;
       border-radius: 8px;
@@ -186,7 +187,6 @@
       border-left: 4px solid #E74C3C;
     }
 
-    /* 招式庫專用樣式 */
     .dex-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -220,6 +220,15 @@
     .move-tag.prio { border-color: #E74C3C; color: #C0392B; font-weight: bold; }
     .move-tag.setup { border-color: #2980B9; color: #2980B9; font-weight: bold; }
 
+    /* 傷害計算結果區塊 */
+    .calc-box {
+      background: #FFFFFF;
+      border: 1px solid #F39C12;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+
     /* 屬性色彩標章 */
     .bg-normal { background-color: #A8A878; }
     .bg-fire { background-color: #F08030; }
@@ -247,11 +256,13 @@
       <h1>寶可夢 18 屬性對戰戰術中心</h1>
     </div>
 
+    <!-- 五大功能分頁切換 -->
     <div class="tab-nav">
       <div class="tab-btn active" onclick="switchTab('defense')">🛡️ 單隻攻防</div>
       <div class="tab-btn" onclick="switchTab('team')">👥 隊伍聯防</div>
       <div class="tab-btn" onclick="switchTab('ability')">✨ 特性影響</div>
       <div class="tab-btn" onclick="switchTab('dex')">📖 招式情報</div>
+      <div class="tab-btn" onclick="switchTab('calc')">📊 傷害計算</div>
     </div>
 
     <div class="tool-box">
@@ -352,6 +363,45 @@
         <div id="dex-result" class="result-section" style="display:none;">請點選上方寶可夢查看詳細情報</div>
       </div>
 
+      <!-- 分頁五：📊 傷害與戰術計算機 (方案B新功能) -->
+      <div id="panel-calc" class="panel">
+        <h3>簡易戰術傷害與血量估算機</h3>
+        <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">輸入招式威力、攻擊方能力階級與雙方屬性，快速估算打落對手的確切傷害與比例：</p>
+        
+        <div class="form-group">
+          <label>攻擊方招式威力 (Power)：</label>
+          <input type="number" id="calc-power" value="110" min="10" max="250">
+        </div>
+
+        <div class="form-group">
+          <label>攻擊方能力階級 (Stage)：</label>
+          <select id="calc-stage">
+            <option value="1">±0 (無強化)</option>
+            <option value="1.5">+1 階級 (1.5倍)</option>
+            <option value="2">+2 階級 (2.0倍，如劍舞/冥想)</option>
+            <option value="2.5">+3 階級 (2.5倍)</option>
+            <option value="4">+4 階級 (4.0倍)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>防禦方第一屬性：</label>
+          <select id="calc-def-1">
+            <option value="normal">一般</option><option value="fire">火</option><option value="water">水</option><option value="electric">電</option><option value="grass">草</option><option value="ice">冰</option><option value="fighting">格鬥</option><option value="poison">毒</option><option value="ground">地面</option><option value="flying">飛行</option><option value="psychic">超能力</option><option value="bug">蟲</option><option value="rock">岩石</option><option value="ghost">幽靈</option><option value="dragon" selected>龍</option><option value="dark">惡</option><option value="steel">鋼</option><option value="fairy">妖精</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>防禦方第二屬性：</label>
+          <select id="calc-def-2">
+            <option value="none" selected>無 (單屬性)</option><option value="normal">一般</option><option value="fire">火</option><option value="water">水</option><option value="electric">電</option><option value="grass">草</option><option value="ice">冰</option><option value="fighting">格鬥</option><option value="poison">毒</option><option value="ground">地面</option><option value="flying">飛行</option><option value="psychic">超能力</option><option value="bug">蟲</option><option value="rock">岩石</option><option value="ghost">幽靈</option><option value="dragon">龍</option><option value="dark">惡</option><option value="steel">鋼</option><option value="fairy">妖精</option>
+          </select>
+        </div>
+
+        <button onclick="calculateDamage()">計算確切傷害與血量比例</button>
+        <div id="calc-result" class="result-section" style="display:none;"></div>
+      </div>
+
     </div>
   </div>
 
@@ -386,19 +436,18 @@
       fairy: { fighting: 2, dragon: 2, dark: 2, fire: 0.5, poison: 0.5, steel: 0.5 }
     };
 
-    // 40 隻完整精準修正的寶可夢與招式情報庫
     const pokemons = [
       { name: "M-噴火龍Y", t1: "fire", t2: "flying", abilities: "日照", powerMoves: ["大字爆炎", "熱風", "陽光烈焰", "氣象球", "龍之波動", "過熱"], priorityMoves: ["電光一閃"], setupMoves: ["羽棲", "順風"] },
       { name: "烈咬陸鯊", t1: "dragon", t2: "ground", abilities: "粗糙皮膚 / 沙隱", powerMoves: ["地震", "逆鱗", "龍爪", "岩石封鎖", "鐵頭", "尖石攻擊"], priorityMoves: ["影襲"], setupMoves: ["劍舞"] },
       { name: "謎擬Ｑ", t1: "ghost", t2: "fairy", abilities: "畫皮", powerMoves: ["嬉鬧", "暗影爪", "戲法", "木槌", "影子偷襲"], priorityMoves: ["影子偷襲"], setupMoves: ["劍舞", "替身"] },
       { name: "快龍", t1: "dragon", t2: "flying", abilities: "多重鱗片 / 精神力", powerMoves: ["逆鱗", "雙翼", "地震", "鐵頭", "火焰拳", "暴風"], priorityMoves: ["神速"], setupMoves: ["龍舞", "羽棲"] },
       { name: "M-巨沼怪", t1: "water", t2: "ground", abilities: "悠游自如", powerMoves: ["地震", "攀瀑", "冷凍拳", "岩崩", "濁流"], priorityMoves: [], setupMoves: ["健美", "隱形岩"] },
-      { name: "魔幻假面喵", t1: "grass", t2: "dark", abilities: "變幻自如 / 深翠魔術", powerMoves: ["千變萬花", "暗襲要害", "嬉鬧", "急速折返", "嬉鬧"], priorityMoves: ["突襲"], setupMoves: ["磨爪"] },
+      { name: "魔幻假面喵", t1: "grass", t2: "dark", abilities: "變幻自如 / 深翠魔術", powerMoves: ["千變萬花", "暗襲要害", "嬉鬧", "急速折返"], priorityMoves: ["突襲"], setupMoves: ["磨爪"] },
       { name: "M-姆克鷹", t1: "fighting", t2: "flying", abilities: "捨身", powerMoves: ["勇鳥猛攻", "近身戰", "報恩", "急速折返"], priorityMoves: ["電光一閃", "音速拳"], setupMoves: ["順風"] },
       { name: "巨金怪", t1: "steel", t2: "psychic", abilities: "清體 / 硬爪", powerMoves: ["思念頭槌", "地震", "雷電拳", "冰凍拳", "鐵頭"], priorityMoves: ["子彈拳"], setupMoves: ["高速移動"] },
       { name: "耿鬼", t1: "ghost", t2: "poison", abilities: "呪術 / 漂浮(舊)", powerMoves: ["暗影球", "污泥炸彈", "十萬伏特", "魔法閃耀", "真氣彈"], priorityMoves: ["奇襲"], setupMoves: ["冥想", "詭計"] },
       { name: "班基拉斯", t1: "rock", t2: "dark", abilities: "沙暴", powerMoves: ["尖石攻擊", "咬碎", "地震", "火焰拳", "冰凍拳"], priorityMoves: ["突襲"], setupMoves: ["龍舞"] },
-      { name: "鋼鎧鴨", t1: "steel", t2: "flying", abilities: "鏡甲 / 壓力", powerMoves: ["鐵頭", "勇鳥猛攻", "撲擊", "body press"], priorityMoves: [], setupMoves: ["鐵壁", "羽棲"] },
+      { name: "鋼鎧鴨", t1: "steel", t2: "flying", abilities: "鏡甲 / 壓力", powerMoves: ["鐵頭", "勇鳥猛攻", "撲擊"], priorityMoves: [], setupMoves: ["鐵壁", "羽棲"] },
       { name: "賽富豪", t1: "steel", t2: "ghost", abilities: "黃金身體", powerMoves: ["淘金潮", "暗影球", "十萬伏特", "氣象球", "真氣彈"], priorityMoves: [], setupMoves: ["詭計", "自我再生"] },
       { name: "鋁鋼橋龍", t1: "dragon", t2: "steel", abilities: "堅韌不拔 / 耐久", powerMoves: ["加農光炮", "流星群", "十萬伏特", "龍之波動", "電光束", "鐵蹄光線"], priorityMoves: [], setupMoves: ["鐵壁", "电磁波"] },
       { name: "劈斬將軍", t1: "dark", t2: "steel", abilities: "不服輸 / 精神力", powerMoves: ["鐵頭", "夜襲", "地獄突刺", "十字剪", "吸血"], priorityMoves: ["突襲"], setupMoves: ["劍舞"] },
@@ -408,7 +457,7 @@
       { name: "美娜斯", t1: "water", t2: "none", abilities: "神奇鱗片 / 競爭", powerMoves: ["熱水", "冰凍光束", "嬉鬧", "濁流"], priorityMoves: [], setupMoves: ["自我再生", "冥想"] },
       { name: "風妖精", t1: "grass", t2: "fairy", abilities: "惡作劇之心", powerMoves: ["月亮力量", "能量球", "暴風"], priorityMoves: [], setupMoves: ["替身", "順風", "催眠粉", "光牆"] },
       { name: "赤焰咆嘯虎", t1: "fire", t2: "dark", abilities: "威嚇", powerMoves: ["閃焰冲鋒", "地獄突刺", "近身戰", "DD金鉤臂", "重磅衝撞"], priorityMoves: ["擊掌奇袭 (Fake Out)"], setupMoves: ["劍舞", "拋下狠話"] },
-      { name: "火焰雞", t1: "fire", t2: "fighting", abilities: "加速", powerMoves: ["閃焰冲鋒", "近身戰", "地震", "岩崩", "閃焰特攻"], priorityMoves: ["電光一閃"], setupMoves: ["劍舞"] },
+      { name: "火焰雞", t1: "fire", t2: "fighting", abilities: "加速", powerMoves: ["閃焰冲鋒", "近身戰", "地震", "岩崩"], priorityMoves: ["電光一閃"], setupMoves: ["劍舞"] },
       { name: "堅盾劍怪", t1: "steel", t2: "ghost", abilities: "戰鬥切換", powerMoves: ["聖劍", "鐵頭", "暗影爪", "加農光炮", "暗影球"], priorityMoves: ["影子偷襲"], setupMoves: ["劍舞", "王者盾牌"] },
       { name: "暴鯉龍", t1: "water", t2: "flying", abilities: "威嚇 / 自信過剩", powerMoves: ["攀瀑", "飛墜特攻", "地震", "冰凍牙", "水流尾"], priorityMoves: [], setupMoves: ["龍舞"] },
       { name: "來悲粗茶", t1: "ghost", t2: "grass", abilities: "熱情款待 / 防彈", powerMoves: ["抹茶攪擊", "暗影球", "能量球"], priorityMoves: [], setupMoves: ["詭計", "破殼"] },
@@ -431,7 +480,6 @@
     ];
 
     window.onload = function() {
-      // 1. 填入第一頁 40 隻按鈕
       const grid = document.getElementById('preset-container');
       pokemons.forEach(p => {
         let btn = document.createElement('button');
@@ -441,7 +489,6 @@
         grid.appendChild(btn);
       });
 
-      // 2. 填入第二頁隊員的 40 隻選擇選單
       for(let i=1; i<=3; i++) {
         let sel = document.getElementById(`team-preset-${i}`);
         pokemons.forEach((p, idx) => {
@@ -452,7 +499,6 @@
         });
       }
 
-      // 3. 填入第四頁 (招式情報庫) 的 40 隻按鈕
       const dexGrid = document.getElementById('dex-container');
       pokemons.forEach((p, idx) => {
         let btn = document.createElement('button');
@@ -481,9 +527,12 @@
       } else if (tab === 'ability') {
         document.querySelectorAll('.tab-btn')[2].classList.add('active');
         document.getElementById('panel-ability').classList.add('active');
-      } else {
+      } else if (tab === 'dex') {
         document.querySelectorAll('.tab-btn')[3].classList.add('active');
         document.getElementById('panel-dex').classList.add('active');
+      } else {
+        document.querySelectorAll('.tab-btn')[4].classList.add('active');
+        document.getElementById('panel-calc').classList.add('active');
       }
     }
 
@@ -533,6 +582,57 @@
           ${p.setupMoves.length > 0 ? p.setupMoves.map(m => `<span class="move-tag setup">📈 ${m}</span>`).join('') : '<span style="color:#888;">無</span>'}
         </div>
       `;
+      resDiv.innerHTML = html;
+    }
+
+    /* 方案B：簡易傷害計算核心函數 */
+    function calculateDamage() {
+      let power = parseFloat(document.getElementById('calc-power').value) || 90;
+      let stageMultiplier = parseFloat(document.getElementById('calc-stage').value) || 1;
+      let def1 = document.getElementById('calc-def-1').value;
+      let def2 = document.getElementById('calc-def-2').value;
+
+      // 假設用泛用的攻擊基準來估算，這裡以假定隨機屬性作為攻擊方對應一般招式（倍率係數以無屬性或同屬加成為基準）
+      // 我們預設以 1 種假設攻擊屬性來對應防禦方計算剋制倍率（以當前選定的防禦方為核心）
+      let resDiv = document.getElementById('calc-result');
+      resDiv.style.display = 'block';
+
+      // 簡易估算傷害公式: 基礎傷害 = (威力 * 能力加成 * 0.8) / 10
+      // 乘以防禦方受到的屬性剋制倍率 (這裡我們檢視所有屬性打過去對該防禦方的最高/最低剋制)
+      
+      let html = `<div class="result-category"><strong>📊 針對該防禦組合 (${typeNames[def1]}${def2 !== 'none' ? '/' + typeNames[def2] : ''}) 的傷害模擬：</strong></div>`;
+      
+      // 計算所有18種攻擊屬性打這個防禦方的傷害預估
+      let damageRows = [];
+      allTypes.forEach(atk => {
+        let mult = getMultiplier(atk, def1, def2);
+        if (mult > 0) {
+          let estimatedDmg = Math.floor((power * stageMultiplier * mult * 0.75));
+          damageRows.push({ atk: atk, mult: mult, dmg: estimatedDmg });
+        } else {
+          damageRows.push({ atk: atk, mult: 0, dmg: 0 });
+        }
+      });
+
+      // 依照傷害高低排序
+      damageRows.sort((a, b) => b.dmg - a.dmg);
+
+      let top3 = damageRows.slice(0, 3);
+      html += `<div style="font-size:0.85rem; color:#555; margin-bottom:6px;">使用威力 <strong>${power}</strong> (強化倍率 <strong>${stageMultiplier}x</strong>) 打擊時的預估效果：</div>`;
+      
+      top3.forEach(item => {
+        let percent = Math.min(100, Math.floor((item.dmg / 150) * 100)); // 假設基準血量 150
+        html += `
+          <div class="calc-box">
+            <span class="type-badge bg-${item.atk}">${typeNames[item.atk]}屬性招式</span> 
+            <span style="font-size:0.85rem; margin-left:6px;">相剋倍率：<strong>${item.mult}x</strong></span>
+            <div style="margin-top:4px; font-size:0.9rem; color:#D35400;">
+              預估傷害值：約 <strong>${item.dmg}</strong> 傷害 (約佔標準 150 血量之 <strong>${percent}%</strong>)
+            </div>
+          </div>
+        `;
+      });
+
       resDiv.innerHTML = html;
     }
 
