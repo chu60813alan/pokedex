@@ -207,7 +207,6 @@
     }
     .dex-btn:hover { background-color: #F39C12; color: white; }
     
-    /* 方案 A：更詳細的招式卡片與特效說明樣式 */
     .move-card {
       background: #FFFFFF;
       border: 1px solid #F39C12;
@@ -267,7 +266,7 @@
       <div class="tab-btn active" onclick="switchTab('defense')">🛡️ 單隻攻防</div>
       <div class="tab-btn" onclick="switchTab('team')">👥 隊伍聯防</div>
       <div class="tab-btn" onclick="switchTab('ability')">✨ 特性影響</div>
-      <div class="tab-btn" onclick="switchTab('dex')">📖 招式情報</div>
+      <div class="tab-btn" onclick="switchTab('dex')">📖 熱門前六招</div>
       <div class="tab-btn" onclick="switchTab('calc')">📊 傷害計算</div>
     </div>
 
@@ -360,16 +359,16 @@
         <div id="ability-result" class="result-section" style="display:none;"></div>
       </div>
 
-      <!-- 分頁四：📖 40 隻寶可夢情報與招式庫 (方案 A：帶詳細威力和副作用說明) -->
+      <!-- 分頁四：📖 40 隻寶可夢前六大熱門常用技能庫 -->
       <div id="panel-dex" class="panel">
-        <h3>寶可夢專屬特性與招式情報庫 (含特效說明)</h3>
-        <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">點擊下方角色，查看其特性、高威力招式（含蓄力/副作用說明）、先制與強化技：</p>
+        <h3>OPGG 環境 Meta 前六大常用技能庫</h3>
+        <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">點擊下方角色，查看其特性與對戰環境中最常用的前 6 大熱門技能（含威力與特效）：</p>
         
         <div class="dex-grid" id="dex-container"></div>
         <div id="dex-result" class="result-section" style="display:none;">請點選上方寶可夢查看詳細情報</div>
       </div>
 
-      <!-- 分頁五：📊 傷害與戰術計算機 (方案 B) -->
+      <!-- 分頁五：📊 傷害與戰術計算機 -->
       <div id="panel-calc" class="panel">
         <h3>簡易戰術傷害與血量估算機</h3>
         <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">輸入招式威力、攻擊方能力階級與雙方屬性，快速估算打落對手的確切傷害與比例：</p>
@@ -442,108 +441,448 @@
       fairy: { fighting: 2, dragon: 2, dark: 2, fire: 0.5, poison: 0.5, steel: 0.5 }
     };
 
-    /* 方案 A 資料庫：每個招式帶有詳細威力與特效文字說明 */
+    /* 40 隻寶可夢清單與 OPGG 環境前六大常用熱門招式庫 */
     const pokemons = [
       { 
-        name: "鋁鋼橋龍", t1: "dragon", t2: "steel", abilities: "堅韌不拔 / 耐久", 
-        powerMoves: [
-          { name: "電光束", desc: "威力 130｜蓄力1回合後發射，自身特攻+1" },
-          { name: "流星群", desc: "威力 110｜強力龍系特攻，使用後自身特攻-2" },
-          { name: "加農光炮", desc: "威力 80｜30%機率降低對手特防" },
-          { name: "十萬伏特", desc: "威力 90｜10%機率使對手陷入麻痺" }
-        ], 
-        priorityMoves: [], 
-        setupMoves: [{ name: "鐵壁", desc: "自身防禦大幅提升 (+2)" }] 
+        name: "M-噴火龍Y", t1: "fire", t2: "flying", abilities: "日照", 
+        topMoves: [
+          { name: "大字爆炎", desc: "威力 110｜高傷害火系本屬特攻，10%機率燒傷" },
+          { name: "熱風", desc: "威力 95｜雙打熱門全體火系攻擊，10%燒傷" },
+          { name: "陽光烈焰", desc: "威力 120｜配合日照特性可免蓄力瞬間發射" },
+          { name: "氣象球", desc: "威力 50(晴天變100)｜天氣啟動時威力翻倍且屬性變更" },
+          { name: "龍之波動", desc: "威力 85｜補打龍系盲點的安定特攻招式" },
+          { name: "羽棲", desc: "變化招式｜回覆自身最大HP的一半，暫時失去飛行屬性" }
+        ]
       },
       { 
         name: "烈咬陸鯊", t1: "dragon", t2: "ground", abilities: "粗糙皮膚 / 沙隱", 
-        powerMoves: [
-          { name: "地震", desc: "威力 100｜地面招牌全體/單體強力輸出" },
-          { name: "逆鱗", desc: "威力 120｜連續攻擊2-3回合後陷入混亂" },
-          { name: "尖石攻擊", desc: "威力 100｜容易擊中要害 (急所率高)" }
-        ], 
-        priorityMoves: [{ name: "影襲", desc: "先制+1｜幽靈系物理先制" }], 
-        setupMoves: [{ name: "劍舞", desc: "自身攻擊大幅提升 (+2)" }] 
-      },
-      { 
-        name: "快龍", t1: "dragon", t2: "flying", abilities: "多重鱗片", 
-        powerMoves: [
-          { name: "逆鱗", desc: "威力 120｜高威力龍系連續輸出" },
-          { name: "暴風", desc: "威力 110｜雨天必中，30%混亂" }
-        ], 
-        priorityMoves: [{ name: "神速", desc: "先制+2｜威力 80，優先度極高的先制物理攻擊" }], 
-        setupMoves: [{ name: "龍舞", desc: "自身攻擊與速度同時提升 (+1)" }] 
-      },
-      { 
-        name: "路卡利歐", t1: "fighting", t2: "steel", abilities: "不屈之心 / 適應力", 
-        powerMoves: [
-          { name: "近身戰", desc: "威力 120｜使用後自身物防與特防各降低 1 階" },
-          { name: "波導彈", desc: "威力 80｜必中攻擊，不受閃避率影響" },
-          { name: "加農光炮", desc: "威力 80｜30%機率降低對手特防" }
-        ], 
-        priorityMoves: [{ name: "神速", desc: "先制+2｜強大泛用先制招式" }], 
-        setupMoves: [{ name: "劍舞", desc: "自身攻擊大幅提升 (+2)" }] 
-      },
-      { 
-        name: "賽富豪", t1: "steel", t2: "ghost", abilities: "黃金身體", 
-        powerMoves: [
-          { name: "淘金潮", desc: "威力 120｜專屬招式，攻擊後自身特攻降低 1 階" },
-          { name: "暗影球", desc: "威力 80｜20%機率降低對手特防" },
-          { name: "十萬伏特", desc: "威力 90｜10%機率麻痺" }
-        ], 
-        priorityMoves: [], 
-        setupMoves: [{ name: "詭計", desc: "自身特攻大幅提升 (+2)" }] 
-      },
-      { 
-        name: "轟雷金剛猩", t1: "grass", t2: "none", abilities: "青草製造者", 
-        powerMoves: [
-          { name: "木槌", desc: "威力 120｜造成巨大傷害，承受1/3反作用力傷害" },
-          { name: "十萬馬力", desc: "威力 95｜強力地面系打點" },
-          { name: "打落", desc: "威力 65｜若對手攜帶道具則威力提升 1.5 倍並拍落道具" }
-        ], 
-        priorityMoves: [{ name: "青草滑梯", desc: "先制+1｜在青草場地中自動變為先制攻擊" }], 
-        setupMoves: [{ name: "劍舞", desc: "自身攻擊大幅提升 (+2)" }] 
-      },
-      { 
-        name: "赤焰咆哮虎", t1: "fire", t2: "dark", abilities: "威嚇", 
-        powerMoves: [
-          { name: "閃焰冲鋒", desc: "威力 120｜火系爆發，承受 1/3 反作用傷，10%燒傷" },
-          { name: "近身戰", desc: "威力 120｜使用後雙防降低 1 階" },
-          { name: "地獄突刺", desc: "威力 80｜使對手 2 回合內無法使用聲音類招式" }
-        ], 
-        priorityMoves: [{ name: "擊掌奇襲", desc: "先制+3｜登場第一回合令目標陷入畏縮狀態" }], 
-        setupMoves: [{ name: "拋下狠話", desc: "降低對手物攻與特攻後強制替換寶可夢出場" }] 
-      },
-      { 
-        name: "沙奈朵", t1: "psychic", t2: "fairy", abilities: "同步 / 妖精皮膚", 
-        powerMoves: [
-          { name: "精神強念", desc: "威力 90｜10%機率降低對手特防" },
-          { name: "月亮力量", desc: "威力 95｜30%機率降低對手特攻" },
-          { name: "十萬伏特", desc: "威力 90｜10%機率麻痺" }
-        ], 
-        priorityMoves: [{ name: "影子偷襲", desc: "先制+1｜補刀用的幽靈先制招式" }], 
-        setupMoves: [{ name: "冥想", desc: "自身特攻與特防同時提升 (+1)" }] 
+        topMoves: [
+          { name: "地震", desc: "威力 100｜地面系標配高威力群體/單體物理輸出" },
+          { name: "逆鱗", desc: "威力 120｜連續攻擊2-3回合的強力龍系爆發" },
+          { name: "劍舞", desc: "變化招式｜自身攻擊大幅提升 2 階，核心強化" },
+          { name: "尖石攻擊", desc: "威力 100｜打擊飛行與冰系弱點，急所率高" },
+          { name: "鐵頭", desc: "威力 80｜打擊妖精與冰系對手的鋼系物理招" },
+          { name: "影襲", desc: "先制+1｜補刀用的先制幽靈招式" }
+        ]
       },
       { 
         name: "謎擬Ｑ", t1: "ghost", t2: "fairy", abilities: "畫皮", 
-        powerMoves: [
-          { name: "嬉鬧", desc: "威力 90｜30%機率降低對手攻擊" },
-          { name: "暗影爪", desc: "威力 70｜容易擊中要害" }
-        ], 
-        priorityMoves: [{ name: "影子偷襲", desc: "先制+1｜幽靈先制招式" }], 
-        setupMoves: [{ name: "劍舞", desc: "自身攻擊大幅提升 (+2)" }] 
+        topMoves: [
+          { name: "嬉鬧", desc: "威力 90｜妖精系主力輸出，30%機率降對手物攻" },
+          { name: "暗影爪", desc: "威力 70｜幽靈本屬穩定攻擊，容易擊中要害" },
+          { name: "影子偷襲", desc: "先制+1｜威力 40，關鍵的幽靈先制補刀神招" },
+          { name: "劍舞", desc: "變化招式｜攻擊大幅提升 2 階，配合畫皮安全強化" },
+          { name: "戲法", desc: "變化招式｜與對手互換攜帶道具，限制對手戰術" },
+          { name: "木槌", desc: "威力 120｜草系強襲，反彈 1/3 傷害" }
+        ]
       },
       { 
-        name: "多龍巴魯托", t1: "dragon", t2: "ghost", abilities: "透明體 / 穿透", 
-        powerMoves: [
-          { name: "龍箭", desc: "威力 50｜連續攻擊兩次，雙打可指定不同目標" },
-          { name: "暗影球", desc: "威力 80｜20%機率降低特防" },
-          { name: "流星群", desc: "威力 110｜使用後自身特攻-2" }
-        ], 
-        priorityMoves: [{ name: "影子偷襲", desc: "先制+1｜先制補刀" }], 
-        setupMoves: [{ name: "龍舞", desc: "自身攻擊與速度提升 (+1)" }] 
+        name: "快龍", t1: "dragon", t2: "flying", abilities: "多重鱗片", 
+        topMoves: [
+          { name: "神速", desc: "先制+2｜威力 80，環境頂級的無盲點物理先制" },
+          { name: "龍舞", desc: "變化招式｜攻擊與速度同時提升 1 階，極度強勢" },
+          { name: "逆鱗", desc: "威力 120｜龍系毀滅性本屬連續攻擊" },
+          { name: "地震", desc: "威力 100｜泛用強力打點物理招式" },
+          { name: "雙翼", desc: "威力 40｜連續攻擊2次，飛行系穩定輸出" },
+          { name: "羽棲", desc: "變化招式｜結合多重鱗片減傷進行高效續航" }
+        ]
+      },
+      { 
+        name: "M-巨沼怪", t1: "water", t2: "ground", abilities: "悠游自如", 
+        topMoves: [
+          { name: "地震", desc: "威力 100｜本屬頂級地面物理輸出" },
+          { name: "攀瀑", desc: "威力 80｜水系本屬物攻，20%機率使對手畏縮" },
+          { name: "冷凍拳", desc: "威力 75｜反制草系與龍系天敵的冰系打點" },
+          { name: "岩崩", desc: "威力 75｜30%機率使對手畏縮的群體岩石技" },
+          { name: "健美", desc: "變化招式｜同時提升攻擊與防禦各 1 階" },
+          { name: "隱形岩", desc: "變化招式｜在對手場地佈置岩釘限制換場" }
+        ]
+      },
+      { 
+        name: "魔幻假面喵", t1: "grass", t2: "dark", abilities: "變幻自如", 
+        topMoves: [
+          { name: "千變萬花", desc: "威力 70｜專屬必中招式且必定擊中要害 (急所)" },
+          { name: "暗襲要害", desc: "威力 70｜惡系本屬，容易擊中要害" },
+          { name: "嬉鬧", desc: "威力 90｜反制格鬥與龍系的妖精打點" },
+          { name: "急速折返", desc: "威力 70｜攻擊後立刻換人，優秀的游擊戰術" },
+          { name: "突襲", desc: "先制+1｜威力 70，對手準備攻擊時可先發制人" },
+          { name: "磨爪", desc: "變化招式｜同時提升攻擊與命中率 1 階" }
+        ]
+      },
+      { 
+        name: "M-姆克鷹", t1: "fighting", t2: "flying", abilities: "捨身", 
+        topMoves: [
+          { name: "勇鳥猛攻", desc: "威力 120｜配合捨身特性具備恐怖破壞力的飛行爆發" },
+          { name: "近身戰", desc: "威力 120｜強力格鬥本屬，使用後雙防下降" },
+          { name: "報恩", desc: "威力 102｜安定的一般系高威力物理輸出" },
+          { name: "急速折返", desc: "威力 70｜攻擊後換防禦核心退場" },
+          { name: "電光一閃", desc: "先制+1｜補刀專用一般先制招式" },
+          { name: "順風", desc: "變化招式｜4回合內大幅提升全隊速度" }
+        ]
+      },
+      { 
+        name: "巨金怪", t1: "steel", t2: "psychic", abilities: "清體 / 硬爪", 
+        topMoves: [
+          { name: "子彈拳", desc: "先制+1｜威力 40，鋼系本屬硬爪加成的強力先制" },
+          { name: "思念頭槌", desc: "威力 80｜超能力本屬物理，20%畏縮" },
+          { name: "地震", desc: "威力 100｜反制火與鋼系的頂級地震打點" },
+          { name: "雷電拳", desc: "威力 75｜打擊水與飛行系的電系打點" },
+          { name: "冰凍拳", desc: "威力 75｜反制龍與地面系的冰系打點" },
+          { name: "高速移動", desc: "變化招式｜速度大幅提升 2 階，搶先手優勢" }
+        ]
+      },
+      { 
+        name: "耿鬼", t1: "ghost", t2: "poison", abilities: "呪術 / 漂浮", 
+        topMoves: [
+          { name: "暗影球", desc: "威力 80｜幽靈本屬核心特攻，20%降特防" },
+          { name: "污泥炸彈", desc: "威力 90｜毒系本屬高威力，30%中毒機率" },
+          { name: "十萬伏特", desc: "威力 90｜打擊水與飛行系的廣泛特攻打點" },
+          { name: "魔法閃耀", desc: "威力 80｜反制惡系與龍系的妖精特攻" },
+          { name: "真氣彈", desc: "威力 120｜高爆發格鬥特攻，打擊鋼與惡系" },
+          { name: "詭計", desc: "變化招式｜特攻大幅提升 2 階，暴力輸出" }
+        ]
+      },
+      { 
+        name: "班基拉斯", t1: "rock", t2: "dark", abilities: "沙暴", 
+        topMoves: [
+          { name: "尖石攻擊", desc: "威力 100｜高爆發岩石本屬物理輸出" },
+          { name: "咬碎", desc: "威力 80｜惡系本屬，20%機率降低對手物防" },
+          { name: "地震", desc: "威力 100｜補足鋼與岩石盲點的地面輸出" },
+          { name: "火焰拳", desc: "威力 75｜反制草與蟲、鋼系的精準火系打點" },
+          { name: "龍舞", desc: "變化招式｜攻擊與速度同時提升 1 階，沙暴下坦度極高" },
+          { name: "突襲", desc: "先制+1｜惡系先制反擊對手" }
+        ]
+      },
+      { 
+        name: "鋼鎧鴨", t1: "steel", t2: "flying", abilities: "鏡甲 / 壓力", 
+        topMoves: [
+          { name: "鐵頭", desc: "威力 80｜鋼系本屬物理，30%畏縮" },
+          { name: "勇鳥猛攻", desc: "威力 120｜飛行系強襲爆發" },
+          { name: "撲擊", desc: "威力 80｜傷害依據自身「防禦力」計算而非攻擊力" },
+          { name: "羽棲", desc: "變化招式｜回血核心，維持聯防坦度" },
+          { name: "鐵壁", desc: "變化招式｜防禦大幅提升 2 階，增幅撲擊傷害" },
+          { name: "順風", desc: "變化招式｜為隊友創造高速環境" }
+        ]
+      },
+      { 
+        name: "賽富豪", t1: "steel", t2: "ghost", abilities: "黃金身體", 
+        topMoves: [
+          { name: "淘金潮", desc: "威力 120｜專屬全體/單體神技，攻擊後特防不減但特攻減1" },
+          { name: "暗影球", desc: "威力 80｜穩定幽靈特攻打點" },
+          { name: "十萬伏特", desc: "威力 90｜反制水與飛行系特攻" },
+          { name: "氣象球", desc: "威力 50(天氣下100)｜環境應變特攻" },
+          { name: "詭計", desc: "變化招式｜特攻提升 2 階，秒人核心" },
+          { name: "自我再生", desc: "變化招式｜回覆 50% HP，極強續航力" }
+        ]
+      },
+      { 
+        name: "鋁鋼橋龍", t1: "dragon", t2: "steel", abilities: "堅韌不拔 / 耐久", 
+        topMoves: [
+          { name: "電光束", desc: "威力 130｜蓄力1回合發射，自身特攻+1，環境爆發核心" },
+          { name: "流星群", desc: "威力 110｜龍系毀滅特攻，使用後特攻-2" },
+          { name: "加農光炮", desc: "威力 80｜鋼系穩定本屬特攻" },
+          { name: "十萬伏特", desc: "威力 90｜10%麻痺，補足電系打點" },
+          { name: "鐵蹄光線", desc: "威力 140｜極限輸出，扣除自身一半HP" },
+          { name: "鐵壁", desc: "變化招式｜防禦大幅提升 2 階" }
+        ]
+      },
+      { 
+        name: "劈斬將軍", t1: "dark", t2: "steel", abilities: "不服輸", 
+        topMoves: [
+          { name: "鐵頭", desc: "威力 80｜鋼系主力物理輸出" },
+          { name: "突襲", desc: "先制+1｜威力 70，惡系強勢先制" },
+          { name: "地獄突刺", desc: "威力 80｜惡系本屬穩定輸出" },
+          { name: "十字剪", desc: "威力 80｜打擊超能力與草系" },
+          { name: "劍舞", desc: "變化招式｜攻擊大幅提升 2 階" },
+          { name: "吸血", desc: "威力 80｜造成傷害的一半轉化為自身HP" }
+        ]
+      },
+      { 
+        name: "蒼炎刃鬼", t1: "fire", t2: "ghost", abilities: "引火", 
+        topMoves: [
+          { name: "悔念劍", desc: "威力 90｜專屬火系物理，將造成傷害的一半回覆自身HP" },
+          { name: "暗影爪", desc: "威力 70｜容易擊中要害的幽靈本屬物攻" },
+          { name: "近身戰", desc: "威力 120｜強攻格鬥打點" },
+          { name: "影襲", desc: "先制+1｜幽靈系先制補刀" },
+          { name: "劍舞", desc: "變化招式｜攻擊提升 2 階" },
+          { name: "精神利刃", desc: "威力 70｜打擊毒與格鬥系" }
+        ]
+      },
+      { 
+        name: "幽尾玄魚", t1: "water", t2: "ghost", abilities: "適者縫合", 
+        topMoves: [
+          { name: "波浪冲", desc: "威力 120｜配合適者縫合與水本屬造成極為恐怖的傷害" },
+          { name: "暗影球", desc: "威力 80｜穩定幽靈特攻輸出" },
+          { name: "水流裂破", desc: "威力 85｜水系穩定物理輸出，20%降防" },
+          { name: "冰凍牙", desc: "威力 65｜打擊草與龍系" },
+          { name: "冥想", desc: "變化招式｜特攻與特防提升 1 階" },
+          { name: "健美", desc: "變化招式｜物攻與物防提升 1 階" }
+        ]
+      },
+      { 
+        name: "勾魂眼", t1: "dark", t2: "ghost", abilities: "惡作劇之心", 
+        topMoves: [
+          { name: "鬼火", desc: "變化招式｜惡作劇之心先制使對手陷入「燒傷」狀態" },
+          { name: "暗影爪", desc: "威力 70｜基本物理輸出" },
+          { name: "暗影球", desc: "威力 80｜基本特攻輸出" },
+          { name: "冥想", desc: "變化招式｜特攻特防雙升" },
+          { name: "回收利用", desc: "變化招式｜循環使用樹果道具" },
+          { name: "突襲", desc: "先制+1｜惡系先制反擊" }
+        ]
+      },
+      { 
+        name: "美娜斯", t1: "water", t2: "none", abilities: "神奇鱗片", 
+        topMoves: [
+          { name: "熱水", desc: "威力 80｜水系核心特攻，30%高機率使對手燒傷" },
+          { name: "冰凍光束", desc: "威力 90｜10%機率冰凍，反制草與龍系" },
+          { name: "自我再生", desc: "變化招式｜回覆 50% HP，極強防守續航" },
+          { name: "冥想", desc: "變化招式｜特攻特防強化" },
+          { name: "濁流", desc: "威力 90｜雙打群體水系攻擊，30%降命中" },
+          { name: "嬉鬧", desc: "威力 90｜妖精打點" }
+        ]
+      },
+      { 
+        name: "風妖精", t1: "grass", t2: "fairy", abilities: "惡作劇之心", 
+        topMoves: [
+          { name: "順風", desc: "變化招式｜惡作劇之心先制開啟全隊加速環境" },
+          { name: "月亮力量", desc: "威力 95｜妖精本屬特攻，30%降特攻" },
+          { name: "替身", desc: "變化招式｜先制製造替身規避異常狀態" },
+          { name: "催眠粉", desc: "變化招式｜先制使對手陷入睡眠" },
+          { name: "能量球", desc: "威力 90｜草系穩定特攻" },
+          { name: "光牆", desc: "變化招式｜減半全隊受到的特殊傷害" }
+        ]
+      },
+      { 
+        name: "赤焰咆嘯虎", t1: "fire", t2: "dark", abilities: "威嚇", 
+        topMoves: [
+          { name: "擊掌奇襲", desc: "先制+3｜雙打神技，登場令對手畏縮" },
+          { name: "拋下狠話", desc: "變化招式｜降對手雙攻後安全退場" },
+          { name: "閃焰冲鋒", desc: "威力 120｜火系強力爆發物攻" },
+          { name: "地獄突刺", desc: "威力 80｜惡系本屬輸出" },
+          { name: "近身戰", desc: "威力 120｜破防格鬥打點" },
+          { name: "重磅衝撞", desc: "威力依體重決定｜鋼系重擊" }
+        ]
+      },
+      { 
+        name: "火焰雞", t1: "fire", t2: "fighting", abilities: "加速", 
+        topMoves: [
+          { name: "閃焰冲鋒", desc: "威力 120｜火系本屬高傷物攻" },
+          { name: "近身戰", desc: "威力 120｜格鬥本屬毀滅打點" },
+          { name: "地震", desc: "威力 100｜反制炎與毒系的地面地震" },
+          { name: "岩崩", desc: "威力 75｜群體岩石控場" },
+          { name: "劍舞", desc: "變化招式｜攻擊大幅提升 2 階" },
+          { name: "電光一閃", desc: "先制+1｜一般先制補刀" }
+        ]
+      },
+      { 
+        name: "堅盾劍怪", t1: "steel", t2: "ghost", abilities: "戰鬥切換", 
+        topMoves: [
+          { name: "王者盾牌", desc: "變化招式｜先制防禦攻擊並大幅降低攻擊者的物攻 2 階" },
+          { name: "聖劍", desc: "威力 90｜忽略對手防禦與閃避階級加成" },
+          { name: "鐵頭", desc: "威力 80｜鋼系本屬強擊" },
+          { name: "影子偷襲", desc: "先制+1｜幽靈先制補刀" },
+          { name: "劍舞", desc: "變化招式｜攻擊大幅提升 2 階" },
+          { name: "加農光炮", desc: "威力 80｜特殊型態鋼系輸出" }
+        ]
+      },
+      { 
+        name: "暴鯉龍", t1: "water", t2: "flying", abilities: "威嚇", 
+        topMoves: [
+          { name: "龍舞", desc: "變化招式｜攻擊與速度同時提升 1 階，推隊核心" },
+          { name: "攀瀑", desc: "威力 80｜水系本屬，20%畏縮" },
+          { name: "飛墜特攻", desc: "威力 85｜飛行系本屬強力物理衝撞" },
+          { name: "地震", desc: "威力 100｜補足電系盲點的地震打點" },
+          { name: "冰凍牙", desc: "威力 65｜反制草與龍系" },
+          { name: "水流尾", desc: "威力 90｜高威力水系物理" }
+        ]
+      },
+      { 
+        name: "來悲粗茶", t1: "ghost", t2: "grass", abilities: "熱情款待", 
+        topMoves: [
+          { name: "抹茶攪擊", desc: "威力 80｜草系特攻，同時回覆自身 HP" },
+          { name: "暗影球", desc: "威力 80｜幽靈本屬特攻" },
+          { name: "破殼", desc: "變化招式｜雙防各降1階，但雙攻與速度大幅提升 2 階" },
+          { name: "能量球", desc: "威力 90｜草系穩定特攻" },
+          { name: "詭計", desc: "變化招式｜特攻提升 2 階" },
+          { name: "吸取拳", desc: "威力 75｜回血格鬥技" }
+        ]
+      },
+      { 
+        name: "多龍巴魯托", t1: "dragon", t2: "ghost", abilities: "透明體", 
+        topMoves: [
+          { name: "龍箭", desc: "威力 50｜連續攻擊兩次，雙打神技" },
+          { name: "暗影球", desc: "威力 80｜穩定幽靈特攻" },
+          { name: "十萬伏特", desc: "威力 90｜廣域特攻打點" },
+          { name: "流星群", desc: "威力 110｜龍系爆發特攻" },
+          { name: "影子偷襲", desc: "先制+1｜幽靈先制補刀" },
+          { name: "龍舞", desc: "變化招式｜雙向強化推隊" }
+        ]
+      },
+      { 
+        name: "沙奈朵", t1: "psychic", t2: "fairy", abilities: "妖精皮膚", 
+        topMoves: [
+          { name: "月亮力量", desc: "威力 95｜妖精本屬特攻，30%降特攻" },
+          { name: "精神強念", desc: "威力 90｜超能力本屬特攻" },
+          { name: "十萬伏特", desc: "威力 90｜廣域特攻打點" },
+          { name: "暗影球", desc: "威力 80｜反制鋼與幽靈系" },
+          { name: "冥想", desc: "變化招式｜特攻特防雙升" },
+          { name: "影子偷襲", desc: "先制+1｜幽靈先制" }
+        ]
+      },
+      { 
+        name: "黏美路龍", t1: "dragon", t2: "none", abilities: "食草", 
+        topMoves: [
+          { name: "龍之波動", desc: "威力 85｜穩定龍系特攻" },
+          { name: "冰凍光束", desc: "威力 90｜反制冰龍系天敵" },
+          { name: "火焰放射", desc: "威力 90｜反制鋼系特攻打點" },
+          { name: "濁流", desc: "威力 90｜水系特攻，30%降命中" },
+          { name: "十萬伏特", desc: "威力 90｜電系特攻打點" },
+          { name: "溶化", desc: "變化招式｜防禦大幅提升 2 階" }
+        ]
+      },
+      { 
+        name: "暴飛龍", t1: "dragon", t2: "flying", abilities: "威嚇", 
+        topMoves: [
+          { name: "逆鱗", desc: "威力 120｜龍系強力爆發物攻" },
+          { name: "地震", desc: "威力 100｜地面強襲" },
+          { name: "捨身衝撞", desc: "威力 120｜高威力物理衝撞" },
+          { name: "大字爆炎", desc: "威力 110｜反制鋼系奇襲特攻" },
+          { name: "龍舞", desc: "變化招式｜攻擊速度雙升" },
+          { name: "電光一閃", desc: "先制+1｜先制補刀" }
+        ]
+      },
+      { 
+        name: "巨鍛匠", t1: "fairy", t2: "steel", abilities: "破格", 
+        topMoves: [
+          { name: "巨力錘", desc: "威力 160｜專屬極高威力鋼系物理，但連續使用會失敗" },
+          { name: "嬉鬧", desc: "威力 90｜妖精本屬穩定輸出" },
+          { name: "加農光炮", desc: "威力 80｜特殊鋼系打點" },
+          { name: "擊落", desc: "威力 50｜擊落飛行對手" },
+          { name: "劍舞", desc: "變化招式｜攻擊大幅提升 2 階" },
+          { name: "電磁波", desc: "變化招式｜使對手陷入麻痺狀態" }
+        ]
+      },
+      { 
+        name: "路卡利歐", t1: "fighting", t2: "steel", abilities: "適應力", 
+        topMoves: [
+          { name: "近身戰", desc: "威力 120｜配合適應力特性造成恐怖的格鬥爆發" },
+          { name: "波導彈", desc: "威力 80｜必中格鬥特攻" },
+          { name: "加農光炮", desc: "威力 80｜鋼系本屬特攻" },
+          { name: "神速", desc: "先制+2｜強大泛用物理先制" },
+          { name: "地震", desc: "威力 100｜地面打點" },
+          { name: "劍舞", desc: "變化招式｜物攻大幅提升 2 階" }
+        ]
+      },
+      { 
+        name: "仙子伊布", t1: "fairy", t2: "none", abilities: "妖精皮膚", 
+        topMoves: [
+          { name: "巨聲", desc: "威力 90｜經妖精皮膚轉化為極強的妖精系群體/單體爆發" },
+          { name: "月亮力量", desc: "威力 95｜穩定妖精單體特攻" },
+          { name: "影子球", desc: "威力 80｜反制鋼與毒系" },
+          { name: "十萬伏特", desc: "威力 90｜電系特攻打點" },
+          { name: "冥想", desc: "變化招式｜特攻特防雙向強化" },
+          { name: "電光一閃", desc: "先制+1｜一般先制" }
+        ]
+      },
+      { 
+        name: "風速狗", t1: "fire", t2: "none", abilities: "威嚇", 
+        topMoves: [
+          { name: "神速", desc: "先制+2｜威力 80，風速狗標配強悍物理先制" },
+          { name: "閃焰冲鋒", desc: "威力 120｜火系本屬高傷爆發" },
+          { name: "近身戰", desc: "威力 120｜格鬥打點破岩石與惡系" },
+          { name: "嬉鬧", desc: "威力 90｜反制龍系天敵" },
+          { name: "鬼火", desc: "變化招式｜使對手燒傷降低物攻" },
+          { name: "朝陽", desc: "變化招式｜回覆自身 HP 進行續航" }
+        ]
+      },
+      { 
+        name: "棄世猴", t1: "fighting", t2: "ghost", abilities: "憤怒拳", 
+        topMoves: [
+          { name: "憤怒拳", desc: "威力 50(受傷累積威力)｜每次受傷威力疊加，環境極具壓迫感的神技" },
+          { name: "近身戰", desc: "威力 120｜格鬥本屬暴力輸出" },
+          { name: "暗影爪", desc: "威力 70｜穩定幽靈物理打點" },
+          { name: "岩石封鎖", desc: "威力 55｜命中後必定降低對手速度 1 階" },
+          { name: "健美", desc: "變化招式｜物攻物防雙升" },
+          { name: "影襲", desc: "先制+1｜幽靈先制" }
+        ]
+      },
+      { 
+        name: "大鋼蛇", t1: "steel", t2: "ground", abilities: "結實", 
+        topMoves: [
+          { name: "地震", desc: "威力 100｜地面本屬強擊" },
+          { name: "重磅衝撞", desc: "威力依體重決定｜極高重量造成毀滅性鋼系傷害" },
+          { name: "岩崩", desc: "威力 75｜岩石群體打點" },
+          { name: "冰凍牙", desc: "威力 65｜反制草與龍系" },
+          { name: "鐵壁", desc: "變化招式｜防禦大幅提升 2 階" },
+          { name: "詛咒", desc: "變化招式｜降速換取物攻物防大增" }
+        ]
+      },
+      { 
+        name: "巨鉗螳螂", t1: "bug", t2: "steel", abilities: "技術高手", 
+        topMoves: [
+          { name: "子彈拳", desc: "先制+1｜威力 40(受技術高手加成達60)｜環境頂級鋼系先制神技" },
+          { name: "近身戰", desc: "威力 120｜打破盲點的強襲格鬥招" },
+          { name: "十字剪", desc: "威力 80｜蟲系本屬物攻" },
+          { name: "意念頭槌", desc: "威力 80｜超能力系打點" },
+          { name: "劍舞", desc: "變化招式｜攻擊大幅提升 2 階，子彈拳直接清場" },
+          { name: "燕返", desc: "威力 60(技術高手加成)｜必中飛行技" }
+        ]
+      },
+      { 
+        name: "帝王拿波", t1: "water", t2: "steel", abilities: "不服輸", 
+        topMoves: [
+          { name: "熱水", desc: "威力 80｜水系特攻，30%燒傷" },
+          { name: "加農光炮", desc: "威力 80｜鋼系本屬特攻，30%降特防" },
+          { name: "冰凍光束", desc: "威力 90｜反制草龍系" },
+          { name: "衝浪", desc: "威力 90｜穩定水系特攻" },
+          { name: "水流噴射", desc: "先制+1｜水系物理先制補刀" },
+          { name: "高速移動", desc: "變化招式｜速度大幅提升" }
+        ]
+      },
+      { 
+        name: "轟雷金剛猩", t1: "grass", t2: "none", abilities: "青草製造者", 
+        topMoves: [
+          { name: "青草滑梯", desc: "先制+1｜威力 70，配合青草場地變為極強先制草招" },
+          { name: "木槌", desc: "威力 120｜高爆發草系輸出" },
+          { name: "十萬馬力", desc: "威力 95｜地面打點" },
+          { name: "打落", desc: "威力 65｜拍落對手道具" },
+          { name: "吸取拳", desc: "威力 75｜攻擊並回血" },
+          { name: "劍舞", desc: "變化招式｜攻擊大幅提升 2 階" }
+        ]
+      },
+      { 
+        name: "大嘴鷗", t1: "water", t2: "flying", abilities: "降雨", 
+        topMoves: [
+          { name: "暴風", desc: "威力 110｜雨天必中，極為暴力的飛行特攻" },
+          { name: "衝浪", desc: "威力 90｜雨天加成的水系本屬特攻" },
+          { name: "水炮", desc: "威力 110｜雨天極限水系爆發" },
+          { name: "氣象球", desc: "威力 50(雨天翻倍達100)｜優秀打點" },
+          { name: "順風", desc: "變化招式｜開啟全隊加速" },
+          { name: "羽棲", desc: "變化招式｜自我回血" }
+        ]
+      },
+      { 
+        name: "大電海燕", t1: "electric", t2: "flying", abilities: "蓄電", 
+        topMoves: [
+          { name: "暴風", desc: "威力 110｜高傷害飛行特攻" },
+          { name: "十萬伏特", desc: "威力 90｜電系本屬穩定特攻" },
+          { name: "伏特替換", desc: "威力 70｜攻擊後立刻換人游擊" },
+          { name: "氣象球", desc: "威力 50｜環境應變技" },
+          { name: "順風", desc: "變化招式｜為隊友鋪陳速度優勢" },
+          { name: "高速移動", desc: "變化招式｜大幅提升自身速度" }
+        ]
+      },
+      { 
+        name: "倫琴貓", t1: "electric", t2: "none", abilities: "威嚇", 
+        topMoves: [
+          { name: "瘋伏特", desc: "威力 90｜電系強力物理，承受 1/4 反作用傷" },
+          { name: "近身戰", desc: "威力 120｜破防格鬥打點" },
+          { name: "冰凍牙", desc: "威力 65｜反制地面與龍系" },
+          { name: "嬉鬧", desc: "威力 90｜反制龍系天敵" },
+          { name: "充電", desc: "變化招式｜特防提升並使下一招電系威力加倍" },
+          { name: "電磁波", desc: "變化招式｜使對手麻痺" }
+        ]
       }
-      /* 其餘角色可依此類推擴充 */
     ];
 
     window.onload = function() {
@@ -617,7 +956,7 @@
       document.getElementById(`team-${i}-2`).value = p.t2;
     }
 
-    /* 方案 A 渲染邏輯：顯示每個招式的詳細威力與副作用 */
+    /* OPGG 前六大熱門常用技能渲染邏輯 */
     function showPokemonDex(idx) {
       let p = pokemons[idx];
       let resDiv = document.getElementById('dex-result');
@@ -628,23 +967,9 @@
         typeText += ` <span class="type-badge bg-${p.t2}">${typeNames[p.t2]}</span>`;
       }
 
-      let powerHtml = p.powerMoves.length > 0 ? p.powerMoves.map(m => `
+      let movesHtml = p.topMoves.length > 0 ? p.topMoves.map(m => `
         <div class="move-card">
-          <div class="move-name">💥 ${m.name}</div>
-          <div class="move-desc">${m.desc}</div>
-        </div>
-      `).join('') : '<span style="color:#888;">無</span>';
-
-      let prioHtml = p.priorityMoves.length > 0 ? p.priorityMoves.map(m => `
-        <div class="move-card" style="border-color:#E74C3C;">
-          <div class="move-name" style="color:#C0392B;">⚡ ${m.name}</div>
-          <div class="move-desc">${m.desc}</div>
-        </div>
-      `).join('') : '<span style="color:#888;">無</span>';
-
-      let setupHtml = p.setupMoves.length > 0 ? p.setupMoves.map(m => `
-        <div class="move-card" style="border-color:#2980B9;">
-          <div class="move-name" style="color:#2980B9;">📈 ${m.name}</div>
+          <div class="move-name">🔥 ${m.name}</div>
           <div class="move-desc">${m.desc}</div>
         </div>
       `).join('') : '<span style="color:#888;">無</span>';
@@ -659,16 +984,8 @@
           <span style="color:#D35400; font-weight:bold;">${p.abilities}</span>
         </div>
         <div class="result-category">
-          <strong>💥 核心輸出招式與詳細特效：</strong>
-          ${powerHtml}
-        </div>
-        <div class="result-category">
-          <strong>⚡ 先制招式：</strong>
-          ${prioHtml}
-        </div>
-        <div class="result-category">
-          <strong>📈 強力強化與變化招式：</strong>
-          ${setupHtml}
+          <strong>🏆 OPGG 環境前六大常用熱門技能與特效：</strong>
+          ${movesHtml}
         </div>
       `;
       resDiv.innerHTML = html;
