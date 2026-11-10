@@ -17,7 +17,7 @@
     }
     .container {
       width: 100%;
-      max-width: 650px;
+      max-width: 680px;
     }
     .header {
       display: flex;
@@ -99,12 +99,13 @@
     .panel { display: none; }
     .panel.active { display: block; }
     
+    /* 40隻熱門寶可夢網格 (可滾動) */
     .preset-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 6px;
       margin-bottom: 12px;
-      max-height: 150px;
+      max-height: 180px;
       overflow-y: auto;
       padding-right: 4px;
     }
@@ -154,12 +155,8 @@
       padding: 8px;
       border-radius: 8px;
       margin-bottom: 8px;
-      display: flex;
-      gap: 8px;
     }
-    .team-slot select { font-size: 0.9rem; padding: 4px; }
 
-    /* 全新美化的盲點聯防卡片 */
     .weakness-card {
       background: #FFFFFF;
       padding: 10px;
@@ -225,37 +222,11 @@
 
     <div class="tool-box">
       
-      <!-- 分頁一 -->
+      <!-- 分頁一：單隻攻防 (40隻快捷按鈕) -->
       <div id="panel-defense" class="panel active">
         <h3>單隻寶可夢防禦與進攻分析</h3>
-        <label>🔥 快速載入 25 隻熱門寶可夢：</label>
-        <div class="preset-grid">
-          <button class="preset-btn" onclick="loadPreset('fire', 'flying')">M-噴火龍Y</button>
-          <button class="preset-btn" onclick="loadPreset('dragon', 'ground')">烈咬陸鯊</button>
-          <button class="preset-btn" onclick="loadPreset('ghost', 'fairy')">謎擬Ｑ</button>
-          <button class="preset-btn" onclick="loadPreset('dragon', 'flying')">快龍</button>
-          <button class="preset-btn" onclick="loadPreset('water', 'ground')">M-巨沼怪</button>
-          <button class="preset-btn" onclick="loadPreset('grass', 'dark')">魔幻假面喵</button>
-          <button class="preset-btn" onclick="loadPreset('fighting', 'flying')">M-姆克鷹</button>
-          <button class="preset-btn" onclick="loadPreset('steel', 'psychic')">巨金怪</button>
-          <button class="preset-btn" onclick="loadPreset('ghost', 'poison')">耿鬼</button>
-          <button class="preset-btn" onclick="loadPreset('rock', 'dark')">班基拉斯</button>
-          <button class="preset-btn" onclick="loadPreset('steel', 'flying')">鋼鎧鴨</button>
-          <button class="preset-btn" onclick="loadPreset('steel', 'ghost')">賽富豪</button>
-          <button class="preset-btn" onclick="loadPreset('dragon', 'steel')">鋁鋼橋龍</button>
-          <button class="preset-btn" onclick="loadPreset('dark', 'steel')">劈斬將軍</button>
-          <button class="preset-btn" onclick="loadPreset('fire', 'ghost')">蒼炎刃鬼</button>
-          <button class="preset-btn" onclick="loadPreset('water', 'ghost')">幽尾玄魚</button>
-          <button class="preset-btn" onclick="loadPreset('dark', 'ghost')">勾魂眼</button>
-          <button class="preset-btn" onclick="loadPreset('water', 'none')">美娜斯</button>
-          <button class="preset-btn" onclick="loadPreset('grass', 'fairy')">風妖精</button>
-          <button class="preset-btn" onclick="loadPreset('fire', 'dark')">赤焰咆嘯虎</button>
-          <button class="preset-btn" onclick="loadPreset('fire', 'fighting')">火焰雞</button>
-          <button class="preset-btn" onclick="loadPreset('steel', 'ghost')">堅盾劍怪</button>
-          <button class="preset-btn" onclick="loadPreset('water', 'flying')">暴鯉龍</button>
-          <button class="preset-btn" onclick="loadPreset('ghost', 'grass')">來悲粗茶</button>
-          <button class="preset-btn" onclick="loadPreset('dragon', 'ghost')">多龍巴魯托</button>
-        </div>
+        <label>🔥 快速載入 40 隻熱門寶可夢：</label>
+        <div class="preset-grid" id="preset-container"></div>
 
         <div class="form-group">
           <label>防禦方 - 第一屬性：</label>
@@ -273,34 +244,41 @@
         <div id="defense-result" class="result-section" style="display:none;"></div>
       </div>
 
-      <!-- 分頁二：👥 隊伍盲點與聯防分析 -->
+      <!-- 分頁二：隊伍盲點與聯防 (支援40隻快速選擇) -->
       <div id="panel-team" class="panel">
         <h3>多隻寶可夢隊伍盲點與聯防分析</h3>
-        <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">設定你的 3 隻隊員組合，系統將統計弱點並自動尋找隊中能幫忙「聯防扛傷」的隊友：</p>
+        <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">設定你的 3 隻隊員（可直接從 40 隻熱門寶可夢中選擇，或自訂屬性）：</p>
         
         <div id="team-slots-container">
+          <!-- 動態產生 3 個隊員設定 -->
           <script>
             for(let i=1; i<=3; i++) {
               document.write(`
                 <div class="team-slot">
-                  <span style="font-weight:bold; font-size:0.9rem; align-self:center;">隊員${i}</span>
-                  <select id="team-${i}-1" style="flex:1;">
-                    <option value="normal">一般</option><option value="fire">火</option><option value="water">水</option><option value="electric">電</option><option value="grass">草</option><option value="ice">冰</option><option value="fighting">格鬥</option><option value="poison">毒</option><option value="ground">地面</option><option value="flying">飛行</option><option value="psychic">超能力</option><option value="bug">蟲</option><option value="rock">岩石</option><option value="ghost">幽靈</option><option value="dragon">龍</option><option value="dark">惡</option><option value="steel">鋼</option><option value="fairy">妖精</option>
-                  </select>
-                  <select id="team-${i}-2" style="flex:1;">
-                    <option value="none">單屬性</option><option value="normal">一般</option><option value="fire">火</option><option value="water">水</option><option value="electric">電</option><option value="grass">草</option><option value="ice">冰</option><option value="fighting">格鬥</option><option value="poison">毒</option><option value="ground">地面</option><option value="flying">飛行</option><option value="psychic">超能力</option><option value="bug">蟲</option><option value="rock">岩石</option><option value="ghost">幽靈</option><option value="dragon">龍</option><option value="dark">惡</option><option value="steel">鋼</option><option value="fairy">妖精</option>
-                  </select>
+                  <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                    <span style="font-weight:bold; font-size:0.9rem;">隊員 ${i}</span>
+                    <select id="team-preset-${i}" onchange="applyTeamPreset(${i})" style="width: 160px; font-size:0.8rem; padding:2px;">
+                      <option value="">-- 選擇 40 隻熱門角色 --</option>
+                    </select>
+                  </div>
+                  <div style="display:flex; gap:6px;">
+                    <select id="team-${i}-1" style="flex:1;">
+                      <option value="normal">一般</option><option value="fire">火</option><option value="water">水</option><option value="electric">電</option><option value="grass">草</option><option value="ice">冰</option><option value="fighting">格鬥</option><option value="poison">毒</option><option value="ground">地面</option><option value="flying">飛行</option><option value="psychic">超能力</option><option value="bug">蟲</option><option value="rock">岩石</option><option value="ghost">幽靈</option><option value="dragon">龍</option><option value="dark">惡</option><option value="steel">鋼</option><option value="fairy">妖精</option>
+                    </select>
+                    <select id="team-${i}-2" style="flex:1;">
+                      <option value="none">單屬性</option><option value="normal">一般</option><option value="fire">火</option><option value="water">水</option><option value="electric">電</option><option value="grass">草</option><option value="ice">冰</option><option value="fighting">格鬥</option><option value="poison">毒</option><option value="ground">地面</option><option value="flying">飛行</option><option value="psychic">超能力</option><option value="bug">蟲</option><option value="rock">岩石</option><option value="ghost">幽靈</option><option value="dragon">龍</option><option value="dark">惡</option><option value="steel">鋼</option><option value="fairy">妖精</option>
+                    </select>
+                  </div>
                 </div>
               `);
             }
           </script>
         </div>
-        <!-- 注意這裡的按鈕文字已更新為全新名稱 -->
         <button onclick="analyzeTeamWeakness()">分析全隊盲點與聯防</button>
         <div id="team-result" class="result-section" style="display:none;"></div>
       </div>
 
-      <!-- 分頁三 -->
+      <!-- 分頁三：特性影響 -->
       <div id="panel-ability" class="panel">
         <h3>特性能力對防禦抗性的影響</h3>
         <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">選擇寶可夢原本屬性，並套用對戰特殊特性來即時修正防禦結果：</p>
@@ -366,6 +344,74 @@
       fairy: { fighting: 2, dragon: 2, dark: 2, fire: 0.5, poison: 0.5, steel: 0.5 }
     };
 
+    // 完整的 40 隻寶可夢清單與屬性對應
+    const pokemons = [
+      { name: "M-噴火龍Y", t1: "fire", t2: "flying" },
+      { name: "烈咬陸鯊", t1: "dragon", t2: "ground" },
+      { name: "謎擬Ｑ", t1: "ghost", t2: "fairy" },
+      { name: "快龍", t1: "dragon", t2: "flying" },
+      { name: "M-巨沼怪", t1: "water", t2: "ground" },
+      { name: "魔幻假面喵", t1: "grass", t2: "dark" },
+      { name: "M-姆克鷹", t1: "fighting", t2: "flying" },
+      { name: "巨金怪", t1: "steel", t2: "psychic" },
+      { name: "耿鬼", t1: "ghost", t2: "poison" },
+      { name: "班基拉斯", t1: "rock", t2: "dark" },
+      { name: "鋼鎧鴨", t1: "steel", t2: "flying" },
+      { name: "賽富豪", t1: "steel", t2: "ghost" },
+      { name: "鋁鋼橋龍", t1: "dragon", t2: "steel" },
+      { name: "劈斬將軍", t1: "dark", t2: "steel" },
+      { name: "蒼炎刃鬼", t1: "fire", t2: "ghost" },
+      { name: "幽尾玄魚", t1: "water", t2: "ghost" },
+      { name: "勾魂眼", t1: "dark", t2: "ghost" },
+      { name: "美娜斯", t1: "water", t2: "none" },
+      { name: "風妖精", t1: "grass", t2: "fairy" },
+      { name: "赤焰咆嘯虎", t1: "fire", t2: "dark" },
+      { name: "火焰雞", t1: "fire", t2: "fighting" },
+      { name: "堅盾劍怪", t1: "steel", t2: "ghost" },
+      { name: "暴鯉龍", t1: "water", t2: "flying" },
+      { name: "來悲粗茶", t1: "ghost", t2: "grass" },
+      { name: "多龍巴魯托", t1: "dragon", t2: "ghost" },
+      { name: "沙奈朵", t1: "psychic", t2: "fairy" },
+      { name: "黏美路龍", t1: "dragon", t2: "none" },
+      { name: "暴飛龍", t1: "dragon", t2: "flying" },
+      { name: "巨鍛匠", t1: "fairy", t2: "steel" },
+      { name: "路卡利歐", t1: "fighting", t2: "steel" },
+      { name: "仙子伊布", t1: "fairy", t2: "none" },
+      { name: "風速狗", t1: "fire", t2: "none" },
+      { name: "棄世猴", t1: "fighting", t2: "ghost" },
+      { name: "大鋼蛇", t1: "steel", t2: "ground" },
+      { name: "巨鉗螳螂", t1: "bug", t2: "steel" },
+      { name: "帝王拿波", t1: "water", t2: "steel" },
+      { name: "轟雷金剛猩", t1: "grass", t2: "none" },
+      { name: "大嘴鷗", t1: "water", t2: "flying" },
+      { name: "大電海燕", t1: "electric", t2: "flying" },
+      { name: "倫琴貓", t1: "electric", t2: "none" }
+    ];
+
+    // 初始化頁面上的快捷按鈕與下拉選單
+    window.onload = function() {
+      // 1. 填入第一頁的 40 隻按鈕
+      const grid = document.getElementById('preset-container');
+      pokemons.forEach(p => {
+        let btn = document.createElement('button');
+        btn.className = 'preset-btn';
+        btn.innerText = p.name;
+        btn.onclick = () => loadPreset(p.t1, p.t2);
+        grid.appendChild(btn);
+      });
+
+      // 2. 填入第二頁隊員的 40 隻選擇選單
+      for(let i=1; i<=3; i++) {
+        let sel = document.getElementById(`team-preset-${i}`);
+        pokemons.forEach((p, idx) => {
+          let opt = document.createElement('option');
+          opt.value = idx;
+          opt.innerText = p.name;
+          sel.appendChild(opt);
+        });
+      }
+    };
+
     function getMultiplier(atk, def1, def2) {
       let m1 = (chart[atk] && chart[atk][def1] !== undefined) ? chart[atk][def1] : 1;
       let m2 = (def2 !== 'none' && chart[atk] && chart[atk][def2] !== undefined) ? chart[atk][def2] : 1;
@@ -391,6 +437,14 @@
       document.getElementById('def-1').value = t1;
       document.getElementById('def-2').value = t2;
       analyzeDefense();
+    }
+
+    function applyTeamPreset(i) {
+      let idx = document.getElementById(`team-preset-${i}`).value;
+      if(idx === "") return;
+      let p = pokemons[idx];
+      document.getElementById(`team-${i}-1`).value = p.t1;
+      document.getElementById(`team-${i}-2`).value = p.t2;
     }
 
     function analyzeDefense() {
