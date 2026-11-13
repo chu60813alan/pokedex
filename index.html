@@ -234,7 +234,6 @@
       margin-top: 10px;
     }
 
-    /* 3v3 對戰模擬專用樣式 */
     .battle-arena {
       background: #FFF;
       border: 1px solid #F39C12;
@@ -305,7 +304,6 @@
       gap: 4px;
     }
 
-    /* 屬性色彩標章 */
     .bg-normal { background-color: #A8A878; }
     .bg-fire { background-color: #F08030; }
     .bg-water { background-color: #6890F0; }
@@ -372,28 +370,56 @@
         <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">設定你的 3 隻隊員（可直接從 40 隻熱門寶可夢中選擇，或自訂屬性）：</p>
         
         <div id="team-slots-container">
-          <script>
-            for(let i=1; i<=3; i++) {
-              document.write(`
-                <div class="team-slot">
-                  <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-                    <span style="font-weight:bold; font-size:0.9rem;">隊員 ${i}</span>
-                    <select id="team-preset-${i}" onchange="applyTeamPreset(${i})" style="width: 160px; font-size:0.8rem; padding:2px;">
-                      <option value="">-- 選擇 40 隻熱門角色 --</option>
-                    </select>
-                  </div>
-                  <div style="display:flex; gap:6px;">
-                    <select id="team-${i}-1" style="flex:1;">
-                      <option value="normal">一般</option><option value="fire">火</option><option value="water">水</option><option value="electric">電</option><option value="grass">草</option><option value="ice">冰</option><option value="fighting">格鬥</option><option value="poison">毒</option><option value="ground">地面</option><option value="flying">飛行</option><option value="psychic">超能力</option><option value="bug">蟲</option><option value="rock">岩石</option><option value="ghost">幽靈</option><option value="dragon">龍</option><option value="dark">惡</option><option value="steel">鋼</option><option value="fairy">妖精</option>
-                    </select>
-                    <select id="team-${i}-2" style="flex:1;">
-                      <option value="none">單屬性</option><option value="normal">一般</option><option value="fire">火</option><option value="water">水</option><option value="electric">電</option><option value="grass">草</option><option value="ice">冰</option><option value="fighting">格鬥</option><option value="poison">毒</option><option value="ground">地面</option><option value="flying">飛行</option><option value="psychic">超能力</option><option value="bug">蟲</option><option value="rock">岩石</option><option value="ghost">幽靈</option><option value="dragon">龍</option><option value="dark">惡</option><option value="steel">鋼</option><option value="fairy">妖精</option>
-                    </select>
-                  </div>
-                </div>
-              `);
-            }
-          </script>
+          <div class="team-slot">
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+              <span style="font-weight:bold; font-size:0.9rem;">隊員 1</span>
+              <select id="team-preset-1" onchange="applyTeamPreset(1)" style="width: 160px; font-size:0.8rem; padding:2px;">
+                <option value="">-- 選擇 40 隻熱門角色 --</option>
+              </select>
+            </div>
+            <div style="display:flex; gap:6px;">
+              <select id="team-1-1" style="flex:1;">
+                <option value="normal">一般</option><option value="fire">火</option><option value="water">水</option><option value="electric">電</option><option value="grass">草</option><option value="ice">冰</option><option value="fighting">格鬥</option><option value="poison">毒</option><option value="ground">地面</option><option value="flying">飛行</option><option value="psychic">超能力</option><option value="bug">蟲</option><option value="rock">岩石</option><option value="ghost">幽靈</option><option value="dragon">龍</option><option value="dark">惡</option><option value="steel">鋼</option><option value="fairy">妖精</option>
+              </select>
+              <select id="team-1-2" style="flex:1;">
+                <option value="none">單屬性</option><option value="normal">一般</option><option value="fire">火</option><option value="water">水</option><option value="electric">電</option><option value="grass">草</option><option value="ice">冰</option><option value="fighting">格鬥</option><option value="poison">毒</option><option value="ground">地面</option><option value="flying">飛行</option><option value="psychic">超能力</option><option value="bug">蟲</option><option value="rock">岩石</option><option value="ghost">幽靈</option><option value="dragon">龍</option><option value="dark">惡</option><option value="steel">鋼</option><option value="fairy">妖精</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="team-slot">
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+              <span style="font-weight:bold; font-size:0.9rem;">隊員 2</span>
+              <select id="team-preset-2" onchange="applyTeamPreset(2)" style="width: 160px; font-size:0.8rem; padding:2px;">
+                <option value="">-- 選擇 40 隻熱門角色 --</option>
+              </select>
+            </div>
+            <div style="display:flex; gap:6px;">
+              <select id="team-2-1" style="flex:1;">
+                <option value="normal">一般</option><option value="fire">火</option><option value="water">水</option><option value="electric">電</option><option value="grass">草</option><option value="ice">冰</option><option value="fighting">格鬥</option><option value="poison">毒</option><option value="ground">地面</option><option value="flying">飛行</option><option value="psychic">超能力</option><option value="bug">蟲</option><option value="rock">岩石</option><option value="ghost">幽靈</option><option value="dragon">龍</option><option value="dark">惡</option><option value="steel">鋼</option><option value="fairy">妖精</option>
+              </select>
+              <select id="team-2-2" style="flex:1;">
+                <option value="none">單屬性</option><option value="normal">一般</option><option value="fire">火</option><option value="water">水</option><option value="electric">電</option><option value="grass">草</option><option value="ice">冰</option><option value="fighting">格鬥</option><option value="poison">毒</option><option value="ground">地面</option><option value="flying">飛行</option><option value="psychic">超能力</option><option value="bug">蟲</option><option value="rock">岩石</option><option value="ghost">幽靈</option><option value="dragon">龍</option><option value="dark">惡</option><option value="steel">鋼</option><option value="fairy">妖精</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="team-slot">
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+              <span style="font-weight:bold; font-size:0.9rem;">隊員 3</span>
+              <select id="team-preset-3" onchange="applyTeamPreset(3)" style="width: 160px; font-size:0.8rem; padding:2px;">
+                <option value="">-- 選擇 40 隻熱門角色 --</option>
+              </select>
+            </div>
+            <div style="display:flex; gap:6px;">
+              <select id="team-3-1" style="flex:1;">
+                <option value="normal">一般</option><option value="fire">火</option><option value="water">水</option><option value="electric">電</option><option value="grass">草</option><option value="ice">冰</option><option value="fighting">格鬥</option><option value="poison">毒</option><option value="ground">地面</option><option value="flying">飛行</option><option value="psychic">超能力</option><option value="bug">蟲</option><option value="rock">岩石</option><option value="ghost">幽靈</option><option value="dragon">龍</option><option value="dark">惡</option><option value="steel">鋼</option><option value="fairy">妖精</option>
+              </select>
+              <select id="team-3-2" style="flex:1;">
+                <option value="none">單屬性</option><option value="normal">一般</option><option value="fire">火</option><option value="water">水</option><option value="electric">電</option><option value="grass">草</option><option value="ice">冰</option><option value="fighting">格鬥</option><option value="poison">毒</option><option value="ground">地面</option><option value="flying">飛行</option><option value="psychic">超能力</option><option value="bug">蟲</option><option value="rock">岩石</option><option value="ghost">幽靈</option><option value="dragon">龍</option><option value="dark">惡</option><option value="steel">鋼</option><option value="fairy">妖精</option>
+              </select>
+            </div>
+          </div>
         </div>
         <button onclick="analyzeTeamWeakness()">分析全隊盲點與聯防</button>
         <div id="team-result" class="result-section" style="display:none;"></div>
@@ -1055,61 +1081,81 @@
     ];
 
     window.onload = function() {
-      const grid = document.getElementById('preset-container');
-      pokemons.forEach(p => {
-        let btn = document.createElement('button');
-        btn.className = 'preset-btn';
-        btn.innerText = p.name;
-        btn.onclick = () => loadPreset(p.t1, p.t2);
-        grid.appendChild(btn);
-      });
+      try {
+        const grid = document.getElementById('preset-container');
+        if (grid) {
+          pokemons.forEach(p => {
+            let btn = document.createElement('button');
+            btn.className = 'preset-btn';
+            btn.innerText = p.name;
+            btn.onclick = () => loadPreset(p.t1, p.t2);
+            grid.appendChild(btn);
+          });
+        }
 
-      for(let i=1; i<=3; i++) {
-        let sel = document.getElementById(`team-preset-${i}`);
-        pokemons.forEach((p, idx) => {
-          let opt = document.createElement('option');
-          opt.value = idx;
-          opt.innerText = p.name;
-          sel.appendChild(opt);
+        for(let i=1; i<=3; i++) {
+          let sel = document.getElementById(`team-preset-${i}`);
+          if (sel) {
+            pokemons.forEach((p, idx) => {
+              let opt = document.createElement('option');
+              opt.value = idx;
+              opt.innerText = p.name;
+              sel.appendChild(opt);
+            });
+          }
+        }
+
+        const dexGrid = document.getElementById('dex-container');
+        if (dexGrid) {
+          pokemons.forEach((p, idx) => {
+            let btn = document.createElement('button');
+            btn.className = 'dex-btn';
+            btn.innerText = p.name;
+            btn.onclick = () => showPokemonDex(idx);
+            dexGrid.appendChild(btn);
+          });
+        }
+
+        ['p1-choice', 'p2-choice', 'p3-choice', 'e1-choice', 'e2-choice', 'e3-choice'].forEach((id, i) => {
+          let sel = document.getElementById(id);
+          if (sel) {
+            pokemons.forEach((p, idx) => {
+              let opt = document.createElement('option');
+              opt.value = idx;
+              opt.innerText = p.name;
+              sel.appendChild(opt);
+            });
+            sel.value = (i * 2) % pokemons.length;
+          }
         });
+
+        for(let i=1; i<=3; i++) {
+          let pSel = document.getElementById(`p${i}-choice`);
+          if (pSel) pSel.value = (i - 1) * 2;
+        }
+        renderAllPlayerConfigs();
+
+        let e1 = document.getElementById('e1-choice');
+        let e2 = document.getElementById('e2-choice');
+        let e3 = document.getElementById('e3-choice');
+        if (e1) e1.value = 1;
+        if (e2) e2.value = 2;
+        if (e3) e3.value = 3;
+      } catch (err) {
+        console.error("Initialization error:", err);
       }
-
-      const dexGrid = document.getElementById('dex-container');
-      pokemons.forEach((p, idx) => {
-        let btn = document.createElement('button');
-        btn.className = 'dex-btn';
-        btn.innerText = p.name;
-        btn.onclick = () => showPokemonDex(idx);
-        dexGrid.appendChild(btn);
-      });
-
-      ['p1-choice', 'p2-choice', 'p3-choice', 'e1-choice', 'e2-choice', 'e3-choice'].forEach((id, i) => {
-        let sel = document.getElementById(id);
-        pokemons.forEach((p, idx) => {
-          let opt = document.createElement('option');
-          opt.value = idx;
-          opt.innerText = p.name;
-          sel.appendChild(opt);
-        });
-        sel.value = (i * 2) % pokemons.length;
-      });
-
-      for(let i=1; i<=3; i++) {
-        document.getElementById(`p${i}-choice`).value = (i - 1) * 2;
-      }
-      renderAllPlayerConfigs();
-
-      document.getElementById('e1-choice').value = 1;
-      document.getElementById('e2-choice').value = 2;
-      document.getElementById('e3-choice').value = 3;
     };
 
     function renderAllPlayerConfigs() {
       let container = document.getElementById('team-custom-config');
+      if (!container) return;
       container.innerHTML = "";
       for(let i=1; i<=3; i++) {
-        let pokeIdx = document.getElementById(`p${i}-choice`).value;
+        let pChoiceElem = document.getElementById(`p${i}-choice`);
+        if (!pChoiceElem) continue;
+        let pokeIdx = pChoiceElem.value;
         let p = pokemons[pokeIdx];
+        if (!p) continue;
 
         let itemHtml = "";
         if (p.isMega) {
@@ -1155,7 +1201,7 @@
       let checkedCount = checkboxes.filter(cb => cb.checked).length;
       if(checkedCount > 4) {
         alert("最多只能勾選 4 個出戰技能！");
-        event.target.checked = false;
+        if (event && event.target) event.target.checked = false;
       }
     }
 
@@ -1196,9 +1242,12 @@
     }
 
     function applyTeamPreset(i) {
-      let idx = document.getElementById(`team-preset-${i}`).value;
+      let sel = document.getElementById(`team-preset-${i}`);
+      if (!sel) return;
+      let idx = sel.value;
       if(idx === "") return;
       let p = pokemons[idx];
+      if (!p) return;
       document.getElementById(`team-${i}-1`).value = p.t1;
       document.getElementById(`team-${i}-2`).value = p.t2;
     }
@@ -1206,6 +1255,7 @@
     function showPokemonDex(idx) {
       let p = pokemons[idx];
       let resDiv = document.getElementById('dex-result');
+      if (!resDiv) return;
       resDiv.style.display = 'block';
 
       let typeText = `<span class="type-badge bg-${p.t1}">${typeNames[p.t1]}</span>`;
@@ -1244,6 +1294,7 @@
       let def2 = document.getElementById('calc-def-2').value;
 
       let resDiv = document.getElementById('calc-result');
+      if (!resDiv) return;
       resDiv.style.display = 'block';
 
       let html = `<div class="result-category"><strong>📊 針對該防禦組合 (${typeNames[def1]}${def2 !== 'none' ? '/' + typeNames[def2] : ''}) 的傷害模擬：</strong></div>`;
@@ -1284,6 +1335,7 @@
       const d1 = document.getElementById('def-1').value;
       const d2 = document.getElementById('def-2').value;
       const resDiv = document.getElementById('defense-result');
+      if (!resDiv) return;
       resDiv.style.display = 'block';
 
       let groups = { 4: [], 2: [], 1: [], 0.5: [], 0.25: [], 0: [] };
@@ -1308,12 +1360,14 @@
     function analyzeTeamWeakness() {
       let team = [];
       for(let i=1; i<=3; i++) {
-        let t1 = document.getElementById(`team-${i}-1`).value;
-        let t2 = document.getElementById(`team-${i}-2`).value;
-        team.push({ id: i, t1: t1, t2: t2 });
+        let t1Elem = document.getElementById(`team-${i}-1`);
+        let t2Elem = document.getElementById(`team-${i}-2`);
+        if (!t1Elem || !t2Elem) continue;
+        team.push({ id: i, t1: t1Elem.value, t2: t2Elem.value });
       }
 
       const resDiv = document.getElementById('team-result');
+      if (!resDiv) return;
       resDiv.style.display = 'block';
 
       let html = `<div class="result-category"><strong>📊 全隊屬性弱點與聯防分析：</strong></div>`;
@@ -1365,6 +1419,7 @@
       const d2 = document.getElementById('ab-2').value;
       const ability = document.getElementById('ability-select').value;
       const resDiv = document.getElementById('ability-result');
+      if (!resDiv) return;
       resDiv.style.display = 'block';
 
       let groups = { 4: [], 2: [], 1: [], 0.5: [], 0.25: [], 0: [] };
@@ -1382,7 +1437,9 @@
         }
       });
 
-      let html = `<div style="font-size:0.85rem; color:#D35400; margin-bottom:8px; font-weight:bold;">✨ 已套用特性修正：${document.getElementById('ability-select').selectedOptions[0].text}</div>`;
+      let abilitySel = document.getElementById('ability-select');
+      let abilityText = abilitySel && abilitySel.selectedOptions[0] ? abilitySel.selectedOptions[0].text : '';
+      let html = `<div style="font-size:0.85rem; color:#D35400; margin-bottom:8px; font-weight:bold;">✨ 已套用特性修正：${abilityText}</div>`;
       if (groups[4].length > 0) html += `<div class="result-category"><strong>💥 4 倍傷害：</strong>` + groups[4].map(t => `<span class="type-badge bg-${t}">${typeNames[t]}</span>`).join('') + `</div>`;
       if (groups[2].length > 0) html += `<div class="result-category"><strong>⚡ 2 倍傷害：</strong>` + groups[2].map(t => `<span class="type-badge bg-${t}">${typeNames[t]}</span>`).join('') + `</div>`;
       if (groups[0.5].length > 0) html += `<div class="result-category"><strong>🛡️ 0.5 倍抗性：</strong>` + groups[0.5].map(t => `<span class="type-badge bg-${t}">${typeNames[t]}</span>`).join('') + `</div>`;
@@ -1405,7 +1462,9 @@
     function startBattle() {
       let pTeamTmp = [];
       for(let i=1; i<=3; i++) {
-        let pokeIdx = document.getElementById(`p${i}-choice`).value;
+        let pChoiceElem = document.getElementById(`p${i}-choice`);
+        if (!pChoiceElem) continue;
+        let pokeIdx = pChoiceElem.value;
         let basePoke = pokemons[pokeIdx];
         let pCopy = JSON.parse(JSON.stringify(basePoke));
 
@@ -1422,9 +1481,10 @@
         pCopy.topMoves = selectedMoves;
 
         if (pCopy.isMega) {
-          pCopy.item = "mega-stone"; // Mega寶可夢自動鎖定Mega石
+          pCopy.item = "mega-stone";
         } else {
-          pCopy.item = document.getElementById(`p${i}-item`).value;
+          let itemElem = document.getElementById(`p${i}-item`);
+          pCopy.item = itemElem ? itemElem.value : availableItems[0].id;
         }
 
         pCopy.currentHp = pCopy.stats.hp;
@@ -1439,7 +1499,9 @@
 
       let eTeamTmp = [];
       ['e1-choice', 'e2-choice', 'e3-choice'].forEach((id) => {
-        let pokeIdx = document.getElementById(id).value;
+        let eElem = document.getElementById(id);
+        if (!eElem) return;
+        let pokeIdx = eElem.value;
         let basePoke = pokemons[pokeIdx];
         let eCopy = JSON.parse(JSON.stringify(basePoke));
 
@@ -1472,17 +1534,16 @@
 
       checkMegaAndEntry(battleState.playerTeam[0], battleState.enemyTeam[0], "我方", "對手");
 
-      document.getElementById('battle-container').style.display = 'block';
+      let battleContainer = document.getElementById('battle-container');
+      if (battleContainer) battleContainer.style.display = 'block';
       updateBattleUI();
     }
 
     function checkMegaAndEntry(pLead, eLead, pLabel, eLabel) {
-      // 處理我方首發 Mega 進化
       if (pLead.isMega && !pLead.megaEvolved) {
         pLead.megaEvolved = true;
-        battleState.log.puts ? null : battleState.log.push(`💎 ${pLabel}的 ${pLead.name} 攜帶了 Mega 石，伴隨著耀眼的光芒完成了超進化！`);
+        battleState.log.push(`💎 ${pLabel}的 ${pLead.name} 攜帶了 Mega 石，伴隨著耀眼的光芒完成了超進化！`);
       }
-      // 處理敵方首發 Mega 進化
       if (eLead.isMega && !eLead.megaEvolved) {
         eLead.megaEvolved = true;
         battleState.log.push(`💎 ${eLabel}的 ${eLead.name} 攜帶了 Mega 石，完成了超進化！`);
@@ -1533,6 +1594,7 @@
     function updateBattleUI() {
       let pCur = battleState.playerTeam[battleState.pIdx];
       let eCur = battleState.enemyTeam[battleState.eIdx];
+      if (!pCur || !eCur) return;
 
       let pPercent = Math.max(0, Math.floor((pCur.currentHp / pCur.maxHp) * 100));
       let ePercent = Math.max(0, Math.floor((eCur.currentHp / eCur.maxHp) * 100));
@@ -1541,17 +1603,19 @@
       let eAliveCount = battleState.enemyTeam.filter(m => m.currentHp > 0).length;
 
       let weatherDiv = document.getElementById('weather-display');
-      if (battleState.weather !== 'none' && battleState.weatherTurns > 0) {
-        weatherDiv.style.display = 'block';
-        if (battleState.weather === 'rain') {
-          weatherDiv.innerText = `🌧️ 天氣：降雨 (水攻1.5x / 火攻0.5x) - 剩餘 ${battleState.weatherTurns} 回合`;
-        } else if (battleState.weather === 'sun') {
-          weatherDiv.innerText = `☀️ 天氣：日照晴天 (火攻1.5x / 水攻0.5x) - 剩餘 ${battleState.weatherTurns} 回合`;
-        } else if (battleState.weather === 'sandstorm') {
-          weatherDiv.innerText = `⏳ 天氣：沙暴 (岩石系特防提升) - 剩餘 ${battleState.weatherTurns} 回合`;
+      if (weatherDiv) {
+        if (battleState.weather !== 'none' && battleState.weatherTurns > 0) {
+          weatherDiv.style.display = 'block';
+          if (battleState.weather === 'rain') {
+            weatherDiv.innerText = `🌧️ 天氣：降雨 (水攻1.5x / 火攻0.5x) - 剩餘 ${battleState.weatherTurns} 回合`;
+          } else if (battleState.weather === 'sun') {
+            weatherDiv.innerText = `☀️ 天氣：日照晴天 (火攻1.5x / 水攻0.5x) - 剩餘 ${battleState.weatherTurns} 回合`;
+          } else if (battleState.weather === 'sandstorm') {
+            weatherDiv.innerText = `⏳ 天氣：沙暴 (岩石系特防提升) - 剩餘 ${battleState.weatherTurns} 回合`;
+          }
+        } else {
+          weatherDiv.style.display = 'none';
         }
-      } else {
-        weatherDiv.style.display = 'none';
       }
 
       let pItemName = pCur.isMega ? "💎 Mega石" : (availableItems.find(i => i.id === pCur.item)?.name.split(' ')[0] || '無');
@@ -1561,57 +1625,72 @@
       let eItemName = eCur.isMega ? "💎 Mega石" : (availableItems.find(i => i.id === eCur.item)?.name.split(' ')[0] || '無');
       let eExtraInfo = `特性: ${eCur.abilities} | 道具: ${eItemName}`;
 
-      document.getElementById('player-status').innerHTML = `
-        我方場上 [存活: ${pAliveCount}/3] <strong>${pCur.name}</strong> (${pExtraInfo})<br>
-        HP: ${pCur.currentHp} / ${pCur.maxHp} (${pPercent}%)
-        <div class="hp-bar-container"><div class="hp-bar" style="width: ${pPercent}%;"></div></div>
-      `;
-
-      document.getElementById('enemy-status').innerHTML = `
-        對手場上 [存活: ${eAliveCount}/3] <strong>${eCur.name}</strong> (${eExtraInfo})<br>
-        HP: ${eCur.currentHp} / ${eCur.maxHp} (${pPercent}%)
-        <div class="hp-bar-container"><div class="hp-bar" style="width: ${ePercent}%; background: #E74C3C;"></div></div>
-      `;
-
-      let moveSel = document.getElementById('move-choice');
-      moveSel.innerHTML = "";
-      pCur.topMoves.forEach((mv, idx) => {
-        let opt = document.createElement('option');
-        opt.value = idx;
-        opt.innerText = `${mv.name} (威力:${mv.power || 0})`;
-        moveSel.appendChild(opt);
-      });
-
-      let switchSel = document.getElementById('switch-choice');
-      switchSel.innerHTML = "";
-      battleState.playerTeam.forEach((member, idx) => {
-        if (idx !== battleState.pIdx && member.currentHp > 0) {
-          let opt = document.createElement('option');
-          opt.value = idx;
-          opt.innerText = `換上：${member.name} (HP: ${member.currentHp}/${member.maxHp})`;
-          switchSel.appendChild(opt);
-        }
-      });
-      if(switchSel.options.length === 0) {
-        let opt = document.createElement('option');
-        opt.innerText = "無其他可替換隊員";
-        switchSel.appendChild(opt);
+      let pStatusElem = document.getElementById('player-status');
+      if (pStatusElem) {
+        pStatusElem.innerHTML = `
+          我方場上 [存活: ${pAliveCount}/3] <strong>${pCur.name}</strong> (${pExtraInfo})<br>
+          HP: ${pCur.currentHp} / ${pCur.maxHp} (${pPercent}%)
+          <div class="hp-bar-container"><div class="hp-bar" style="width: ${pPercent}%;"></div></div>
+        `;
       }
 
-      document.getElementById('battle-log').innerHTML = battleState.log.join('<br>');
-      document.getElementById('battle-log').scrollTop = document.getElementById('battle-log'].scrollHeight;
+      let eStatusElem = document.getElementById('enemy-status');
+      if (eStatusElem) {
+        eStatusElem.innerHTML = `
+          對手場上 [存活: ${eAliveCount}/3] <strong>${eCur.name}</strong> (${eExtraInfo})<br>
+          HP: ${eCur.currentHp} / ${eCur.maxHp} (${ePercent}%)
+          <div class="hp-bar-container"><div class="hp-bar" style="width: ${ePercent}%; background: #E74C3C;"></div></div>
+        `;
+      }
+
+      let moveSel = document.getElementById('move-choice');
+      if (moveSel) {
+        moveSel.innerHTML = "";
+        pCur.topMoves.forEach((mv, idx) => {
+          let opt = document.createElement('option');
+          opt.value = idx;
+          opt.innerText = `${mv.name} (威力:${mv.power || 0})`;
+          moveSel.appendChild(opt);
+        });
+      }
+
+      let switchSel = document.getElementById('switch-choice');
+      if (switchSel) {
+        switchSel.innerHTML = "";
+        battleState.playerTeam.forEach((member, idx) => {
+          if (idx !== battleState.pIdx && member.currentHp > 0) {
+            let opt = document.createElement('option');
+            opt.value = idx;
+            opt.innerText = `換上：${member.name} (HP: ${member.currentHp}/${member.maxHp})`;
+            switchSel.appendChild(opt);
+          }
+        });
+        if(switchSel.options.length === 0) {
+          let opt = document.createElement('option');
+          opt.innerText = "無其他可替換隊員";
+          switchSel.appendChild(opt);
+        }
+      }
+
+      let logElem = document.getElementById('battle-log');
+      if (logElem) {
+        logElem.innerHTML = battleState.log.join('<br>');
+        logElem.scrollTop = logElem.scrollHeight;
+      }
     }
 
     function executeTurn(actionType) {
       let pCur = battleState.playerTeam[battleState.pIdx];
       let eCur = battleState.enemyTeam[battleState.eIdx];
 
-      if (pCur.currentHp <= 0 || eCur.currentHp <= 0) return;
+      if (!pCur || !eCur || pCur.currentHp <= 0 || eCur.currentHp <= 0) return;
 
       let eMove = eCur.topMoves[Math.floor(Math.random() * eCur.topMoves.length)];
 
       if (actionType === 'switch') {
-        let targetIdx = parseInt(document.getElementById('switch-choice').value);
+        let switchElem = document.getElementById('switch-choice');
+        if (!switchElem) return;
+        let targetIdx = parseInt(switchElem.value);
         if (isNaN(targetIdx) || battleState.playerTeam[targetIdx].currentHp <= 0) {
           alert("無法更換為該隊員！");
           return;
@@ -1633,7 +1712,9 @@
         }
 
       } else {
-        let moveIdx = document.getElementById('move-choice').value;
+        let moveChoiceElem = document.getElementById('move-choice');
+        if (!moveChoiceElem) return;
+        let moveIdx = moveChoiceElem.value;
         let pMove = pCur.topMoves[moveIdx];
 
         let pPriority = pMove.priority || 0;
