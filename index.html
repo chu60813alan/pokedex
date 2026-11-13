@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>寶可夢 18 屬性對戰戰術中心與 3v3 模擬器</title>
+  <title>寶可夢 18 屬性對戰戰術中心與 3v3 模擬器 (Mega石與道具系統)</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -479,10 +479,10 @@
         <div id="calc-result" class="result-section" style="display:none;"></div>
       </div>
 
-      <!-- 分頁六：🎮 3v3 對戰模擬 (支援十選四與三選一道具) -->
+      <!-- 分頁六：🎮 3v3 對戰模擬 (支援 Mega 石與十選四技能配置) -->
       <div id="panel-battle" class="panel">
-        <h3>🎮 3v3 回合制對戰模擬器 (含道具三選一與十選四技能配置)</h3>
-        <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">組建你的 3 隻出戰陣容，並可為每隻寶可夢挑選攜帶道具（三選一）以及從 10 大熱門招式中勾選 4 個出戰技能：</p>
+        <h3>🎮 3v3 回合制對戰模擬器 (含 Mega 石鎖定與十選四技能)</h3>
+        <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">組建你的 3 隻出戰陣容。若是 Mega 寶可夢將自動攜帶專屬 Mega 石進場；一般寶可夢則可從三選一道具中挑選：</p>
         
         <div style="background:#FFF3E6; padding:10px; border-radius:8px; margin-bottom:10px; border:1px solid #F39C12;">
           <strong style="color:#D35400; font-size:0.9rem;">⭐ 我方 3 隻出戰陣容配置：</strong>
@@ -502,7 +502,7 @@
             <select id="e2-choice" style="flex:1;"></select>
             <select id="e3-choice" style="flex:1;"></select>
           </div>
-          <div style="font-size: 0.8rem; color: #78281F; margin-top: 4px;">(對手將自動隨機配置熱門道具與 4 個強力招式)</div>
+          <div style="font-size: 0.8rem; color: #78281F; margin-top: 4px;">(對手將自動配置對應道具與 4 個強力招式)</div>
         </div>
 
         <button onclick="startBattle()">開始 3v3 對戰模擬</button>
@@ -572,7 +572,7 @@
     ];
 
     const pokemons = [
-      { name: "M-噴火龍Y", t1: "fire", t2: "flying", abilities: "日照", stats: {hp:150, atk:104, def:98, spa:159, spd:135, spe:120}, topMoves: [
+      { name: "M-噴火龍Y", t1: "fire", t2: "flying", abilities: "日照", isMega: true, stats: {hp:150, atk:104, def:98, spa:159, spd:135, spe:120}, topMoves: [
         { name: "大字爆炎", type: "fire", power: 110, desc: "威力 110｜火系本屬特攻" },
         { name: "熱風", type: "fire", power: 95, desc: "威力 95｜群體火系攻擊" },
         { name: "陽光烈焰", type: "grass", power: 120, desc: "威力 120｜日照免蓄力" },
@@ -620,7 +620,7 @@
         { name: "流星群", type: "dragon", power: 110, effect: "self_spa_down", desc: "威力 110｜特攻大幅下降" },
         { name: "水流尾", type: "water", power: 90, desc: "威力 90｜水系物理" }
       ]},
-      { name: "M-巨沼怪", t1: "water", t2: "ground", abilities: "悠游自如", stats: {hp:175, atk:150, def:110, spa:105, spd:110, spe:90}, topMoves: [
+      { name: "M-巨沼怪", t1: "water", t2: "ground", abilities: "悠游自如", isMega: true, stats: {hp:175, atk:150, def:110, spa:105, spd:110, spe:90}, topMoves: [
         { name: "地震", type: "ground", power: 100, desc: "威力 100｜頂級地面輸出" },
         { name: "攀瀑", type: "water", power: 80, desc: "威力 80｜水系本屬物理" },
         { name: "冷凍拳", type: "ice", power: 75, desc: "威力 75｜冰凍打點" },
@@ -644,7 +644,7 @@
         { name: "撒菱", type: "ground", power: 0, desc: "設置場地陷阱" },
         { name: "雷電拳", type: "electric", power: 75, desc: "電系補盲" }
       ]},
-      { name: "M-姆克鷹", t1: "fighting", t2: "flying", abilities: "捨身", stats: {hp:177, atk:140, def:90, spa:70, spd:80, spe:110}, topMoves: [
+      { name: "M-姆克鷹", t1: "fighting", t2: "flying", abilities: "捨身", isMega: true, stats: {hp:177, atk:140, def:90, spa:70, spd:80, spe:110}, topMoves: [
         { name: "勇鳥猛攻", type: "flying", power: 120, effect: "recoil", desc: "威力 120｜飛行反作用力" },
         { name: "近身戰", type: "fighting", power: 120, effect: "self_def_down", desc: "威力 120｜格鬥防禦下降" },
         { name: "電光一閃", type: "normal", power: 40, priority: 1, desc: "先制+1｜一般先制" },
@@ -1111,14 +1111,23 @@
         let pokeIdx = document.getElementById(`p${i}-choice`).value;
         let p = pokemons[pokeIdx];
 
+        let itemHtml = "";
+        if (p.isMega) {
+          itemHtml = `<input type="text" value="💎 專屬 Mega 進化石 (固定鎖定)" disabled style="font-size:0.8rem; background:#FFF3E6; color:#D35400; font-weight:bold;">`;
+        } else {
+          itemHtml = `
+            <select id="p${i}-item" style="font-size:0.8rem; padding:4px;">
+              ${availableItems.map((item, idx) => `<option value="${item.id}" ${idx===0?'selected':''}>${item.name}</option>`).join('')}
+            </select>
+          `;
+        }
+
         let html = `
           <div style="background:#FFF; border:1px solid #F39C12; padding:8px; border-radius:6px; margin-bottom:6px;">
-            <div style="font-weight:bold; font-size:0.85rem; color:#D35400; margin-bottom:4px;">隊員 ${i}：${p.name} 配置</div>
+            <div style="font-weight:bold; font-size:0.85rem; color:#D35400; margin-bottom:4px;">隊員 ${i}：${p.name} 配置 ${p.isMega ? '<span style="color:#2980B9;">(✨ Mega 寶可夢)</span>' : ''}</div>
             <div style="margin-bottom:6px;">
-              <label style="font-size:0.75rem;">攜帶道具 (三選一)：</label>
-              <select id="p${i}-item" style="font-size:0.8rem; padding:4px;">
-                ${availableItems.map((item, idx) => `<option value="${item.id}" ${idx===0?'selected':''}>${item.name}</option>`).join('')}
-              </select>
+              <label style="font-size:0.75rem;">攜帶道具：</label>
+              ${itemHtml}
             </div>
             <div>
               <label style="font-size:0.75rem;">從 OPGG 10 大常用技能中勾選 4 個出戰技能：</label>
@@ -1213,7 +1222,7 @@
 
       let html = `
         <div class="result-category">
-          <strong>📌 寶可夢名稱：${p.name}</strong>
+          <strong>📌 寶可夢名稱：${p.name} ${p.isMega ? '<span style="color:#2980B9;">(✨ Mega 進化型態)</span>' : ''}</strong>
           <div style="margin-top:4px;">屬性：${typeText}</div>
         </div>
         <div class="result-category">
@@ -1412,14 +1421,18 @@
         }
         pCopy.topMoves = selectedMoves;
 
-        let itemChoice = document.getElementById(`p${i}-item`).value;
-        pCopy.item = itemChoice;
+        if (pCopy.isMega) {
+          pCopy.item = "mega-stone"; // Mega寶可夢自動鎖定Mega石
+        } else {
+          pCopy.item = document.getElementById(`p${i}-item`).value;
+        }
 
         pCopy.currentHp = pCopy.stats.hp;
         pCopy.maxHp = pCopy.stats.hp;
         pCopy.spaStage = 1.0;
         pCopy.atkStage = 1.0;
         pCopy.hasDisguise = (pCopy.abilities === "畫皮");
+        pCopy.megaEvolved = false;
 
         pTeamTmp.push(pCopy);
       }
@@ -1433,14 +1446,18 @@
         let shuffled = [...basePoke.topMoves].sort(() => 0.5 - Math.random());
         eCopy.topMoves = shuffled.slice(0, 4);
 
-        let randomItem = availableItems[Math.floor(Math.random() * availableItems.length)].id;
-        eCopy.item = randomItem;
+        if (eCopy.isMega) {
+          eCopy.item = "mega-stone";
+        } else {
+          eCopy.item = availableItems[Math.floor(Math.random() * availableItems.length)].id;
+        }
 
         eCopy.currentHp = eCopy.stats.hp;
         eCopy.maxHp = eCopy.stats.hp;
         eCopy.spaStage = 1.0;
         eCopy.atkStage = 1.0;
         eCopy.hasDisguise = (eCopy.abilities === "畫皮");
+        eCopy.megaEvolved = false;
 
         eTeamTmp.push(eCopy);
       });
@@ -1451,15 +1468,26 @@
       battleState.eIdx = 0;
       battleState.weather = 'none';
       battleState.weatherTurns = 0;
-      battleState.log = ["[系統] 3v3 雙方帶上自選道具與 4 大戰術技能，全隊對戰正式開始！"];
+      battleState.log = ["[系統] 3v3 雙方帶上專屬道具與 4 大戰術技能，全隊對戰正式開始！"];
 
-      checkEntryAbility(battleState.playerTeam[0], battleState.enemyTeam[0], "我方", "對手");
+      checkMegaAndEntry(battleState.playerTeam[0], battleState.enemyTeam[0], "我方", "對手");
 
       document.getElementById('battle-container').style.display = 'block';
       updateBattleUI();
     }
 
-    function checkEntryAbility(pLead, eLead, pLabel, eLabel) {
+    function checkMegaAndEntry(pLead, eLead, pLabel, eLabel) {
+      // 處理我方首發 Mega 進化
+      if (pLead.isMega && !pLead.megaEvolved) {
+        pLead.megaEvolved = true;
+        battleState.log.puts ? null : battleState.log.push(`💎 ${pLabel}的 ${pLead.name} 攜帶了 Mega 石，伴隨著耀眼的光芒完成了超進化！`);
+      }
+      // 處理敵方首發 Mega 進化
+      if (eLead.isMega && !eLead.megaEvolved) {
+        eLead.megaEvolved = true;
+        battleState.log.push(`💎 ${eLabel}的 ${eLead.name} 攜帶了 Mega 石，完成了超進化！`);
+      }
+
       let setWeather = (fighter, label) => {
         if (fighter.abilities === "降雨") {
           battleState.weather = "rain";
@@ -1512,9 +1540,6 @@
       let pAliveCount = battleState.playerTeam.filter(m => m.currentHp > 0).length;
       let eAliveCount = battleState.enemyTeam.filter(m => m.currentHp > 0).length;
 
-      let pActualSpe = getEffectiveSpeed(pCur);
-      let eActualSpe = getEffectiveSpeed(eCur);
-
       let weatherDiv = document.getElementById('weather-display');
       if (battleState.weather !== 'none' && battleState.weatherTurns > 0) {
         weatherDiv.style.display = 'block';
@@ -1529,11 +1554,11 @@
         weatherDiv.style.display = 'none';
       }
 
-      let itemName = availableItems.find(i => i.id === pCur.item)?.name.split(' ')[0] || '無';
-      let pExtraInfo = `特性: ${pCur.abilities} | 道具: ${itemName}`;
+      let pItemName = pCur.isMega ? "💎 Mega石" : (availableItems.find(i => i.id === pCur.item)?.name.split(' ')[0] || '無');
+      let pExtraInfo = `特性: ${pCur.abilities} | 道具: ${pItemName}`;
       if (pCur.abilities === '畫皮') pExtraInfo += ` (畫皮: ${pCur.hasDisguise ? '✨' : '❌'})`;
 
-      let eItemName = availableItems.find(i => i.id === eCur.item)?.name.split(' ')[0] || '無';
+      let eItemName = eCur.isMega ? "💎 Mega石" : (availableItems.find(i => i.id === eCur.item)?.name.split(' ')[0] || '無');
       let eExtraInfo = `特性: ${eCur.abilities} | 道具: ${eItemName}`;
 
       document.getElementById('player-status').innerHTML = `
@@ -1574,7 +1599,7 @@
       }
 
       document.getElementById('battle-log').innerHTML = battleState.log.join('<br>');
-      document.getElementById('battle-log').scrollTop = document.getElementById('battle-log').scrollHeight;
+      document.getElementById('battle-log').scrollTop = document.getElementById('battle-log'].scrollHeight;
     }
 
     function executeTurn(actionType) {
@@ -1596,9 +1621,9 @@
         let newP = battleState.playerTeam[battleState.pIdx];
         battleState.log.push(`🔄 我方收回了 ${oldName}，派出了後備 <strong>${newP.name}</strong> 上場！`);
         
-        checkEntryAbility(newP, eCur, "我方", "對手");
+        checkMegaAndEntry(newP, eCur, "我方", "對手");
 
-        let dmgToPlayer = calcDamageDealt(eCur, newP, eMove);
+        let dmgToPlayer = calcDamageDealtWithAbilityAndItem(eCur, newP, eMove).dmg;
         newP.currentHp = Math.max(0, newP.currentHp - dmgToPlayer);
         battleState.log.push(`🔸 敵方的 ${eCur.name} 使用了 <strong>${eMove.name}</strong>，對登場的 ${newP.name} 造成了 <strong>${dmgToPlayer}</strong> 點傷害！`);
 
@@ -1775,7 +1800,7 @@
       if (battleState.pIdx < battleState.playerTeam.length) {
         let nextP = battleState.playerTeam[battleState.pIdx];
         battleState.log.push(`🔄 替補隊員 <strong>${nextP.name}</strong> 自動補位上場！`);
-        checkEntryAbility(nextP, battleState.enemyTeam[battleState.eIdx], "我方", "對手");
+        checkMegaAndEntry(nextP, battleState.enemyTeam[battleState.eIdx], "我方", "對手");
       }
     }
 
@@ -1784,7 +1809,7 @@
       if (battleState.eIdx < battleState.enemyTeam.length) {
         let nextE = battleState.enemyTeam[battleState.eIdx];
         battleState.log.push(`🔄 對手派出了後備寶可夢：<strong>${nextE.name}</strong>！`);
-        checkEntryAbility(battleState.playerTeam[battleState.pIdx], nextE, "我方", "對手");
+        checkMegaAndEntry(battleState.playerTeam[battleState.pIdx], nextE, "我方", "對手");
       }
     }
 
