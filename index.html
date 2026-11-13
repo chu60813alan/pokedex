@@ -330,7 +330,6 @@
       <h1>寶可夢 18 屬性對戰戰術中心與 3v3 模擬器</h1>
     </div>
 
-    <!-- 六大功能分頁切換 -->
     <div class="tab-nav">
       <div class="tab-btn active" onclick="switchTab('defense')">🛡️ 單隻攻防</div>
       <div class="tab-btn" onclick="switchTab('team')">👥 隊伍聯防</div>
@@ -505,7 +504,7 @@
         <div id="calc-result" class="result-section" style="display:none;"></div>
       </div>
 
-      <!-- 分頁六：🎮 3v3 對戰模擬 (支援 10 大對戰道具與神經防呆修正) -->
+      <!-- 分頁六：🎮 3v3 對戰模擬 (精確物理/特殊傷害公式修正) -->
       <div id="panel-battle" class="panel">
         <h3>🎮 3v3 回合制對戰模擬器 (10 大熱門道具與精確傷害)</h3>
         <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">組建你的 3 隻出戰陣容。Mega 寶可夢鎖定專屬 Mega 石，一般寶可夢可選擇 10 種熱門對戰道具：</p>
@@ -591,7 +590,6 @@
       fairy: { fighting: 2, dragon: 2, dark: 2, fire: 0.5, poison: 0.5, steel: 0.5 }
     };
 
-    // 擴充至 10 種熱門對戰道具
     const availableItems = [
       { id: "life-orb", name: "生命寶珠 (傷害1.3倍 / 每次攻擊反傷1/10)" },
       { id: "choice-band", name: "講究頭帶 (物理攻擊1.5倍)" },
@@ -1137,8 +1135,8 @@
 
         pCopy.currentHp = pCopy.stats.hp;
         pCopy.maxHp = pCopy.stats.hp;
-        pCopy.spaStage = 1.0;
-        pCopy.atkStage = 1.0;
+        pCopy.spaStage = 0; // 階級採標準 -6 到 +6
+        pCopy.atkStage = 0; 
         pCopy.hasDisguise = (pCopy.abilities === "畫皮");
         pCopy.megaEvolved = false;
 
@@ -1164,8 +1162,8 @@
 
         eCopy.currentHp = eCopy.stats.hp;
         eCopy.maxHp = eCopy.stats.hp;
-        eCopy.spaStage = 1.0;
-        eCopy.atkStage = 1.0;
+        eCopy.spaStage = 0;
+        eCopy.atkStage = 0;
         eCopy.hasDisguise = (eCopy.abilities === "畫皮");
         eCopy.megaEvolved = false;
 
@@ -1219,12 +1217,21 @@
       }
 
       if (pLead.abilities === "威嚇") {
-        eLead.atkStage = Math.max(0.5, eLead.atkStage - 0.25);
+        eLead.atkStage = Math.max(-6, eLead.atkStage - 1);
         battleState.log.push(`🔥 ${pLabel}的 ${pLead.name} 特性【威嚇】發動！使 ${eLabel} ${eLead.name} 的攻擊力下降了！`);
       }
       if (eLead.abilities === "威嚇") {
-        pLead.atkStage = Math.max(0.5, pLead.atkStage - 0.25);
+        pLead.atkStage = Math.max(-6, pLead.atkStage - 1);
         battleState.log.push(`🔥 ${eLabel}的 ${eLead.name} 特性【威嚇】發動！使 ${pLabel} ${pLead.name} 的攻擊力下降了！`);
+      }
+    }
+
+    function getStageMultiplier(stage) {
+      // 標準寶可夢階級公式：(2 + max(0, stage)) / (2 - min(0, stage))
+      if (stage >= 0) {
+        return (2 + stage) / 2;
+      } else {
+        return 2 / (2 - stage);
       }
     }
 
@@ -1447,7 +1454,6 @@
         }
       }
 
-      // 回合結束：處理剩餘飯匙回復與天氣
       [battleState.playerTeam[battleState.pIdx], battleState.enemyTeam[battleState.eIdx]].forEach((fighter, idx) => {
         let label = idx === 0 ? "我方" : "敵方";
         if (fighter && fighter.currentHp > 0) {
@@ -1478,16 +1484,15 @@
       let logText = "";
       let power = move.power || 0;
 
-      // 處理變化招式 (如劍舞、龍舞、冥想、挑撥等)
       if (power === 0) {
         if (move.name === "劍舞") {
-          attacker.atkStage = (attacker.atkStage || 1.0) * 1.5;
-          logText = `✨ ${atkLabel}的 ${attacker.name} 使用了 <strong>劍舞</strong>，攻擊力大幅提升！`;
+          attacker.atkStage = Math.min(6, (attacker.atkStage || 0) + 2);
+          logText = `✨ ${atkLabel}的 ${attacker.name} 使用了 <strong>劍舞</strong>，攻擊力大幅提升（+2階）！`;
         } else if (move.name === "龍之舞" || move.name === "健美") {
-          attacker.atkStage = (attacker.atkStage || 1.0) * 1.25;
+          attacker.atkStage = Math.min(6, (attacker.atkStage || 0) + 1);
           logText = `✨ ${atkLabel}的 ${attacker.name} 使用了 <strong>${move.name}</strong>，提升了戰鬥能力！`;
         } else if (move.name === "冥想" || move.name === "詭計") {
-          attacker.spaStage = (attacker.spaStage || 1.0) * 1.5;
+          attacker.spaStage = Math.min(6, (attacker.spaStage || 0) + 2);
           logText = `✨ ${atkLabel}的 ${attacker.name} 使用了 <strong>${move.name}</strong>，特攻能力大幅提升！`;
         } else {
           logText = `✨ ${atkLabel}的 ${attacker.name} 使用了 <strong>${move.name}</strong>！`;
@@ -1497,7 +1502,6 @@
 
       let mult = getMultiplier(move.type, defender.t1, defender.t2);
       
-      // 免疫判斷 (0倍傷害直接判定為 0)
       if (mult === 0) {
         return { dmg: 0, logText: `🚫 ${atkLabel}的 ${attacker.name} 使用了 <strong>${move.name}</strong>，但對 ${defender.name} 完全無效！` };
       }
@@ -1505,11 +1509,12 @@
       let stab = (move.type === attacker.t1 || move.type === attacker.t2) ? 1.5 : 1.0;
       let isSpecial = ['fire', 'water', 'electric', 'grass', 'ice', 'psychic', 'ghost', 'dragon', 'fairy', 'poison'].includes(move.type);
 
-      let itemAtkMod = 1.0;
-      if (attacker.item === 'choice-band' && !isSpecial) itemAtkMod = 1.5;
-      if (attacker.item === 'choice-specs' && isSpecial) itemAtkMod = 1.5;
+      let itemMod = 1.0;
+      if (attacker.item === 'choice-band' && !isSpecial) itemMod = 1.5;
+      if (attacker.item === 'choice-specs' && isSpecial) itemMod = 1.5;
 
-      let atkStat = isSpecial ? (attacker.stats.spa * (attacker.spaStage || 1.0) * itemAtkMod) : (attacker.stats.atk * (attacker.atkStage || 1.0) * itemAtkMod);
+      // 修正：確實套用階段倍率與正確的物防/特防判定
+      let atkStat = isSpecial ? (attacker.stats.spa * getStageMultiplier(attacker.spaStage || 0) * itemMod) : (attacker.stats.atk * getStageMultiplier(attacker.atkStage || 0) * itemMod);
       let defStat = isSpecial ? defender.stats.spd : defender.stats.def;
 
       if (defender.item === 'assault-vest' && isSpecial) {
@@ -1531,11 +1536,11 @@
 
       let expertMod = (attacker.item === 'expert-belt' && mult >= 2) ? 1.2 : 1.0;
 
-      let rawDmg = Math.floor((power * (atkStat / Math.max(1, defStat)) * stab * mult * weatherMod * expertMod * 0.5));
+      // 修正：標準寶可夢傷害公式放大，使傷害符合實戰預期
+      let rawDmg = Math.floor((((2 * 50 / 5 + 2) * power * (atkStat / Math.max(1, defStat)) / 50) + 2) * stab * mult * weatherMod * expertMod * (0.85 + Math.random() * 0.15));
 
       let finalDmg = Math.max(1, rawDmg);
 
-      // 達人帶 / 生命寶珠 / 弱點保險 邏輯
       if (attacker.item === 'life-orb') {
         finalDmg = Math.floor(finalDmg * 1.3);
         let recoil = Math.max(1, Math.floor(attacker.maxHp / 10));
@@ -1544,12 +1549,11 @@
       }
 
       if (defender.item === 'weakness-policy' && mult >= 2) {
-        defender.atkStage = (defender.atkStage || 1.0) * 1.5;
-        defender.spaStage = (defender.spaStage || 1.0) * 1.5;
+        defender.atkStage = Math.min(6, (defender.atkStage || 0) + 2);
+        defender.spaStage = Math.min(6, (defender.spaStage || 0) + 2);
         logText += `⚡ ${defLabel}的 ${defender.name} 被發動【弱點保險】，攻特攻大幅提升！ `;
       }
 
-      // 畫皮防禦
       if (defender.abilities === "畫皮" && defender.hasDisguise) {
         defender.hasDisguise = false;
         let disguiseDmg = Math.floor(defender.maxHp / 8);
@@ -1560,13 +1564,11 @@
         };
       }
 
-      // 多重鱗片
       if (defender.abilities === "多重鱗片" && defender.currentHp === defender.maxHp) {
         finalDmg = Math.floor(finalDmg * 0.5);
         logText += `🛡️ ${defender.name} 【多重鱗片】發動，受到的傷害減半！ `;
       }
 
-      // 氣勢披帶 (氣腰)
       if (defender.item === 'focus-sash' && defender.currentHp === defender.maxHp && finalDmg >= defender.currentHp) {
         finalDmg = defender.currentHp - 1;
         logText += `🎗️ ${defLabel}的 ${defender.name} 靠著【氣勢披帶】挺住了致命一擊，保留了 1 點 HP！ `;
@@ -1576,7 +1578,7 @@
         attacker.stats.def = Math.max(30, attacker.stats.def * 0.8);
         logText += `⚠️ ${attacker.name} 防禦力下降了！ `;
       } else if (move.effect === 'self_spa_down') {
-        attacker.spaStage = Math.max(0.5, attacker.spaStage - 0.5);
+        attacker.spaStage = Math.max(-6, (attacker.spaStage || 0) - 1);
         logText += `⚠️ ${attacker.name} 特攻大幅下降了！ `;
       } else if (move.effect === 'recoil') {
         let recoilDmg = Math.floor(finalDmg * 0.3);
