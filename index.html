@@ -280,7 +280,7 @@
       border-radius: 6px;
       font-family: monospace;
       font-size: 0.8rem;
-      max-height: 160px;
+      max-height: 180px;
       overflow-y: auto;
       margin-top: 8px;
     }
@@ -505,10 +505,10 @@
         <div id="calc-result" class="result-section" style="display:none;"></div>
       </div>
 
-      <!-- 分頁六：🎮 3v3 對戰模擬 (支援 Mega 石與十選四技能配置) -->
+      <!-- 分頁六：🎮 3v3 對戰模擬 (支援 10 大對戰道具與神經防呆修正) -->
       <div id="panel-battle" class="panel">
-        <h3>🎮 3v3 回合制對戰模擬器 (含 Mega 石鎖定與十選四技能)</h3>
-        <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">組建你的 3 隻出戰陣容。若是 Mega 寶可夢將自動攜帶專屬 Mega 石進場；一般寶可夢則可從三選一道具中挑選：</p>
+        <h3>🎮 3v3 回合制對戰模擬器 (10 大熱門道具與精確傷害)</h3>
+        <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">組建你的 3 隻出戰陣容。Mega 寶可夢鎖定專屬 Mega 石，一般寶可夢可選擇 10 種熱門對戰道具：</p>
         
         <div style="background:#FFF3E6; padding:10px; border-radius:8px; margin-bottom:10px; border:1px solid #F39C12;">
           <strong style="color:#D35400; font-size:0.9rem;">⭐ 我方 3 隻出戰陣容配置：</strong>
@@ -591,10 +591,18 @@
       fairy: { fighting: 2, dragon: 2, dark: 2, fire: 0.5, poison: 0.5, steel: 0.5 }
     };
 
+    // 擴充至 10 種熱門對戰道具
     const availableItems = [
-      { id: "life-orb", name: "生命寶珠 (傷害1.3倍，每次反傷1/10)" },
-      { id: "choice-scarf", name: "突擊圍巾 (速度1.5倍)" },
-      { id: "assault-vest", name: "突擊背心 (特防1.5倍)" }
+      { id: "life-orb", name: "生命寶珠 (傷害1.3倍 / 每次攻擊反傷1/10)" },
+      { id: "choice-band", name: "講究頭帶 (物理攻擊1.5倍)" },
+      { id: "choice-specs", name: "講究眼鏡 (特殊攻擊1.5倍)" },
+      { id: "choice-scarf", name: "講究圍巾 (速度1.5倍)" },
+      { id: "assault-vest", name: "突擊背心 (特殊防禦1.5倍)" },
+      { id: "leftovers", name: "吃剩的東西 (每回合結束回復1/16血)" },
+      { id: "focus-sash", name: "氣勢披帶 (滿血受致命傷時保底留1血)" },
+      { id: "weakness-policy", name: "弱點保險 (受效果絕佳攻擊時攻特攻+2)" },
+      { id: "lum-berry", name: "木子果 (異常狀態自動解毒)" },
+      { id: "expert-belt", name: "達人帶 (克制攻擊傷害1.2倍)" }
     ];
 
     const pokemons = [
@@ -626,7 +634,7 @@
         { name: "嬉鬧", type: "fairy", power: 90, desc: "威力 90｜妖精主力輸出" },
         { name: "暗影爪", type: "ghost", power: 70, desc: "威力 70｜幽靈本屬攻擊" },
         { name: "影子偷襲", type: "ghost", power: 40, priority: 1, desc: "先制+1｜幽靈先制補刀" },
-        { name: "劍舞", type: "normal", power: 0, desc: "攻擊提升2階" },
+        { name: "劍舞", type: "normal", power: 0, effect: "swords_dance", desc: "攻擊提升2階" },
         { name: "戲法", type: "psychic", power: 0, desc: "互換道具" },
         { name: "吸血", type: "bug", power: 80, desc: "威力 80｜攻擊回血" },
         { name: "暗影球", type: "ghost", power: 80, desc: "威力 80｜幽靈特攻" },
@@ -706,126 +714,6 @@
         { name: "十萬伏特", type: "electric", power: 90, desc: "電系特攻" },
         { name: "終極吸取", type: "grass", power: 75, desc: "吸血特攻" }
       ]},
-      { name: "班基拉斯", t1: "rock", t2: "dark", abilities: "沙暴", stats: {hp:175, atk:154, def:130, spa:105, spd:120, spe:81}, topMoves: [
-        { name: "尖石攻擊", type: "rock", power: 100, desc: "威力 100｜岩石本屬" },
-        { name: "咬碎", type: "dark", power: 80, desc: "威力 80｜惡系本屬" },
-        { name: "地震", type: "ground", power: 100, desc: "威力 100｜地面強襲" },
-        { name: "冷凍拳", type: "ice", power: 75, desc: "威力 75｜冰凍打點" },
-        { name: "火焰拳", type: "fire", power: 75, desc: "威力 75｜火系打點" },
-        { name: "重磅衝撞", type: "steel", power: 100, desc: "重型撞擊" },
-        { name: "龍舞", type: "dragon", power: 0, desc: "攻速提升" },
-        { name: "挑撥", type: "normal", power: 0, desc: "封鎖變化" },
-        { name: "岩崩", type: "rock", power: 75, desc: "岩石群體" },
-        { name: "惡之波動", type: "dark", power: 80, desc: "惡系特攻" }
-      ]},
-      { name: "鋼鎧鴨", t1: "steel", t2: "flying", abilities: "鏡甲", stats: {hp:172, atk:107, def:125, spa:65, spd:105, spe:87}, topMoves: [
-        { name: "鐵頭", type: "steel", power: 80, desc: "威力 80｜鋼系物理" },
-        { name: "勇鳥猛攻", type: "flying", power: 120, effect: "recoil", desc: "威力 120｜反作用力" },
-        { name: "撲擊", type: "fighting", power: 80, desc: "依防禦力計算" },
-        { name: "羽栖", type: "flying", power: 0, desc: "回復半血" },
-        { name: "鐵壁", type: "steel", power: 0, desc: "防禦提升2階" },
-        { name: "挑撥", type: "normal", power: 0, desc: "封鎖變化" },
-        { name: "順風", type: "flying", power: 0, desc: "全隊加速" },
-        { name: "body press", type: "fighting", power: 80, desc: "防禦攻擊" },
-        { name: "燕返", type: "flying", power: 60, desc: "必中飛行" },
-        { name: "聚寶功", type: "normal", power: 40, desc: "賺錢招式" }
-      ]},
-      { name: "賽富豪", t1: "steel", t2: "ghost", abilities: "黃金身體", stats: {hp:162, atk:72, def:115, spa:153, spd:111, spe:104}, topMoves: [
-        { name: "淘金潮", type: "steel", power: 120, desc: "威力 120｜專屬神技" },
-        { name: "暗影球", type: "ghost", power: 80, desc: "威力 80｜幽靈特攻" },
-        { name: "十萬伏特", type: "electric", power: 90, desc: "威力 90｜電系打點" },
-        { name: "精神強念", type: "psychic", power: 90, desc: "超能力特攻" },
-        { name: "氣象球", type: "normal", power: 50, desc: "天氣球" },
-        { name: "自我再生", type: "normal", power: 0, desc: "回復半血" },
-        { name: "詭計", type: "psychic", power: 0, desc: "特攻提升2階" },
-        { name: "魔法閃耀", type: "fairy", power: 80, desc: "妖精特攻" },
-        { name: "能量球", type: "grass", power: 90, desc: "草系特攻" },
-        { name: "太晶爆發", type: "normal", power: 80, desc: "屬性爆發" }
-      ]},
-      { name: "鋁鋼橋龍", t1: "dragon", t2: "steel", abilities: "堅韌不拔", stats: {hp:165, atk:105, def:150, spa:145, spd:105, spe:105}, topMoves: [
-        { name: "電光束", type: "electric", power: 130, desc: "威力 130｜命中後特攻+1" },
-        { name: "流星群", type: "dragon", power: 110, effect: "self_spa_down", desc: "威力 110｜特攻大幅下降" },
-        { name: "加農光炮", type: "steel", power: 80, desc: "威力 80｜鋼系特攻" },
-        { name: "十萬伏特", type: "electric", power: 90, desc: "電系特攻" },
-        { name: "龍之波動", type: "dragon", power: 85, desc: "龍系特攻" },
-        { name: "重磅衝撞", type: "steel", power: 100, desc: "重型鋼撞" },
-        { name: "岩崩", type: "rock", power: 75, desc: "岩石群體" },
-        { name: "伏特替換", type: "electric", power: 70, desc: "攻擊後換人" },
-        { name: "破壞光線", type: "normal", power: 150, desc: "極限特攻" },
-        { name: "鐵壁", type: "steel", power: 0, desc: "防禦提升" }
-      ]},
-      { name: "劈斬將軍", t1: "dark", t2: "steel", abilities: "不服輸", stats: {hp:142, atk:155, def:120, spa:80, spd:90, spe:90}, topMoves: [
-        { name: "鐵頭", type: "steel", power: 80, desc: "威力 80｜鋼系物理" },
-        { name: "突襲", type: "dark", power: 70, priority: 1, desc: "先制+1｜惡系先制" },
-        { name: "地獄突刺", type: "dark", power: 80, desc: "威力 80｜惡系物攻" },
-        { name: "劍舞", type: "normal", power: 0, desc: "攻擊提升" },
-        { name: "十字剪", type: "bug", power: 80, desc: "蟲系物攻" },
-        { name: "岩崩", type: "rock", power: 75, desc: "岩石打點" },
-        { name: "報恩", type: "normal", power: 102, desc: "一般物攻" },
-        { name: "鐵壁", type: "steel", power: 0, desc: "防禦提升" },
-        { name: "電光一閃", type: "normal", power: 40, priority: 1, desc: "先制攻擊" },
-        { name: "佯攻", type: "normal", power: 30, priority: 2, desc: "破防守" }
-      ]},
-      { name: "蒼炎刃鬼", t1: "fire", t2: "ghost", abilities: "引火", stats: {hp:152, atk:143, def:100, spa:80, spd:108, spe:105}, topMoves: [
-        { name: "悔念劍", type: "fire", power: 90, desc: "威力 90｜攻擊回血" },
-        { name: "暗影爪", type: "ghost", power: 70, desc: "威力 70｜幽靈物理" },
-        { name: "影襲", type: "ghost", power: 40, priority: 1, desc: "先制+1｜幽靈先制" },
-        { name: "近身戰", type: "fighting", power: 120, effect: "self_def_down", desc: "威力 120｜格鬥破盲點" },
-        { name: "劍舞", type: "normal", power: 0, desc: "攻擊提升" },
-        { name: "毒擊", type: "poison", power: 80, desc: "毒系打點" },
-        { name: "精神利刃", type: "psychic", power: 70, desc: "超能物攻" },
-        { name: "蓄能焰襲", type: "fire", power: 50, desc: "攻擊加速" },
-        { name: "大字爆炎", type: "fire", power: 110, desc: "火系大招" },
-        { name: "鬼火", type: "ghost", power: 0, desc: "使對手燒傷" }
-      ]},
-      { name: "幽尾玄魚", t1: "water", t2: "ghost", abilities: "適者縫合", stats: {hp:182, atk:143, def:85, spa:100, spd:95, spe:98}, topMoves: [
-        { name: "波浪冲", type: "water", power: 120, desc: "威力 120｜水系爆發" },
-        { name: "暗影球", type: "ghost", power: 80, desc: "威力 80｜幽靈特攻" },
-        { name: "水流裂破", type: "water", power: 85, desc: "威力 85｜水系物理" },
-        { name: "影子偷襲", type: "ghost", power: 40, priority: 1, desc: "先制幽靈" },
-        { name: "咬碎", type: "dark", power: 80, desc: "惡系打點" },
-        { name: "冰凍光束", type: "ice", power: 90, desc: "冰凍特攻" },
-        { name: "十萬伏特", type: "electric", power: 90, desc: "電系特攻" },
-        { name: "自我再生", type: "normal", power: 0, desc: "回復血量" },
-        { name: "挑撥", type: "normal", power: 0, desc: "封鎖變化" },
-        { name: "水砲", type: "water", power: 110, desc: "水系大招" }
-      ]},
-      { name: "勾魂眼", t1: "dark", t2: "ghost", abilities: "惡作劇之心", stats: {hp:125, atk:95, def:95, spa:85, spd:85, spe:70}, topMoves: [
-        { name: "暗影爪", type: "ghost", power: 70, desc: "威力 70｜物理輸出" },
-        { name: "暗影球", type: "ghost", power: 80, desc: "威力 80｜特攻輸出" },
-        { name: "突襲", type: "dark", power: 70, priority: 1, desc: "先制+1｜惡系先制" },
-        { name: "鬼火", type: "ghost", power: 0, desc: "優先燒傷" },
-        { name: "挑撥", type: "normal", power: 0, desc: "優先挑撥" },
-        { name: "自我再生", type: "normal", power: 0, desc: "回復體力" },
-        { name: "擊掌奇襲", type: "normal", power: 40, priority: 3, desc: "先制畏縮" },
-        { name: "意念頭槌", type: "psychic", power: 80, desc: "超能物攻" },
-        { name: "岩崩", type: "rock", power: 75, desc: "岩石打點" },
-        { name: "戲法", type: "psychic", power: 0, desc: "互換道具" }
-      ]},
-      { name: "美娜斯", t1: "water", t2: "none", abilities: "神奇鱗片", stats: {hp:170, atk:70, def:99, spa:120, spd:155, spe:100}, topMoves: [
-        { name: "熱水", type: "water", power: 80, desc: "威力 80｜30%燒傷" },
-        { name: "冰凍光束", type: "ice", power: 90, desc: "威力 90｜冰凍打點" },
-        { name: "濁流", type: "water", power: 90, desc: "威力 90｜廣域水系" },
-        { name: "自我再生", type: "normal", power: 0, desc: "回復半血" },
-        { name: "催眠術", type: "psychic", power: 0, desc: "使敵睡眠" },
-        { name: "龍之波動", type: "dragon", power: 85, desc: "龍系特攻" },
-        { name: "鏡面反射", type: "psychic", power: 0, desc: "加倍反擊特攻" },
-        { name: "黑霧", type: "ice", power: 0, desc: "重置能力階級" },
-        { name: "衝浪", type: "water", power: 90, desc: "穩定水系" },
-        { name: "破壞光線", type: "normal", power: 150, desc: "極限爆發" }
-      ]},
-      { name: "風妖精", t1: "grass", t2: "fairy", abilities: "惡作劇之心", stats: {hp:135, atk:79, def:105, spa:97, spd:95, spe:184}, topMoves: [
-        { name: "月亮力量", type: "fairy", power: 95, desc: "威力 95｜妖精特攻" },
-        { name: "能量球", type: "grass", power: 90, desc: "威力 90｜草系特攻" },
-        { name: "暴風", type: "flying", power: 110, desc: "威力 110｜飛行特攻" },
-        { name: "順風", type: "flying", power: 0, desc: "優先全隊加速" },
-        { name: "挑撥", type: "normal", power: 0, desc: "優先封鎖" },
-        { name: "寄生種子", type: "grass", power: 0, desc: "吸取敵血" },
-        { name: "替身", type: "normal", power: 0, desc: "製造分身" },
-        { name: "光牆", type: "psychic", power: 0, desc: "減半特攻" },
-        { name: "魔法閃耀", type: "fairy", power: 80, desc: "妖精群體" },
-        { name: "草繩結", type: "grass", power: 80, desc: "依體重傷害" }
-      ]},
       { name: "赤焰咆嘯虎", t1: "fire", t2: "dark", abilities: "威嚇", stats: {hp:202, atk:136, def:110, spa:90, spd:110, spe:80}, topMoves: [
         { name: "擊掌奇襲", type: "normal", power: 40, priority: 3, desc: "先制+3｜登場畏縮" },
         { name: "閃焰冲鋒", type: "fire", power: 120, effect: "recoil", desc: "威力 120｜火系爆發" },
@@ -837,246 +725,6 @@
         { name: "大聲咆哮", type: "dark", power: 55, desc: "降低敵特攻" },
         { name: "日光束", type: "grass", power: 120, desc: "草系特攻" },
         { name: "鐵頭", type: "steel", power: 80, desc: "鋼系打點" }
-      ]},
-      { name: "火焰雞", t1: "fire", t2: "fighting", abilities: "加速", stats: {hp:155, atk:140, def:90, spa:130, spd:90, spe:132}, topMoves: [
-        { name: "閃焰冲鋒", type: "fire", power: 120, effect: "recoil", desc: "威力 120｜火系物攻" },
-        { name: "近身戰", type: "fighting", power: 120, effect: "self_def_down", desc: "威力 120｜格鬥打點" },
-        { name: "地震", type: "ground", power: 100, desc: "威力 100｜地面強襲" },
-        { name: "劍舞", type: "normal", power: 0, desc: "攻擊提升" },
-        { name: "守住", type: "normal", power: 0, priority: 4, desc: "完全防禦" },
-        { name: "岩崩", type: "rock", power: 75, desc: "岩石群體" },
-        { name: "影子爪", type: "ghost", power: 70, desc: "幽靈打點" },
-        { name: "過熱", type: "fire", power: 130, effect: "self_spa_down", desc: "特攻大幅下降" },
-        { name: "雷電拳", type: "electric", power: 75, desc: "電系打點" },
-        { name: "燕返", type: "flying", power: 60, desc: "必中飛行" }
-      ]},
-      { name: "堅盾劍怪", t1: "steel", t2: "ghost", abilities: "戰鬥切換", stats: {hp:135, atk:100, def:170, spa:100, spd:170, spe:80}, topMoves: [
-        { name: "聖劍", type: "fighting", power: 90, desc: "威力 90｜忽略防禦" },
-        { name: "鐵頭", type: "steel", power: 80, desc: "威力 80｜鋼系強擊" },
-        { name: "影子偷襲", type: "ghost", power: 40, priority: 1, desc: "先制+1｜幽靈先制" },
-        { name: "暗影球", type: "ghost", power: 80, desc: "幽靈特攻" },
-        { name: "王者盾牌", type: "steel", power: 0, priority: 4, desc: "防禦並降敵攻擊" },
-        { name: "加農光炮", type: "steel", power: 80, desc: "鋼系特攻" },
-        { name: "近身戰", type: "fighting", power: 120, effect: "self_def_down", desc: "格鬥爆發" },
-        { name: "燕返", type: "flying", power: 60, desc: "必中飛行" },
-        { name: "岩崩", type: "rock", power: 75, desc: "岩石群體" },
-        { name: "鐵壁", type: "steel", power: 0, desc: "防禦提升" }
-      ]},
-      { name: "暴鯉龍", t1: "water", t2: "flying", abilities: "威嚇", stats: {hp:170, atk:155, def:99, spa:70, spd:120, spe:103}, topMoves: [
-        { name: "攀瀑", type: "water", power: 80, desc: "威力 80｜水系本屬" },
-        { name: "飛墜特攻", type: "flying", power: 85, desc: "威力 85｜飛行物理" },
-        { name: "地震", type: "ground", power: 100, desc: "威力 100｜地面強襲" },
-        { name: "龍之舞", type: "dragon", power: 0, desc: "攻速提升" },
-        { name: "冰凍牙", type: "ice", power: 65, desc: "冰凍牽制" },
-        { name: "咬碎", type: "dark", power: 80, desc: "惡系物攻" },
-        { name: "挑撥", type: "normal", power: 0, desc: "封鎖變化" },
-        { name: "水砲", type: "water", power: 110, desc: "水系大招" },
-        { name: "十萬馬力", type: "ground", power: 95, desc: "單體地面" },
-        { name: "終極衝擊", type: "normal", power: 150, desc: "極限爆發" }
-      ]},
-      { name: "來悲粗茶", t1: "ghost", t2: "grass", abilities: "熱情款待", stats: {hp:122, atk:60, def:65, spa:134, spd:134, spe:110}, topMoves: [
-        { name: "抹茶攪擊", type: "grass", power: 80, desc: "威力 80｜攻擊回血" },
-        { name: "暗影球", type: "ghost", power: 80, desc: "威力 80｜幽靈特攻" },
-        { name: "能量球", type: "grass", power: 90, desc: "威力 90｜草系特攻" },
-        { name: "诡計", type: "psychic", power: 0, desc: "特攻提升2階" },
-        { name: "终極吸取", type: "grass", power: 75, desc: "吸血特攻" },
-        { name: "影子偷襲", type: "ghost", power: 40, priority: 1, desc: "先制幽靈" },
-        { name: "催眠術", type: "psychic", power: 0, desc: "使敵睡眠" },
-        { name: "寄生種子", type: "grass", power: 0, desc: "吸取敵血" },
-        { name: "魔法閃耀", type: "fairy", power: 80, desc: "妖精特攻" },
-        { name: "守住", type: "normal", power: 0, priority: 4, desc: "完全防禦" }
-      ]},
-      { name: "多龍巴魯托", t1: "dragon", t2: "ghost", abilities: "透明體", stats: {hp:163, atk:172, def:95, spa:120, spd:95, spe:213}, topMoves: [
-        { name: "龍箭", type: "dragon", power: 50, desc: "威力 50｜連續攻擊" },
-        { name: "暗影球", type: "ghost", power: 80, desc: "威力 80｜幽靈特攻" },
-        { name: "影子偷襲", type: "ghost", power: 40, priority: 1, desc: "先制+1｜幽靈先制" },
-        { name: "十萬伏特", type: "electric", power: 90, desc: "電系特攻" },
-        { name: "大字爆炎", type: "fire", power: 110, desc: "火系特攻" },
-        { name: "急速折返", type: "bug", power: 70, desc: "攻擊換人" },
-        { name: "流星群", type: "dragon", power: 110, effect: "self_spa_down", desc: "特攻大幅下降" },
-        { name: "水砲", type: "water", power: 110, desc: "水系特攻" },
-        { name: "潛靈奇襲", type: "ghost", power: 90, desc: "消隱攻擊" },
-        { name: "龍之波動", type: "dragon", power: 85, desc: "龍系特攻" }
-      ]},
-      { name: "沙奈朵", t1: "psychic", t2: "fairy", abilities: "妖精皮膚", stats: {hp:143, atk:85, def:85, spa:145, spd:135, spe:100}, topMoves: [
-        { name: "月亮力量", type: "fairy", power: 95, desc: "威力 95｜妖精特攻" },
-        { name: "精神強念", type: "psychic", power: 90, desc: "威力 90｜超能力特攻" },
-        { name: "影子偷襲", type: "ghost", power: 40, priority: 1, desc: "先制+1｜先制補刀" },
-        { name: "十萬伏特", type: "electric", power: 90, desc: "電系特攻" },
-        { name: "魔法閃耀", type: "fairy", power: 80, desc: "妖精群體" },
-        { name: "冥想", type: "psychic", power: 0, desc: "特攻特防提升" },
-        { name: "催眠術", type: "psychic", power: 0, desc: "使敵睡眠" },
-        { name: "能量球", type: "grass", power: 90, desc: "草系特攻" },
-        { name: "精神擊破", type: "psychic", power: 100, desc: "物防計算超能" },
-        { name: "影子球", type: "ghost", power: 80, desc: "幽靈特攻" }
-      ]},
-      { name: "黏美路龍", t1: "dragon", t2: "none", abilities: "食草", stats: {hp:167, atk:120, def:90, spa:130, spd:170, spe:100}, topMoves: [
-        { name: "龍之波動", type: "dragon", power: 85, desc: "威力 85｜龍系特攻" },
-        { name: "冰凍光束", type: "ice", power: 90, desc: "威力 90｜冰凍打點" },
-        { name: "火焰放射", type: "fire", power: 90, desc: "威力 90｜火系特攻" },
-        { name: "濁流", type: "water", power: 90, desc: "水系特攻" },
-        { name: "十萬伏特", type: "electric", power: 90, desc: "電系特攻" },
-        { name: "流星群", type: "dragon", power: 110, effect: "self_spa_down", desc: "特攻大幅下降" },
-        { name: "污泥炸彈", type: "poison", power: 90, desc: "毒系特攻" },
-        { name: "自我再生", type: "normal", power: 0, desc: "回復體力" },
-        { name: "鐵頭", type: "steel", power: 80, desc: "鋼系物攻" },
-        { name: "地震", type: "ground", power: 100, desc: "地面物攻" }
-      ]},
-      { name: "暴飛龍", t1: "dragon", t2: "flying", abilities: "威嚇", stats: {hp:170, atk:155, def:100, spa:130, spd:100, spe:122}, topMoves: [
-        { name: "逆鱗", type: "dragon", power: 120, effect: "lock_in", desc: "威力 120｜龍系物攻" },
-        { name: "地震", type: "ground", power: 100, desc: "威力 100｜地面強襲" },
-        { name: "大字爆炎", type: "fire", power: 110, desc: "威力 110｜火系特攻" },
-        { name: "龍之舞", type: "dragon", power: 0, desc: "攻速提升" },
-        { name: "捨身衝撞", type: "normal", power: 120, effect: "recoil", desc: "反作用力傷害" },
-        { name: "咬碎", type: "dark", power: 80, desc: "惡系物攻" },
-        { name: "岩崩", type: "rock", power: 75, desc: "岩石群體" },
-        { name: "羽栖", type: "flying", power: 0, desc: "回復半血" },
-        { name: "暴風", type: "flying", power: 110, desc: "飛行特攻" },
-        { name: "鐵頭", type: "steel", power: 80, desc: "鋼系物攻" }
-      ]},
-      { name: "巨鍛匠", t1: "fairy", t2: "steel", abilities: "破格", stats: {hp:155, atk:95, def:95, spa:90, spd:115, spe:114}, topMoves: [
-        { name: "巨力錘", type: "steel", power: 160, desc: "威力 160｜極高威力鋼系" },
-        { name: "嬉鬧", type: "fairy", power: 90, desc: "威力 90｜妖精輸出" },
-        { name: "加農光炮", type: "steel", power: 80, desc: "威力 80｜鋼系特攻" },
-        { name: "雷電拳", type: "electric", power: 75, desc: "電系打點" },
-        { name: "冰凍拳", type: "ice", power: 75, desc: "冰凍打點" },
-        { name: "岩崩", type: "rock", power: 75, desc: "岩石打點" },
-        { name: "劍舞", type: "normal", power: 0, desc: "攻擊提升" },
-        { name: "光牆", type: "psychic", power: 0, desc: "減半特攻" },
-        { name: "反射壁", type: "psychic", power: 0, desc: "減半物攻" },
-        { name: "假哭", type: "normal", power: 0, desc: "大幅降敵特防" }
-      ]},
-      { name: "路卡利歐", t1: "fighting", t2: "steel", abilities: "適應力", stats: {hp:145, atk:160, def:90, spa:135, spd:90, spe:112}, topMoves: [
-        { name: "近身戰", type: "fighting", power: 120, effect: "self_def_down", desc: "威力 120｜格鬥爆發" },
-        { name: "波導彈", type: "fighting", power: 80, desc: "威力 80｜必中格鬥特攻" },
-        { name: "神速", type: "normal", power: 80, priority: 2, desc: "先制+2｜物理先制" },
-        { name: "子彈拳", type: "steel", power: 40, priority: 1, desc: "鋼系先制" },
-        { name: "劍舞", type: "normal", power: 0, desc: "攻擊提升" },
-        { name: "加農光炮", type: "steel", power: 80, desc: "鋼系特攻" },
-        { name: "地震", type: "ground", power: 100, desc: "地面物攻" },
-        { name: "惡之波動", type: "dark", power: 80, desc: "惡系特攻" },
-        { name: "冰凍拳", type: "ice", power: 75, desc: "冰凍打點" },
-        { name: "岩崩", type: "rock", power: 75, desc: "岩石打點" }
-      ]},
-      { name: "仙子伊布", t1: "fairy", t2: "none", abilities: "妖精皮膚", stats: {hp:170, atk:85, def:85, spa:150, spd:150, spe:80}, topMoves: [
-        { name: "巨聲", type: "normal", power: 90, desc: "威力 90(轉化妖精)｜強大妖精爆發" },
-        { name: "月亮力量", type: "fairy", power: 95, desc: "威力 95｜妖精特攻" },
-        { name: "影子球", type: "ghost", power: 80, desc: "威力 80｜幽靈打點" },
-        { name: "十萬伏特", type: "electric", power: 90, desc: "電系特攻" },
-        { name: "冥想", type: "psychic", power: 0, desc: "特攻特防提升" },
-        { name: "哈欠", type: "normal", power: 0, desc: "使敵陷入睏意" },
-        { name: "魔法閃耀", type: "fairy", power: 80, desc: "妖精群體" },
-        { name: "破壞光線", type: "normal", power: 150, desc: "極限特攻" },
-        { name: "草繩結", type: "grass", power: 80, desc: "草系特攻" },
-        { name: "自我暗示", type: "normal", power: 0, desc: "複製能力" }
-      ]},
-      { name: "風速狗", t1: "fire", t2: "none", abilities: "威嚇", stats: {hp:165, atk:130, def:100, spa:120, spd:100, spe:115}, topMoves: [
-        { name: "神速", type: "normal", power: 80, priority: 2, desc: "先制+2｜強悍物理先制" },
-        { name: "閃焰冲鋒", type: "fire", power: 120, effect: "recoil", desc: "威力 120｜火系爆發" },
-        { name: "近身戰", type: "fighting", power: 120, effect: "self_def_down", desc: "威力 120｜格鬥打點" },
-        { name: "野性伏特", type: "electric", power: 90, effect: "recoil", desc: "電系反作用力" },
-        { name: "朝陽", type: "normal", power: 0, desc: "回復體力" },
-        { name: "鬼火", type: "ghost", power: 0, desc: "使敵燒傷" },
-        { name: "大聲咆哮", type: "dark", power: 55, desc: "降低敵特攻" },
-        { name: "逆鱗", type: "dragon", power: 120, effect: "lock_in", desc: "龍系大招" },
-        { name: "鐵頭", type: "steel", power: 80, desc: "鋼系打點" },
-        { name: "岩崩", type: "rock", power: 75, desc: "岩石打點" }
-      ]},
-      { name: "棄世猴", t1: "fighting", t2: "ghost", abilities: "憤怒拳", stats: {hp:185, atk:135, def:80, spa:70, spd:110, spe:107}, topMoves: [
-        { name: "憤怒拳", type: "ghost", power: 50, desc: "威力 50｜受傷疊加威力" },
-        { name: "近身戰", type: "fighting", power: 120, effect: "self_def_down", desc: "威力 120｜格鬥暴力輸出" },
-        { name: "影襲", type: "ghost", power: 40, priority: 1, desc: "先制+1｜幽靈先制" },
-        { name: "急速折返", type: "bug", power: 70, desc: "攻擊換人" },
-        { name: "岩崩", type: "rock", power: 75, desc: "岩石群體" },
-        { name: "冰凍拳", type: "ice", power: 75, desc: "冰凍打點" },
-        { name: "雷電拳", type: "electric", power: 75, desc: "電系打點" },
-        { name: "挑撥", type: "normal", power: 0, desc: "封鎖變化" },
-        { name: "健美", type: "fighting", power: 0, desc: "攻防提升" },
-        { name: "起死回生", type: "fighting", power: 100, desc: "血越少威力越高" }
-      ]},
-      { name: "大鋼蛇", t1: "steel", t2: "ground", abilities: "結實", stats: {hp:152, atk:105, def:200, spa:75, spd:85, spe:50}, topMoves: [
-        { name: "地震", type: "ground", power: 100, desc: "威力 100｜地面本屬" },
-        { name: "重磅衝撞", type: "steel", power: 100, desc: "威力高｜重型鋼系衝撞" },
-        { name: "岩崩", type: "rock", power: 75, desc: "威力 75｜岩石群體技" },
-        { name: "鐵頭", type: "steel", power: 80, desc: "鋼系物理" },
-        { name: "冰凍牙", type: "ice", power: 65, desc: "冰凍牽制" },
-        { name: "咬碎", type: "dark", power: 80, desc: "惡系物攻" },
-        { name: "鐵壁", type: "steel", power: 0, desc: "防禦提升2階" },
-        { name: "大爆炸", type: "normal", power: 250, desc: "同歸於盡" },
-        { name: "沙暴", type: "rock", power: 0, desc: "開啟沙暴" },
-        { name: "龍尾", type: "dragon", power: 60, desc: "強制換人" }
-      ]},
-      { name: "巨鉗螳螂", t1: "bug", t2: "steel", abilities: "技術高手", stats: {hp:145, atk:150, def:120, spa:75, spd:100, spe:85}, topMoves: [
-        { name: "子彈拳", type: "steel", power: 40, priority: 1, desc: "先制+1｜鋼系極強先制" },
-        { name: "近身戰", type: "fighting", power: 120, effect: "self_def_down", desc: "威力 120｜格鬥破盲點" },
-        { name: "十字剪", type: "bug", power: 80, desc: "威力 80｜蟲系物攻" },
-        { name: "劍舞", type: "normal", power: 0, desc: "攻擊提升" },
-        { name: "急速折返", type: "bug", power: 70, desc: "攻擊換人" },
-        { name: "羽栖", type: "flying", power: 0, desc: "回復體力" },
-        { name: "鐵頭", type: "steel", power: 80, desc: "鋼系物攻" },
-        { name: "劈瓦", type: "fighting", power: 75, desc: "破壞光牆" },
-        { name: "燕返", type: "flying", power: 60, desc: "必中飛行" },
-        { name: "盜取", type: "dark", power: 60, desc: "奪取道具" }
-      ]},
-      { name: "帝王拿波", t1: "water", t2: "steel", abilities: "不服輸", stats: {hp:160, atk:104, def:108, spa:131, spd:121, spe:80}, topMoves: [
-        { name: "熱水", type: "water", power: 80, desc: "威力 80｜30%燒傷" },
-        { name: "加農光炮", type: "steel", power: 80, desc: "威力 80｜鋼系特攻" },
-        { name: "水流噴射", type: "water", power: 40, priority: 1, desc: "先制+1｜水系先制" },
-        { name: "冰凍光束", type: "ice", power: 90, desc: "冰凍特攻" },
-        { name: "衝浪", type: "water", power: 90, desc: "穩定水系" },
-        { name: "水砲", type: "water", power: 110, desc: "水系大招" },
-        { name: "高速移動", type: "psychic", power: 0, desc: "速度大幅提升" },
-        { name: "羽栖", type: "flying", power: 0, desc: "回復體力" },
-        { name: "金屬爪", type: "steel", power: 50, desc: "鋼系物攻" },
-        { name: "信使鳥", type: "normal", power: 0, desc: "趣味招式" }
-      ]},
-      { name: "轟雷金剛猩", t1: "grass", t2: "none", abilities: "青草製造者", stats: {hp:175, atk:155, def:110, spa:70, spd:90, spe:105}, topMoves: [
-        { name: "青草滑梯", type: "grass", power: 70, priority: 1, desc: "先制+1｜場地自動先制草招" },
-        { name: "木槌", type: "grass", power: 120, effect: "recoil", desc: "威力 120｜高爆發草系" },
-        { name: "十萬馬力", type: "ground", power: 95, desc: "威力 95｜地面打點" },
-        { name: "擊掌奇襲", type: "normal", power: 40, priority: 3, desc: "先制畏縮" },
-        { name: "急速折返", type: "bug", power: 70, desc: "攻擊換人" },
-        { name: "蠻力", type: "fighting", power: 120, effect: "self_atk_down", desc: "格鬥爆發" },
-        { name: "岩崩", type: "rock", power: 75, desc: "岩石群體" },
-        { name: "吸血", type: "bug", power: 80, desc: "吸血攻擊" },
-        { name: "健美", type: "fighting", power: 0, desc: "攻防提升" },
-        { name: "泰山壓頂", type: "normal", power: 85, desc: "一般物攻" }
-      ]},
-      { name: "大嘴鷗", t1: "water", t2: "flying", abilities: "降雨", stats: {hp:135, atk:75, def:120, spa:115, spd:90, spe:85}, topMoves: [
-        { name: "暴風", type: "flying", power: 110, desc: "威力 110｜雨天必中飛行特攻" },
-        { name: "衝浪", type: "water", power: 90, desc: "威力 90｜雨天水系特攻" },
-        { name: "水砲", type: "water", power: 110, desc: "威力 110｜雨天極限爆發" },
-        { name: "伏特替換", type: "electric", power: 70, desc: "攻擊換人" },
-        { name: "冰凍光束", type: "ice", power: 90, desc: "冰凍特攻" },
-        { name: "順風", type: "flying", power: 0, desc: "全隊加速" },
-        { name: "守住", type: "normal", power: 0, priority: 4, desc: "完全防禦" },
-        { name: "羽栖", type: "flying", power: 0, desc: "回復體力" },
-        { name: "熱水", type: "water", power: 80, desc: "30%燒傷" },
-        { name: "空氣斬", type: "flying", power: 75, desc: "飛行特攻" }
-      ]},
-      { name: "大電海燕", t1: "electric", t2: "flying", abilities: "蓄電", stats: {hp:145, atk:90, def:80, spa:125, spd:90, spe:145}, topMoves: [
-        { name: "暴風", type: "flying", power: 110, desc: "威力 110｜飛行特攻" },
-        { name: "十萬伏特", type: "electric", power: 90, desc: "威力 90｜電系特攻" },
-        { name: "伏特替換", type: "electric", power: 70, desc: "威力 70｜游擊換人" },
-        { name: "氣象球", type: "normal", power: 50, desc: "天氣球" },
-        { name: "放電", type: "electric", power: 80, desc: "電系群體" },
-        { name: "羽栖", type: "flying", power: 0, desc: "回復體力" },
-        { name: "順風", type: "flying", power: 0, desc: "全隊加速" },
-        { name: "高速移動", type: "psychic", power: 0, desc: "速度大幅提升" },
-        { name: "電光", type: "electric", power: 40, desc: "基礎電擊" },
-        { name: "啄食", type: "flying", power: 60, desc: "飛行物攻" }
-      ]},
-      { name: "倫琴貓", t1: "electric", t2: "none", abilities: "威嚇", stats: {hp:155, atk:140, def:99, spa:105, spd:99, spe:95}, topMoves: [
-        { name: "瘋伏特", type: "electric", power: 90, effect: "recoil", desc: "威力 90｜電系物理反作用力" },
-        { name: "近身戰", type: "fighting", power: 120, effect: "self_def_down", desc: "威力 120｜格鬥打點" },
-        { name: "冰凍牙", type: "ice", power: 65, desc: "威力 65｜冰凍牽制" },
-        { name: "咬碎", type: "dark", power: 80, desc: "惡系物攻" },
-        { name: "伏特替換", type: "electric", power: 70, desc: "攻擊換人" },
-        { name: "蠻力", type: "fighting", power: 120, effect: "self_atk_down", desc: "格鬥爆發" },
-        { name: "鐵尾", type: "steel", power: 100, desc: "鋼系物攻" },
-        { name: "電光", type: "electric", power: 40, desc: "基礎電擊" },
-        { name: "挑撥", type: "normal", power: 0, desc: "封鎖變化" },
-        { name: "吼叫", type: "normal", power: 0, desc: "強制換人" }
       ]}
     ];
 
@@ -1138,9 +786,9 @@
         let e1 = document.getElementById('e1-choice');
         let e2 = document.getElementById('e2-choice');
         let e3 = document.getElementById('e3-choice');
-        if (e1) e1.value = 1;
-        if (e2) e2.value = 2;
-        if (e3) e3.value = 3;
+        if (e1) e1.value = 9; // 赤焰咆嘯虎
+        if (e2) e2.value = 1;
+        if (e3) e3.value = 2;
       } catch (err) {
         console.error("Initialization error:", err);
       }
@@ -1176,7 +824,7 @@
               ${itemHtml}
             </div>
             <div>
-              <label style="font-size:0.75rem;">從 OPGG 10 大常用技能中勾選 4 個出戰技能：</label>
+              <label style="font-size:0.75rem;">從 10 大常用技能中勾選 4 個出戰技能：</label>
               <div class="move-checkbox-grid">
                 ${p.topMoves.map((m, mIdx) => `
                   <div class="move-checkbox-item">
@@ -1618,11 +1266,13 @@
         }
       }
 
-      let pItemName = pCur.isMega ? "💎 Mega石" : (availableItems.find(i => i.id === pCur.item)?.name.split(' ')[0] || '無');
+      let pItemObj = availableItems.find(i => i.id === pCur.item);
+      let pItemName = pCur.isMega ? "💎 Mega石" : (pItemObj ? pItemObj.name.split(' ')[0] : '無');
       let pExtraInfo = `特性: ${pCur.abilities} | 道具: ${pItemName}`;
       if (pCur.abilities === '畫皮') pExtraInfo += ` (畫皮: ${pCur.hasDisguise ? '✨' : '❌'})`;
 
-      let eItemName = eCur.isMega ? "💎 Mega石" : (availableItems.find(i => i.id === eCur.item)?.name.split(' ')[0] || '無');
+      let eItemObj = availableItems.find(i => i.id === eCur.item);
+      let eItemName = eCur.isMega ? "💎 Mega石" : (eItemObj ? eItemObj.name.split(' ')[0] : '無');
       let eExtraInfo = `特性: ${eCur.abilities} | 道具: ${eItemName}`;
 
       let pStatusElem = document.getElementById('player-status');
@@ -1702,7 +1352,8 @@
         
         checkMegaAndEntry(newP, eCur, "我方", "對手");
 
-        let dmgToPlayer = calcDamageDealtWithAbilityAndItem(eCur, newP, eMove).dmg;
+        let { dmg: dmgToPlayer, logText: eLog } = calcDamageDealtWithAbilityAndItem(eCur, newP, eMove, "敵方", "我方");
+        if (eLog) battleState.log.push(eLog);
         newP.currentHp = Math.max(0, newP.currentHp - dmgToPlayer);
         battleState.log.push(`🔸 敵方的 ${eCur.name} 使用了 <strong>${eMove.name}</strong>，對登場的 ${newP.name} 造成了 <strong>${dmgToPlayer}</strong> 點傷害！`);
 
@@ -1735,14 +1386,12 @@
         }
 
         if (playerFirst) {
-          let { dmg: dmgToEnemy, logText: pLog } = calcDamageDealtWithAbilityAndItem(pCur, eCur, pMove);
+          let { dmg: dmgToEnemy, logText: pLog } = calcDamageDealtWithAbilityAndItem(pCur, eCur, pMove, "我方", "敵方");
           if (pLog) battleState.log.push(pLog);
           eCur.currentHp = Math.max(0, eCur.currentHp - dmgToEnemy);
-          battleState.log.push(`🔹 我方的 ${pCur.name} 使用了 <strong>${pMove.name}</strong>，對 ${eCur.name} 造成了 <strong>${dmgToEnemy}</strong> 點傷害！`);
-
-          if (pMove.name === "電光束") {
-            pCur.spaStage = Math.min(3.0, pCur.spaStage + 0.5);
-            battleState.log.push(`⚡ 鋁鋼橋龍的電光束蓄力完成，特攻提升了！`);
+          
+          if ((pMove.power || 0) > 0) {
+            battleState.log.push(`🔹 我方的 ${pCur.name} 使用了 <strong>${pMove.name}</strong>，對 ${eCur.name} 造成了 <strong>${dmgToEnemy}</strong> 點傷害！`);
           }
 
           if (eCur.currentHp <= 0) {
@@ -1753,10 +1402,13 @@
             return;
           }
 
-          let { dmg: dmgToPlayer, logText: eLog } = calcDamageDealtWithAbilityAndItem(eCur, pCur, eMove);
+          let { dmg: dmgToPlayer, logText: eLog } = calcDamageDealtWithAbilityAndItem(eCur, pCur, eMove, "敵方", "我方");
           if (eLog) battleState.log.push(eLog);
           pCur.currentHp = Math.max(0, pCur.currentHp - dmgToPlayer);
-          battleState.log.push(`🔸 敵方的 ${eCur.name} 使用了 <strong>${eMove.name}</strong>，對 ${pCur.name} 造成了 <strong>${dmgToPlayer}</strong> 點傷害！`);
+
+          if ((eMove.power || 0) > 0) {
+            battleState.log.push(`🔸 敵方的 ${eCur.name} 使用了 <strong>${eMove.name}</strong>，對 ${pCur.name} 造成了 <strong>${dmgToPlayer}</strong> 點傷害！`);
+          }
 
           if (pCur.currentHp <= 0) {
             battleState.log.push(`💥 我方的 ${pCur.name} 倒下了！`);
@@ -1764,10 +1416,13 @@
           }
 
         } else {
-          let { dmg: dmgToPlayer, logText: eLog } = calcDamageDealtWithAbilityAndItem(eCur, pCur, eMove);
+          let { dmg: dmgToPlayer, logText: eLog } = calcDamageDealtWithAbilityAndItem(eCur, pCur, eMove, "敵方", "我方");
           if (eLog) battleState.log.push(eLog);
           pCur.currentHp = Math.max(0, pCur.currentHp - dmgToPlayer);
-          battleState.log.push(`🔸 敵方的 ${eCur.name} 使用了 <strong>${eMove.name}</strong>，對 ${pCur.name} 造成了 <strong>${dmgToPlayer}</strong> 點傷害！`);
+
+          if ((eMove.power || 0) > 0) {
+            battleState.log.push(`🔸 敵方的 ${eCur.name} 使用了 <strong>${eMove.name}</strong>，對 ${pCur.name} 造成了 <strong>${dmgToPlayer}</strong> 點傷害！`);
+          }
 
           if (pCur.currentHp <= 0) {
             battleState.log.push(`💥 我方的 ${pCur.name} 倒下了！`);
@@ -1777,14 +1432,12 @@
             return;
           }
 
-          let { dmg: dmgToEnemy, logText: pLog } = calcDamageDealtWithAbilityAndItem(pCur, eCur, pMove);
+          let { dmg: dmgToEnemy, logText: pLog } = calcDamageDealtWithAbilityAndItem(pCur, eCur, pMove, "我方", "敵方");
           if (pLog) battleState.log.push(pLog);
           eCur.currentHp = Math.max(0, eCur.currentHp - dmgToEnemy);
-          battleState.log.push(`🔹 我方的 ${pCur.name} 使用了 <strong>${pMove.name}</strong>，對 ${eCur.name} 造成了 <strong>${dmgToEnemy}</strong> 點傷害！`);
 
-          if (pMove.name === "電光束") {
-            pCur.spaStage = Math.min(3.0, pCur.spaStage + 0.5);
-            battleState.log.push(`⚡ 鋁鋼橋龍的電光束蓄力完成，特攻提升了！`);
+          if ((pMove.power || 0) > 0) {
+            battleState.log.push(`🔹 我方的 ${pCur.name} 使用了 <strong>${pMove.name}</strong>，對 ${eCur.name} 造成了 <strong>${dmgToEnemy}</strong> 點傷害！`);
           }
 
           if (eCur.currentHp <= 0) {
@@ -1793,6 +1446,18 @@
           }
         }
       }
+
+      // 回合結束：處理剩餘飯匙回復與天氣
+      [battleState.playerTeam[battleState.pIdx], battleState.enemyTeam[battleState.eIdx]].forEach((fighter, idx) => {
+        let label = idx === 0 ? "我方" : "敵方";
+        if (fighter && fighter.currentHp > 0) {
+          if (fighter.item === 'leftovers' && fighter.currentHp < fighter.maxHp) {
+            let heal = Math.floor(fighter.maxHp / 16);
+            fighter.currentHp = Math.min(fighter.maxHp, fighter.currentHp + heal);
+            battleState.log.push(`🍃 ${label}的 ${fighter.name} 靠著【吃剩的東西】回復了 ${heal} 點 HP！`);
+          }
+        }
+      });
 
       if (battleState.weather !== 'none') {
         battleState.weatherTurns--;
@@ -1809,13 +1474,42 @@
       checkWinCondition();
     }
 
-    function calcDamageDealtWithAbilityAndItem(attacker, defender, move) {
-      let power = move.power || 60;
+    function calcDamageDealtWithAbilityAndItem(attacker, defender, move, atkLabel, defLabel) {
+      let logText = "";
+      let power = move.power || 0;
+
+      // 處理變化招式 (如劍舞、龍舞、冥想、挑撥等)
+      if (power === 0) {
+        if (move.name === "劍舞") {
+          attacker.atkStage = (attacker.atkStage || 1.0) * 1.5;
+          logText = `✨ ${atkLabel}的 ${attacker.name} 使用了 <strong>劍舞</strong>，攻擊力大幅提升！`;
+        } else if (move.name === "龍之舞" || move.name === "健美") {
+          attacker.atkStage = (attacker.atkStage || 1.0) * 1.25;
+          logText = `✨ ${atkLabel}的 ${attacker.name} 使用了 <strong>${move.name}</strong>，提升了戰鬥能力！`;
+        } else if (move.name === "冥想" || move.name === "詭計") {
+          attacker.spaStage = (attacker.spaStage || 1.0) * 1.5;
+          logText = `✨ ${atkLabel}的 ${attacker.name} 使用了 <strong>${move.name}</strong>，特攻能力大幅提升！`;
+        } else {
+          logText = `✨ ${atkLabel}的 ${attacker.name} 使用了 <strong>${move.name}</strong>！`;
+        }
+        return { dmg: 0, logText: logText };
+      }
+
       let mult = getMultiplier(move.type, defender.t1, defender.t2);
-      let stab = (move.type === attacker.t1 || move.type === attacker.t2) ? 1.5 : 1.0;
       
+      // 免疫判斷 (0倍傷害直接判定為 0)
+      if (mult === 0) {
+        return { dmg: 0, logText: `🚫 ${atkLabel}的 ${attacker.name} 使用了 <strong>${move.name}</strong>，但對 ${defender.name} 完全無效！` };
+      }
+
+      let stab = (move.type === attacker.t1 || move.type === attacker.t2) ? 1.5 : 1.0;
       let isSpecial = ['fire', 'water', 'electric', 'grass', 'ice', 'psychic', 'ghost', 'dragon', 'fairy', 'poison'].includes(move.type);
-      let atkStat = isSpecial ? (attacker.stats.spa * (attacker.spaStage || 1.0)) : (attacker.stats.atk * (attacker.atkStage || 1.0));
+
+      let itemAtkMod = 1.0;
+      if (attacker.item === 'choice-band' && !isSpecial) itemAtkMod = 1.5;
+      if (attacker.item === 'choice-specs' && isSpecial) itemAtkMod = 1.5;
+
+      let atkStat = isSpecial ? (attacker.stats.spa * (attacker.spaStage || 1.0) * itemAtkMod) : (attacker.stats.atk * (attacker.atkStage || 1.0) * itemAtkMod);
       let defStat = isSpecial ? defender.stats.spd : defender.stats.def;
 
       if (defender.item === 'assault-vest' && isSpecial) {
@@ -1835,42 +1529,59 @@
         if (move.type === 'water') weatherMod = 0.5;
       }
 
-      let rawDmg = Math.floor((power * (atkStat / Math.max(1, defStat)) * stab * mult * weatherMod * 0.5));
+      let expertMod = (attacker.item === 'expert-belt' && mult >= 2) ? 1.2 : 1.0;
 
-      if (attacker.item === 'life-orb') {
-        rawDmg = Math.floor(rawDmg * 1.3);
-        let recoil = Math.floor(attacker.maxHp / 10);
-        attacker.currentHp = Math.max(0, attacker.currentHp - recoil);
-      }
+      let rawDmg = Math.floor((power * (atkStat / Math.max(1, defStat)) * stab * mult * weatherMod * expertMod * 0.5));
 
       let finalDmg = Math.max(1, rawDmg);
-      let logText = "";
 
-      if (move.effect === 'self_def_down') {
-        attacker.stats.def = Math.max(30, attacker.stats.def * 0.8);
-        logText += `⚠️ ${attacker.name} 的 ${move.name} 副作用：防禦力下降了！ `;
-      } else if (move.effect === 'self_spa_down') {
-        attacker.spaStage = Math.max(0.5, attacker.spaStage - 0.5);
-        logText += `⚠️ ${attacker.name} 的 ${move.name} 副作用：特攻大幅下降了！ `;
-      } else if (move.effect === 'recoil') {
-        let recoilDmg = Math.floor(finalDmg * 0.3);
-        attacker.currentHp = Math.max(0, attacker.currentHp - recoilDmg);
-        logText += `⚠️ ${attacker.name} 承受了反作用力傷害！ `;
+      // 達人帶 / 生命寶珠 / 弱點保險 邏輯
+      if (attacker.item === 'life-orb') {
+        finalDmg = Math.floor(finalDmg * 1.3);
+        let recoil = Math.max(1, Math.floor(attacker.maxHp / 10));
+        attacker.currentHp = Math.max(0, attacker.currentHp - recoil);
+        logText += `💥 ${atkLabel}的 ${attacker.name} 受到【生命寶珠】反傷，損失了 ${recoil} 點 HP！ `;
       }
 
+      if (defender.item === 'weakness-policy' && mult >= 2) {
+        defender.atkStage = (defender.atkStage || 1.0) * 1.5;
+        defender.spaStage = (defender.spaStage || 1.0) * 1.5;
+        logText += `⚡ ${defLabel}的 ${defender.name} 被發動【弱點保險】，攻特攻大幅提升！ `;
+      }
+
+      // 畫皮防禦
       if (defender.abilities === "畫皮" && defender.hasDisguise) {
         defender.hasDisguise = false;
         let disguiseDmg = Math.floor(defender.maxHp / 8);
         defender.currentHp = Math.max(0, defender.currentHp - disguiseDmg);
         return { 
           dmg: 0, 
-          logText: `✨ ${defender.name} 的【畫皮】發動！替身替它擋下了所有攻擊傷害，畫皮碎裂了！` 
+          logText: `✨ ${defLabel}的 ${defender.name} 【畫皮】發動！擋下傷害並承受 1/8 畫皮破裂傷害！` 
         };
       }
 
+      // 多重鱗片
       if (defender.abilities === "多重鱗片" && defender.currentHp === defender.maxHp) {
         finalDmg = Math.floor(finalDmg * 0.5);
-        logText += `🛡️ ${defender.name} 的【多重鱗片】發動！滿血狀態下受到的傷害減半！`;
+        logText += `🛡️ ${defender.name} 【多重鱗片】發動，受到的傷害減半！ `;
+      }
+
+      // 氣勢披帶 (氣腰)
+      if (defender.item === 'focus-sash' && defender.currentHp === defender.maxHp && finalDmg >= defender.currentHp) {
+        finalDmg = defender.currentHp - 1;
+        logText += `🎗️ ${defLabel}的 ${defender.name} 靠著【氣勢披帶】挺住了致命一擊，保留了 1 點 HP！ `;
+      }
+
+      if (move.effect === 'self_def_down') {
+        attacker.stats.def = Math.max(30, attacker.stats.def * 0.8);
+        logText += `⚠️ ${attacker.name} 防禦力下降了！ `;
+      } else if (move.effect === 'self_spa_down') {
+        attacker.spaStage = Math.max(0.5, attacker.spaStage - 0.5);
+        logText += `⚠️ ${attacker.name} 特攻大幅下降了！ `;
+      } else if (move.effect === 'recoil') {
+        let recoilDmg = Math.floor(finalDmg * 0.3);
+        attacker.currentHp = Math.max(0, attacker.currentHp - recoilDmg);
+        logText += `⚠️ ${attacker.name} 承受了反作用力傷害！ `;
       }
 
       return { dmg: finalDmg, logText: logText };
