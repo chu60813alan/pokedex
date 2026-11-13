@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>寶可夢 18 屬性對戰戰術中心與 3v3 模擬器 (傷害相剋邏輯完全修復)</title>
+  <title>寶可夢 18 屬性對戰戰術中心與 3v3 模擬器 (本傳正統傷害計算)</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -504,9 +504,9 @@
         <div id="calc-result" class="result-section" style="display:none;"></div>
       </div>
 
-      <!-- 分頁六：🎮 3v3 對戰模擬 (相剋倍率與傷害全面修正) -->
+      <!-- 分頁六：🎮 3v3 對戰模擬 (本傳官方標準傷害公式) -->
       <div id="panel-battle" class="panel">
-        <h3>🎮 3v3 回合制對戰模擬器 (相剋與傷害邏輯完美修復)</h3>
+        <h3>🎮 3v3 回合制對戰模擬器 (本傳官方標準傷害公式)</h3>
         <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">組建你的 3 隻出戰陣容。Mega 寶可夢鎖定專屬 Mega 石，一般寶可夢可選擇 10 種熱門對戰道具：</p>
         
         <div style="background:#FFF3E6; padding:10px; border-radius:8px; margin-bottom:10px; border:1px solid #F39C12;">
@@ -852,7 +852,6 @@
     }
 
     function getMultiplier(atk, def1, def2) {
-      // 修正：確保防禦方雙屬性相剋倍率正確相乘 (預設為 1，若有定義則相乘)
       let m1 = 1;
       if (chart[atk] && chart[atk][def1] !== undefined) {
         m1 = chart[atk][def1];
@@ -1183,7 +1182,7 @@
       battleState.eIdx = 0;
       battleState.weather = 'none';
       battleState.weatherTurns = 0;
-      battleState.log = ["[系統] 3v3 雙方帶上專屬道具與 4 大戰術技能，全隊對戰正式開始！"];
+      battleState.log = ["[系統] 3v3 雙方帶上專屬道具與 4 大戰術技能，本傳標準規則對戰開始！"];
 
       checkMegaAndEntry(battleState.playerTeam[0], battleState.enemyTeam[0], "我方", "對手");
 
@@ -1541,8 +1540,17 @@
 
       let expertMod = (attacker.item === 'expert-belt' && mult >= 2) ? 1.2 : 1.0;
 
-      // 修正傷害計算：提升基礎倍率，確保屬性相剋與高特攻輸出能正常打出重創
-      let rawDmg = Math.floor((((2 * 50 / 5 + 2) * power * (atkStat / Math.max(1, defStat)) / 42) + 2) * stab * mult * weatherMod * expertMod * 1.8);
+      // ==========================================
+      // 官方本傳正統傷害公式 (Standard Pokemon Damage Formula)
+      //公式: Floor(Floor(Floor(2 * Level / 5 + 2) * Power * Atk / Def) / 50 + 2) * Modifiers...
+      // ==========================================
+      let levelPart = Math.floor( (2 * 50) / 5 ) + 2; // Lv.50 標準為 22
+      let baseDamage = Math.floor( levelPart * power * (atkStat / Math.max(1, defStat)) );
+      let adjustedDamage = Math.floor( baseDamage / 50 ) + 2;
+
+      // 套用本傳乘數修正 (STAB, Type Effectiveness, Weather, Item, Random 0.85~1.0)
+      let randomFactor = 0.85 + Math.random() * 0.15;
+      let rawDmg = Math.floor( adjustedDamage * stab * mult * weatherMod * expertMod * randomFactor );
 
       let finalDmg = Math.max(1, rawDmg);
 
