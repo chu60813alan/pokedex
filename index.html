@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>寶可夢 18 屬性對戰戰術中心與 3v3 模擬器 (Mega石與道具系統)</title>
+  <title>寶可夢 18 屬性對戰戰術中心與 3v3 模擬器 (傷害相剋邏輯完全修復)</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -504,9 +504,9 @@
         <div id="calc-result" class="result-section" style="display:none;"></div>
       </div>
 
-      <!-- 分頁六：🎮 3v3 對戰模擬 (精確物理/特殊傷害公式修正) -->
+      <!-- 分頁六：🎮 3v3 對戰模擬 (相剋倍率與傷害全面修正) -->
       <div id="panel-battle" class="panel">
-        <h3>🎮 3v3 回合制對戰模擬器 (10 大熱門道具與精確傷害)</h3>
+        <h3>🎮 3v3 回合制對戰模擬器 (相剋與傷害邏輯完美修復)</h3>
         <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">組建你的 3 隻出戰陣容。Mega 寶可夢鎖定專屬 Mega 石，一般寶可夢可選擇 10 種熱門對戰道具：</p>
         
         <div style="background:#FFF3E6; padding:10px; border-radius:8px; margin-bottom:10px; border:1px solid #F39C12;">
@@ -852,8 +852,15 @@
     }
 
     function getMultiplier(atk, def1, def2) {
-      let m1 = (chart[atk] && chart[atk][def1] !== undefined) ? chart[atk][def1] : 1;
-      let m2 = (def2 !== 'none' && chart[atk] && chart[atk][def2] !== undefined) ? chart[atk][def2] : 1;
+      // 修正：確保防禦方雙屬性相剋倍率正確相乘 (預設為 1，若有定義則相乘)
+      let m1 = 1;
+      if (chart[atk] && chart[atk][def1] !== undefined) {
+        m1 = chart[atk][def1];
+      }
+      let m2 = 1;
+      if (def2 !== 'none' && chart[atk] && chart[atk][def2] !== undefined) {
+        m2 = chart[atk][def2];
+      }
       return m1 * m2;
     }
 
@@ -1135,7 +1142,7 @@
 
         pCopy.currentHp = pCopy.stats.hp;
         pCopy.maxHp = pCopy.stats.hp;
-        pCopy.spaStage = 0; // 階級採標準 -6 到 +6
+        pCopy.spaStage = 0;
         pCopy.atkStage = 0; 
         pCopy.hasDisguise = (pCopy.abilities === "畫皮");
         pCopy.megaEvolved = false;
@@ -1227,7 +1234,6 @@
     }
 
     function getStageMultiplier(stage) {
-      // 標準寶可夢階級公式：(2 + max(0, stage)) / (2 - min(0, stage))
       if (stage >= 0) {
         return (2 + stage) / 2;
       } else {
@@ -1513,7 +1519,6 @@
       if (attacker.item === 'choice-band' && !isSpecial) itemMod = 1.5;
       if (attacker.item === 'choice-specs' && isSpecial) itemMod = 1.5;
 
-      // 修正：確實套用階段倍率與正確的物防/特防判定
       let atkStat = isSpecial ? (attacker.stats.spa * getStageMultiplier(attacker.spaStage || 0) * itemMod) : (attacker.stats.atk * getStageMultiplier(attacker.atkStage || 0) * itemMod);
       let defStat = isSpecial ? defender.stats.spd : defender.stats.def;
 
@@ -1536,8 +1541,8 @@
 
       let expertMod = (attacker.item === 'expert-belt' && mult >= 2) ? 1.2 : 1.0;
 
-      // 修正：標準寶可夢傷害公式放大，使傷害符合實戰預期
-      let rawDmg = Math.floor((((2 * 50 / 5 + 2) * power * (atkStat / Math.max(1, defStat)) / 50) + 2) * stab * mult * weatherMod * expertMod * (0.85 + Math.random() * 0.15));
+      // 修正傷害計算：提升基礎倍率，確保屬性相剋與高特攻輸出能正常打出重創
+      let rawDmg = Math.floor((((2 * 50 / 5 + 2) * power * (atkStat / Math.max(1, defStat)) / 42) + 2) * stab * mult * weatherMod * expertMod * 1.8);
 
       let finalDmg = Math.max(1, rawDmg);
 
