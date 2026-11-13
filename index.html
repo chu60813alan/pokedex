@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>寶可夢 18 屬性對戰戰術中心與 3v3 模擬器 (道具與十選四系統)</title>
+  <title>寶可夢 18 屬性對戰戰術中心與 3v3 模擬器</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -286,14 +286,6 @@
       margin-top: 8px;
     }
 
-    /* 十選四技能選擇介面 */
-    .move-picker-container {
-      background: #FFF3E6;
-      border: 1px solid #F39C12;
-      padding: 10px;
-      border-radius: 8px;
-      margin-bottom: 10px;
-    }
     .move-checkbox-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -495,12 +487,11 @@
         <div style="background:#FFF3E6; padding:10px; border-radius:8px; margin-bottom:10px; border:1px solid #F39C12;">
           <strong style="color:#D35400; font-size:0.9rem;">⭐ 我方 3 隻出戰陣容配置：</strong>
           <div style="display:flex; gap:6px; margin-top:6px;">
-            <select id="p1-choice" onchange="renderMoveCheckboxes(1)" style="flex:1;"></select>
-            <select id="p2-choice" onchange="renderMoveCheckboxes(2)" style="flex:1;"></select>
-            <select id="p3-choice" onchange="renderMoveCheckboxes(3)" style="flex:1;"></select>
+            <select id="p1-choice" onchange="renderAllPlayerConfigs()" style="flex:1;"></select>
+            <select id="p2-choice" onchange="renderAllPlayerConfigs()" style="flex:1;"></select>
+            <select id="p3-choice" onchange="renderAllPlayerConfigs()" style="flex:1;"></select>
           </div>
           
-          <!-- 隊員詳細配置區 (道具三選一 + 十選四勾選) -->
           <div id="team-custom-config" style="margin-top: 10px;"></div>
         </div>
 
@@ -574,14 +565,12 @@
       fairy: { fighting: 2, dragon: 2, dark: 2, fire: 0.5, poison: 0.5, steel: 0.5 }
     };
 
-    // 道具清單 (三選一)
     const availableItems = [
-      { id: "life-orb", name: "生命寶珠 (傷害提升1.3倍，每次攻擊扣1/10血)" },
-      { id: "choice-scarf", name: "圍巾 (速度提升1.5倍，只能使用同招)" },
-      { id: "assault-vest", name: "突擊背心 (特防提升1.5倍，無法使用變化招)" }
+      { id: "life-orb", name: "生命寶珠 (傷害1.3倍，每次反傷1/10)" },
+      { id: "choice-scarf", name: "突擊圍巾 (速度1.5倍)" },
+      { id: "assault-vest", name: "突擊背心 (特防1.5倍)" }
     ];
 
-    // 40 隻寶可夢資料庫，每隻擴充至 10 大常用技能（含副作用標記）
     const pokemons = [
       { name: "M-噴火龍Y", t1: "fire", t2: "flying", abilities: "日照", stats: {hp:150, atk:104, def:98, spa:159, spd:135, spe:120}, topMoves: [
         { name: "大字爆炎", type: "fire", power: 110, desc: "威力 110｜火系本屬特攻" },
@@ -602,10 +591,10 @@
         { name: "鐵頭", type: "steel", power: 80, desc: "威力 80｜反制妖精" },
         { name: "龍爪", type: "dragon", power: 80, desc: "威力 80｜穩定龍系" },
         { name: "十萬馬力", type: "ground", power: 95, desc: "威力 95｜單體地面" },
-        { name: "瓦斯彈擊", type: "poison", power: 70, desc: "威力 70｜反制草與妖" },
         { name: "毒擊", type: "poison", power: 80, desc: "威力 80｜毒系打點" },
         { name: "影子爪", type: "ghost", power: 70, desc: "威力 70｜幽靈打點" },
-        { name: "咬碎", type: "dark", power: 80, desc: "威力 80｜惡系物攻" }
+        { name: "咬碎", type: "dark", power: 80, desc: "威力 80｜惡系物攻" },
+        { name: "瓦斯彈擊", type: "poison", power: 70, desc: "威力 70｜毒系招式" }
       ]},
       { name: "謎擬Ｑ", t1: "ghost", t2: "fairy", abilities: "畫皮", stats: {hp:131, atk:110, def:100, spa:70, spd:125, spe:116}, topMoves: [
         { name: "嬉鬧", type: "fairy", power: 90, desc: "威力 90｜妖精主力輸出" },
@@ -698,7 +687,7 @@
         { name: "冷凍拳", type: "ice", power: 75, desc: "威力 75｜冰凍打點" },
         { name: "火焰拳", type: "fire", power: 75, desc: "威力 75｜火系打點" },
         { name: "重磅衝撞", type: "steel", power: 100, desc: "重型撞擊" },
-        { name: "龍舞", type: "dragon", power: 0, desc: "強化攻速" },
+        { name: "龍舞", type: "dragon", power: 0, desc: "攻速提升" },
         { name: "挑撥", type: "normal", power: 0, desc: "封鎖變化" },
         { name: "岩崩", type: "rock", power: 75, desc: "岩石群體" },
         { name: "惡之波動", type: "dark", power: 80, desc: "惡系特攻" }
@@ -1105,14 +1094,10 @@
         sel.value = (i * 2) % pokemons.length;
       });
 
-      // 初始化我方三隻隊員的動態十選四與道具選單
       for(let i=1; i<=3; i++) {
         document.getElementById(`p${i}-choice`).value = (i - 1) * 2;
       }
       renderAllPlayerConfigs();
-      ['p1-choice', 'p2-choice', 'p3-choice'].forEach(id => {
-        document.getElementById(id).addEventListener('change', renderAllPlayerConfigs);
-      });
 
       document.getElementById('e1-choice').value = 1;
       document.getElementById('e2-choice').value = 2;
@@ -1398,7 +1383,6 @@
       resDiv.innerHTML = html;
     }
 
-    /* --- 🎮 3v3 對戰模擬核心引擎 (含道具與十選四技能配置) --- */
     let battleState = {
       playerTeam: [],
       enemyTeam: [],
@@ -1416,7 +1400,6 @@
         let basePoke = pokemons[pokeIdx];
         let pCopy = JSON.parse(JSON.stringify(basePoke));
 
-        // 收集勾選的 4 個招式
         let selectedMoves = [];
         for(let mIdx=0; mIdx<10; mIdx++) {
           let cb = document.getElementById(`p${i}-m-${mIdx}`);
@@ -1425,11 +1408,10 @@
           }
         }
         if(selectedMoves.length === 0) {
-          selectedMoves = [basePoke.topMoves[0]]; // 預防未勾選
+          selectedMoves = [basePoke.topMoves[0]];
         }
         pCopy.topMoves = selectedMoves;
 
-        // 取得道具
         let itemChoice = document.getElementById(`p${i}-item`).value;
         pCopy.item = itemChoice;
 
@@ -1442,18 +1424,15 @@
         pTeamTmp.push(pCopy);
       }
 
-      // 對手隨機配置道具與 4 個招式
       let eTeamTmp = [];
       ['e1-choice', 'e2-choice', 'e3-choice'].forEach((id) => {
         let pokeIdx = document.getElementById(id).value;
         let basePoke = pokemons[pokeIdx];
         let eCopy = JSON.parse(JSON.stringify(basePoke));
 
-        // 隨機選 4 個招式
         let shuffled = [...basePoke.topMoves].sort(() => 0.5 - Math.random());
         eCopy.topMoves = shuffled.slice(0, 4);
 
-        // 隨機選一個道具
         let randomItem = availableItems[Math.floor(Math.random() * availableItems.length)].id;
         eCopy.item = randomItem;
 
@@ -1518,7 +1497,7 @@
         baseSpe *= 2;
       }
       if (fighter.item === 'choice-scarf') {
-        baseSpe *= 1.5; // 圍巾速度 1.5 倍
+        baseSpe *= 1.5;
       }
       return baseSpe;
     }
@@ -1595,7 +1574,7 @@
       }
 
       document.getElementById('battle-log').innerHTML = battleState.log.join('<br>');
-      document.getElementById('battle-log').scrollTop = document.getElementById('battle-log'].scrollHeight;
+      document.getElementById('battle-log').scrollTop = document.getElementById('battle-log').scrollHeight;
     }
 
     function executeTurn(actionType) {
@@ -1724,7 +1703,6 @@
       checkWinCondition();
     }
 
-    // 整合道具、招式副作用、畫皮與多重鱗片的傷害計算引擎
     function calcDamageDealtWithAbilityAndItem(attacker, defender, move) {
       let power = move.power || 60;
       let mult = getMultiplier(move.type, defender.t1, defender.t2);
@@ -1734,12 +1712,10 @@
       let atkStat = isSpecial ? (attacker.stats.spa * (attacker.spaStage || 1.0)) : (attacker.stats.atk * (attacker.atkStage || 1.0));
       let defStat = isSpecial ? defender.stats.spd : defender.stats.def;
 
-      // 突擊背心：特防提升 1.5 倍
       if (defender.item === 'assault-vest' && isSpecial) {
         defStat *= 1.5;
       }
 
-      // 砂暴天氣：岩石系特防提升 1.5 倍
       if (battleState.weather === 'sandstorm' && isSpecial && (defender.t1 === 'rock' || defender.t2 === 'rock')) {
         defStat *= 1.5;
       }
@@ -1755,7 +1731,6 @@
 
       let rawDmg = Math.floor((power * (atkStat / Math.max(1, defStat)) * stab * mult * weatherMod * 0.5));
 
-      // 生命寶珠：傷害提升 1.3 倍，自身反傷 1/10
       if (attacker.item === 'life-orb') {
         rawDmg = Math.floor(rawDmg * 1.3);
         let recoil = Math.floor(attacker.maxHp / 10);
@@ -1765,7 +1740,6 @@
       let finalDmg = Math.max(1, rawDmg);
       let logText = "";
 
-      // 招式副作用處理
       if (move.effect === 'self_def_down') {
         attacker.stats.def = Math.max(30, attacker.stats.def * 0.8);
         logText += `⚠️ ${attacker.name} 的 ${move.name} 副作用：防禦力下降了！ `;
@@ -1778,7 +1752,6 @@
         logText += `⚠️ ${attacker.name} 承受了反作用力傷害！ `;
       }
 
-      // 畫皮特徵判定
       if (defender.abilities === "畫皮" && defender.hasDisguise) {
         defender.hasDisguise = false;
         let disguiseDmg = Math.floor(defender.maxHp / 8);
@@ -1789,7 +1762,6 @@
         };
       }
 
-      // 多重鱗片特徵判定
       if (defender.abilities === "多重鱗片" && defender.currentHp === defender.maxHp) {
         finalDmg = Math.floor(finalDmg * 0.5);
         logText += `🛡️ ${defender.name} 的【多重鱗片】發動！滿血狀態下受到的傷害減半！`;
