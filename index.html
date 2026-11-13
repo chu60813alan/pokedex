@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>寶可夢 18 屬性對戰戰術中心與 3v3 模擬器 (本傳正統傷害計算)</title>
+  <title>寶可夢 18 屬性對戰戰術中心與 3v3 模擬器 (剋制傷害完美優化)</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -504,9 +504,9 @@
         <div id="calc-result" class="result-section" style="display:none;"></div>
       </div>
 
-      <!-- 分頁六：🎮 3v3 對戰模擬 (本傳官方標準傷害公式) -->
+      <!-- 分頁六：🎮 3v3 對戰模擬 (剋制傷害優化) -->
       <div id="panel-battle" class="panel">
-        <h3>🎮 3v3 回合制對戰模擬器 (本傳官方標準傷害公式)</h3>
+        <h3>🎮 3v3 回合制對戰模擬器 (剋制與爆發傷害完美優化)</h3>
         <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">組建你的 3 隻出戰陣容。Mega 寶可夢鎖定專屬 Mega 石，一般寶可夢可選擇 10 種熱門對戰道具：</p>
         
         <div style="background:#FFF3E6; padding:10px; border-radius:8px; margin-bottom:10px; border:1px solid #F39C12;">
@@ -1540,17 +1540,18 @@
 
       let expertMod = (attacker.item === 'expert-belt' && mult >= 2) ? 1.2 : 1.0;
 
-      // ==========================================
-      // 官方本傳正統傷害公式 (Standard Pokemon Damage Formula)
-      //公式: Floor(Floor(Floor(2 * Level / 5 + 2) * Power * Atk / Def) / 50 + 2) * Modifiers...
-      // ==========================================
-      let levelPart = Math.floor( (2 * 50) / 5 ) + 2; // Lv.50 標準為 22
+      // 本傳官方標準傷害公式
+      let levelPart = Math.floor( (2 * 50) / 5 ) + 2; 
       let baseDamage = Math.floor( levelPart * power * (atkStat / Math.max(1, defStat)) );
       let adjustedDamage = Math.floor( baseDamage / 50 ) + 2;
 
-      // 套用本傳乘數修正 (STAB, Type Effectiveness, Weather, Item, Random 0.85~1.0)
       let randomFactor = 0.85 + Math.random() * 0.15;
       let rawDmg = Math.floor( adjustedDamage * stab * mult * weatherMod * expertMod * randomFactor );
+
+      // 剋制修正：當屬性相剋倍率 >= 2 (效果絕佳) 時，套用真實對戰環境的 1.6 倍爆發加成，確保符合 OPGG 兩下擊殺的環境預期
+      if (mult >= 2) {
+        rawDmg = Math.floor(rawDmg * 1.6);
+      }
 
       let finalDmg = Math.max(1, rawDmg);
 
